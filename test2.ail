@@ -1,0 +1,90 @@
+
+function custom_funtion <- (threshold, replace_value, what_to_replace, dataset) {
+    do {
+        dataset.what_to_replace <- replace_value
+    } if {
+        dataset.what_to_replace < threshold
+    }
+}
+
+
+-> @Load {
+    from "train.csv" -> train_data
+    from "test.csv"  -> test_data
+    experiment_data := train_data
+} -> @Features {
+    
+    experiment_data.FamilySize <- experiment_data.SibSp + experiment_data.Parch + 1
+    
+    do {
+        experiment_data.Sex <- 1
+        } if {
+        experiment_data.Sex == "male"
+    } else {// Consider 'do else' instead of 'else'
+        experiment_data.Sex <- 0
+    }
+    // Do we want C style ternary?
+    // like experiment_data.Sex = 1 ? experiment_data.Sex == "male" : 0 
+    
+} -> @Transform {
+    
+    y <- experiment_data.Survived
+    X_std.rest <- (y, experiment_data)
+
+    
+    scaler <- .StandardScaler
+    
+    
+    
+    
+    std_scaler_main.fit_transform <- X_std
+        
+        
+        
+        
+    X_std.StandardScaler.fit_transform
+    
+    X_scaled <- X_std
+    
+} -> @Train {
+    model 
+        <- .RandomForestClassifier 
+        <- (n_estimators=100, max_depth=5, random_state=42)
+    
+    features := ("Pclass", "Sex", "Fare")
+    // Expand the list features and use the result as the column name
+    X <- experiment_data.@features.get_dummies  
+    X_test <- test_data.@features.get_dummies
+   
+        
+    scaler.fit_transform <- X
+    X.scaler.fit_transform
+    X_test.scaler.fit_transform
+    
+    model.fit <- (X, y)
+        
+    predictions 
+        <- model.predict 
+        <- (X_test)
+        
+} -> @Output {
+    
+    out.PassengerId <- test_data.PassengerId
+    out.Survived    <- predictions
+    out.to_csv <- ("result.csv") 
+    
+} 
+
+@Train -> @Accuracy {
+    train_preds 
+        <- model.predict <- (X)
+    .print <- (accuracy_score <- (y, train_preds))
+}
+
+
+
+-> @Load {} -> @Features1 {}
+
+@Load -> @Features2 {} -> {}
+
+@Load -> @Features3 {} -> {}

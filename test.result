@@ -1,0 +1,66 @@
+(prog 
+	(stat (expr (basic_val (num 12))) \n) 
+	(stat (expr (basic_val (num 100_000))) \n) 
+	(stat (expr (basic_val (num 100_000.12))) \n) 
+	(stat (expr (basic_val (num 12.12))) \n) 
+	(stat (expr (basic_val (str "hello\n"))) \n) 
+	(stat (expr (basic_val (str 'hello\n'))) \n) 
+	(stat (expr (df [ (df_val (basic_list ( (num 12) , (num 12) , (num 12) ))) ])) \n) 
+	(stat (expr (df [ (df_val hello : (basic_list ( (num 13) , (num 13) , (num 13) ))) ])) \n) 
+	(stat (expr (id hello)) \n) 
+	(stat (assignment (id hello) := (expr (basic_val (num 123))) \n)) 
+	(stat (expr (list (basic_list ( (str "abc") , (str "dbv") , (str 'ytu') )))) \n) 
+	(stat (expr (list ( (expr (basic_val (num 123))) , (expr (basic_val (str "abc"))) , (expr (basic_val (num 123.123))) ))) \n) 
+	(stat (block -> (label @ Init) (context { 
+	(stat \n) 
+	(stat (expr (basic_val (num 12))) \n) }))) 
+	(stat (block -> (label @ Load) (context { 
+	(stat \n) 
+	(stat (expr (basic_val (str "ABC"))) \n) }))) 
+	(stat (block -> (context { 
+	(stat \n) 
+	(stat \n) }))) 
+	(stat \n) 
+	(stat \n) 
+	(stat (doIfElse do (context { 
+	(stat \n) 
+	(stat (expr (basic_val (num 12))) \n) }) 
+	if (bool_context { \n (bool_group 
+	(bool_stat (expr (list (basic_list ( (num 12) , (num 12) )))) (bool_op >) (expr (basic_val (num 12))))) \n }) 
+	else (context { 
+	(stat \n) }))) 
+	(stat \n) 
+	(stat \n) 
+	(stat (doIfElse do (context { 
+	(stat \n) 
+	(stat (expr (basic_val (num 12))) \n) }) 
+	if (bool_context { \n (bool_group 
+	(bool_stat (expr (list (basic_list ( (num 12) , (num 12) )))) (bool_op >) (expr (basic_val (num 12)))) (bool_op &) \n 
+	(bool_stat (expr (list (basic_list ( (num 15) , (num 15) )))) (bool_op >) (expr (basic_val (num 12))))) \n }) 
+	else (context { 
+	(stat \n) }))) 
+	(stat \n) 
+	(stat \n) 
+	(stat (doIfElse do (context { 
+	(stat \n) 
+	(stat (expr (basic_val (num 12))) \n) }) 
+	if (bool_context { \n (bool_group 
+	(bool_stat (expr (list (basic_list ( (num 12) , (num 12) )))) (bool_op >) (expr (basic_val (num 12)))) (bool_op &) \n 
+	(bool_stat (expr (list (basic_list ( (num 15) , (num 15) )))) (bool_op >) (expr (basic_val (num 12))))) \n \n (bool_group 
+	(bool_stat (expr (list (basic_list ( (num 17) , (num 17) )))) (bool_op >) (expr (basic_val (num 1))))) \n }) 
+	else (context { 
+	(stat \n) }))) 
+	(stat \n) 
+	(stat \n) 
+	(stat (fromToData from 'hello' -> data)) 
+	(stat \n) 
+	(stat \n) 
+	(stat (expr (column data . name)) \n) 
+	(stat (expr (column_method (column data . name) . rename)) \n) 
+	(stat \n) 
+	(stat (expr (column_method (column data . name) . rename <- (arg_list ( (arg (expr (basic_val (str 'hello')))) )))) \n) 
+	(stat \n) 
+	(stat (expr (func . func)) \n) 
+	(stat (expr (func . func <- (arg_list ( (arg (expr (basic_val (str 'hello')))) )))) \n) 
+	(stat \n)
+)
