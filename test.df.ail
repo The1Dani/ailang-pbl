@@ -1,0 +1,19 @@
+12
+100_000
+100_000.12 
+12.12
+"hello\n"
+'hello\n'
+[(12, 12, 12)]
+helloDf := [hello: (13,13,13), world: (14,14,14)]
+hello := 123
+hello
+("abc", "dbv", 'ytu')
+(123, "abc", 123.123)
+df := [(15,15,15)]
+df.0
+df.0 <- df.0 + 35
+df.0 
+df.0 * 5
+df.0
+helloDf.hello

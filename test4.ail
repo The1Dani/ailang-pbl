@@ -1,0 +1,27 @@
+-> @Load {
+  from "data.csv" -> data
+} 
+
+@Load -> {
+  // Processing-1
+} -> {
+  // Feature-Selection-1
+} -> {
+  // Model-1
+}
+
+@Load -> {
+  // Processing-2
+} -> {
+  // Feature-Selection-2
+} -> {
+  // Model-2
+}
+
+@Load -> {
+  // Processing-3
+} -> {
+  // Feature-Selection-3
+} -> {
+  // Model-3
+}

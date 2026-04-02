@@ -71,6 +71,15 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by AiLangParser#id.
+    def enterId(self, ctx:AiLangParser.IdContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#id.
+    def exitId(self, ctx:AiLangParser.IdContext):
+        pass
+
+
     # Enter a parse tree produced by AiLangParser#ref_op.
     def enterRef_op(self, ctx:AiLangParser.Ref_opContext):
         pass
@@ -131,15 +140,6 @@ class AiLangListener(ParseTreeListener):
 
     # Exit a parse tree produced by AiLangParser#printExpr.
     def exitPrintExpr(self, ctx:AiLangParser.PrintExprContext):
-        pass
-
-
-    # Enter a parse tree produced by AiLangParser#blank.
-    def enterBlank(self, ctx:AiLangParser.BlankContext):
-        pass
-
-    # Exit a parse tree produced by AiLangParser#blank.
-    def exitBlank(self, ctx:AiLangParser.BlankContext):
         pass
 
 
@@ -314,6 +314,15 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by AiLangParser#generic_list.
+    def enterGeneric_list(self, ctx:AiLangParser.Generic_listContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#generic_list.
+    def exitGeneric_list(self, ctx:AiLangParser.Generic_listContext):
+        pass
+
+
     # Enter a parse tree produced by AiLangParser#list.
     def enterList(self, ctx:AiLangParser.ListContext):
         pass
@@ -338,6 +347,15 @@ class AiLangListener(ParseTreeListener):
 
     # Exit a parse tree produced by AiLangParser#df_val.
     def exitDf_val(self, ctx:AiLangParser.Df_valContext):
+        pass
+
+
+    # Enter a parse tree produced by AiLangParser#column_id.
+    def enterColumn_id(self, ctx:AiLangParser.Column_idContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#column_id.
+    def exitColumn_id(self, ctx:AiLangParser.Column_idContext):
         pass
 
 
@@ -446,24 +464,6 @@ class AiLangListener(ParseTreeListener):
 
     # Exit a parse tree produced by AiLangParser#str.
     def exitStr(self, ctx:AiLangParser.StrContext):
-        pass
-
-
-    # Enter a parse tree produced by AiLangParser#id.
-    def enterId(self, ctx:AiLangParser.IdContext):
-        pass
-
-    # Exit a parse tree produced by AiLangParser#id.
-    def exitId(self, ctx:AiLangParser.IdContext):
-        pass
-
-
-    # Enter a parse tree produced by AiLangParser#bool_op.
-    def enterBool_op(self, ctx:AiLangParser.Bool_opContext):
-        pass
-
-    # Exit a parse tree produced by AiLangParser#bool_op.
-    def exitBool_op(self, ctx:AiLangParser.Bool_opContext):
         pass
 
 

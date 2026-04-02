@@ -1,0 +1,10 @@
+-> @Start {
+
+  from "hello.csv" -> hello
+  .print <- ("Hello, World")
+
+} -> {
+  
+  .print <- (hello.hello)
+
+}

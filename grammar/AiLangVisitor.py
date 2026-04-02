@@ -44,6 +44,11 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by AiLangParser#id.
+    def visitId(self, ctx:AiLangParser.IdContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by AiLangParser#ref_op.
     def visitRef_op(self, ctx:AiLangParser.Ref_opContext):
         return self.visitChildren(ctx)
@@ -76,11 +81,6 @@ class AiLangVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by AiLangParser#printExpr.
     def visitPrintExpr(self, ctx:AiLangParser.PrintExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by AiLangParser#blank.
-    def visitBlank(self, ctx:AiLangParser.BlankContext):
         return self.visitChildren(ctx)
 
 
@@ -179,6 +179,11 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by AiLangParser#generic_list.
+    def visitGeneric_list(self, ctx:AiLangParser.Generic_listContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by AiLangParser#list.
     def visitList(self, ctx:AiLangParser.ListContext):
         return self.visitChildren(ctx)
@@ -191,6 +196,11 @@ class AiLangVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by AiLangParser#df_val.
     def visitDf_val(self, ctx:AiLangParser.Df_valContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#column_id.
+    def visitColumn_id(self, ctx:AiLangParser.Column_idContext):
         return self.visitChildren(ctx)
 
 
@@ -251,16 +261,6 @@ class AiLangVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by AiLangParser#str.
     def visitStr(self, ctx:AiLangParser.StrContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by AiLangParser#id.
-    def visitId(self, ctx:AiLangParser.IdContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by AiLangParser#bool_op.
-    def visitBool_op(self, ctx:AiLangParser.Bool_opContext):
         return self.visitChildren(ctx)
 
 

@@ -13,4 +13,5 @@ run_test() {
 }
 
 run_test test.ail
+run_test test.df.ail
 run_test test2.ail
