@@ -14,8 +14,13 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by AiLangParser#block.
-    def visitBlock(self, ctx:AiLangParser.BlockContext):
+    # Visit a parse tree produced by AiLangParser#Block2Block.
+    def visitBlock2Block(self, ctx:AiLangParser.Block2BlockContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#Label2Block.
+    def visitLabel2Block(self, ctx:AiLangParser.Label2BlockContext):
         return self.visitChildren(ctx)
 
 

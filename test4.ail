@@ -1,16 +1,27 @@
+x := 34
 -> @Load {
   from "data.csv" -> data
 } 
 
 @Load -> {
+  x := 123
   // Processing-1
 } -> {
+  y := 456
   // Feature-Selection-1
-} -> {
+} -> @Hello {
   // Model-1
+  
+} -> {
+  y <- 'hello'
+}
+
+@Hello -> @FromHello{
+  m := "asd"
 }
 
 @Load -> {
+  z := 123
   // Processing-2
 } -> {
   // Feature-Selection-2

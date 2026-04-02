@@ -17,12 +17,21 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by AiLangParser#block.
-    def enterBlock(self, ctx:AiLangParser.BlockContext):
+    # Enter a parse tree produced by AiLangParser#Block2Block.
+    def enterBlock2Block(self, ctx:AiLangParser.Block2BlockContext):
         pass
 
-    # Exit a parse tree produced by AiLangParser#block.
-    def exitBlock(self, ctx:AiLangParser.BlockContext):
+    # Exit a parse tree produced by AiLangParser#Block2Block.
+    def exitBlock2Block(self, ctx:AiLangParser.Block2BlockContext):
+        pass
+
+
+    # Enter a parse tree produced by AiLangParser#Label2Block.
+    def enterLabel2Block(self, ctx:AiLangParser.Label2BlockContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#Label2Block.
+    def exitLabel2Block(self, ctx:AiLangParser.Label2BlockContext):
         pass
 
 

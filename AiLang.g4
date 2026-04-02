@@ -4,7 +4,9 @@ grammar AiLang;
 
 prog: stat+;
 
-block: ARR label? context;
+block:
+	ARR label? context	# Block2Block
+	| label ARR label? context	# Label2Block;
 
 label: '@' id;
 
@@ -68,9 +70,11 @@ df: '[' df_val (',' df_val)* ']';
 
 df_val: (id ':')? basic_list;
 
-column_id : id | INT;
+column_id: id | INT;
 
-column: id '.' column_id # simpleColumn | id '.' '@' id # columnSet;
+column:
+	id '.' column_id	# simpleColumn
+	| id '.' '@' id		# columnSet;
 
 column_method: column '.' id (REF arg_list)?;
 
