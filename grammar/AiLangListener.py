@@ -71,6 +71,15 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by AiLangParser#bool_stat.
+    def enterBool_stat(self, ctx:AiLangParser.Bool_statContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#bool_stat.
+    def exitBool_stat(self, ctx:AiLangParser.Bool_statContext):
+        pass
+
+
     # Enter a parse tree produced by AiLangParser#assignment.
     def enterAssignment(self, ctx:AiLangParser.AssignmentContext):
         pass
@@ -98,15 +107,6 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by AiLangParser#column_ref_op.
-    def enterColumn_ref_op(self, ctx:AiLangParser.Column_ref_opContext):
-        pass
-
-    # Exit a parse tree produced by AiLangParser#column_ref_op.
-    def exitColumn_ref_op(self, ctx:AiLangParser.Column_ref_opContext):
-        pass
-
-
     # Enter a parse tree produced by AiLangParser#functionDef.
     def enterFunctionDef(self, ctx:AiLangParser.FunctionDefContext):
         pass
@@ -131,15 +131,6 @@ class AiLangListener(ParseTreeListener):
 
     # Exit a parse tree produced by AiLangParser#reference.
     def exitReference(self, ctx:AiLangParser.ReferenceContext):
-        pass
-
-
-    # Enter a parse tree produced by AiLangParser#column_reference.
-    def enterColumn_reference(self, ctx:AiLangParser.Column_referenceContext):
-        pass
-
-    # Exit a parse tree produced by AiLangParser#column_reference.
-    def exitColumn_reference(self, ctx:AiLangParser.Column_referenceContext):
         pass
 
 
@@ -206,33 +197,6 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by AiLangParser#bool_stat.
-    def enterBool_stat(self, ctx:AiLangParser.Bool_statContext):
-        pass
-
-    # Exit a parse tree produced by AiLangParser#bool_stat.
-    def exitBool_stat(self, ctx:AiLangParser.Bool_statContext):
-        pass
-
-
-    # Enter a parse tree produced by AiLangParser#columnMethod.
-    def enterColumnMethod(self, ctx:AiLangParser.ColumnMethodContext):
-        pass
-
-    # Exit a parse tree produced by AiLangParser#columnMethod.
-    def exitColumnMethod(self, ctx:AiLangParser.ColumnMethodContext):
-        pass
-
-
-    # Enter a parse tree produced by AiLangParser#idVal.
-    def enterIdVal(self, ctx:AiLangParser.IdValContext):
-        pass
-
-    # Exit a parse tree produced by AiLangParser#idVal.
-    def exitIdVal(self, ctx:AiLangParser.IdValContext):
-        pass
-
-
     # Enter a parse tree produced by AiLangParser#mathOp.
     def enterMathOp(self, ctx:AiLangParser.MathOpContext):
         pass
@@ -251,12 +215,12 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by AiLangParser#columnID.
-    def enterColumnID(self, ctx:AiLangParser.ColumnIDContext):
+    # Enter a parse tree produced by AiLangParser#pathExpr.
+    def enterPathExpr(self, ctx:AiLangParser.PathExprContext):
         pass
 
-    # Exit a parse tree produced by AiLangParser#columnID.
-    def exitColumnID(self, ctx:AiLangParser.ColumnIDContext):
+    # Exit a parse tree produced by AiLangParser#pathExpr.
+    def exitPathExpr(self, ctx:AiLangParser.PathExprContext):
         pass
 
 
@@ -293,6 +257,33 @@ class AiLangListener(ParseTreeListener):
 
     # Exit a parse tree produced by AiLangParser#group.
     def exitGroup(self, ctx:AiLangParser.GroupContext):
+        pass
+
+
+    # Enter a parse tree produced by AiLangParser#methodCall.
+    def enterMethodCall(self, ctx:AiLangParser.MethodCallContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#methodCall.
+    def exitMethodCall(self, ctx:AiLangParser.MethodCallContext):
+        pass
+
+
+    # Enter a parse tree produced by AiLangParser#simpleTarget.
+    def enterSimpleTarget(self, ctx:AiLangParser.SimpleTargetContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#simpleTarget.
+    def exitSimpleTarget(self, ctx:AiLangParser.SimpleTargetContext):
+        pass
+
+
+    # Enter a parse tree produced by AiLangParser#memberTarget.
+    def enterMemberTarget(self, ctx:AiLangParser.MemberTargetContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#memberTarget.
+    def exitMemberTarget(self, ctx:AiLangParser.MemberTargetContext):
         pass
 
 
@@ -359,39 +350,30 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by AiLangParser#column_id.
-    def enterColumn_id(self, ctx:AiLangParser.Column_idContext):
+    # Enter a parse tree produced by AiLangParser#basicIDMember.
+    def enterBasicIDMember(self, ctx:AiLangParser.BasicIDMemberContext):
         pass
 
-    # Exit a parse tree produced by AiLangParser#column_id.
-    def exitColumn_id(self, ctx:AiLangParser.Column_idContext):
-        pass
-
-
-    # Enter a parse tree produced by AiLangParser#simpleColumn.
-    def enterSimpleColumn(self, ctx:AiLangParser.SimpleColumnContext):
-        pass
-
-    # Exit a parse tree produced by AiLangParser#simpleColumn.
-    def exitSimpleColumn(self, ctx:AiLangParser.SimpleColumnContext):
+    # Exit a parse tree produced by AiLangParser#basicIDMember.
+    def exitBasicIDMember(self, ctx:AiLangParser.BasicIDMemberContext):
         pass
 
 
-    # Enter a parse tree produced by AiLangParser#columnSet.
-    def enterColumnSet(self, ctx:AiLangParser.ColumnSetContext):
+    # Enter a parse tree produced by AiLangParser#intIDMember.
+    def enterIntIDMember(self, ctx:AiLangParser.IntIDMemberContext):
         pass
 
-    # Exit a parse tree produced by AiLangParser#columnSet.
-    def exitColumnSet(self, ctx:AiLangParser.ColumnSetContext):
+    # Exit a parse tree produced by AiLangParser#intIDMember.
+    def exitIntIDMember(self, ctx:AiLangParser.IntIDMemberContext):
         pass
 
 
-    # Enter a parse tree produced by AiLangParser#column_method.
-    def enterColumn_method(self, ctx:AiLangParser.Column_methodContext):
+    # Enter a parse tree produced by AiLangParser#listIDMember.
+    def enterListIDMember(self, ctx:AiLangParser.ListIDMemberContext):
         pass
 
-    # Exit a parse tree produced by AiLangParser#column_method.
-    def exitColumn_method(self, ctx:AiLangParser.Column_methodContext):
+    # Exit a parse tree produced by AiLangParser#listIDMember.
+    def exitListIDMember(self, ctx:AiLangParser.ListIDMemberContext):
         pass
 
 

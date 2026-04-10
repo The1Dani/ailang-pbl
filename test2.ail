@@ -1,5 +1,5 @@
 
-function custom_funtion <- (threshold, replace_value, what_to_replace, dataset) {
+function custom_function <- (threshold, replace_value, what_to_replace, dataset) {
     do {
         dataset.what_to_replace <- replace_value
     } if {
@@ -14,10 +14,10 @@ function custom_funtion <- (threshold, replace_value, what_to_replace, dataset) 
     experiment_data := train_data
 } -> @Features {
     
-    experiment_data.FamilySize <- experiment_data.SibSp + experiment_data.Parch + 1
+    // experiment_data.FamilySize <- experiment_data.SibSp + experiment_data.Parch + 1
     
     do {
-        experiment_data.Sex <- 1
+        experiment_data.Sex <- 1 //make df operations seperate
         } if {
         experiment_data.Sex == "male"
     } else {// Consider 'do else' instead of 'else'
@@ -30,7 +30,7 @@ function custom_funtion <- (threshold, replace_value, what_to_replace, dataset) 
     
     y <- experiment_data.Survived
     X_std.rest <- (y, experiment_data)
-
+    
     
     scaler <- .StandardScaler
     

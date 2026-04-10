@@ -17,44 +17,49 @@ bool_context: '{' bool_group* '}';
 
 bool_group: bool_stat (BOOL_OP bool_stat)*;
 
-assignment: id ':=' expr;
+bool_stat: expr BOOL_OP expr;
+
+assignment: assignable ':=' expr;
 
 // Added back the 'id' rule since some of your other rules reference it
 id: ID;
 
-ref_op: id REF expr;
+ref_op: assignable REF expr;
 
-column_ref_op: column REF expr;
+// column_ref_op: column REF expr;
 
 stat:
-	func_def		# functionDef
-	| assignment	# assign
-	| ref_op		# reference
-	| column_ref_op	# column_reference
-	| expr			# printExpr
-	| block			# block_stat
-	| doIfElse		# do_if_else
-	| fromToData	# load_op;
+	func_def		# functionDef 
+	| assignment	# assign //ok
+	| ref_op		# reference //ok
+	| expr			# printExpr //ok
+	| block			# block_stat //ok
+	| doIfElse		# do_if_else //ok
+	| fromToData	# load_op; //dummy implemented
 
 // Fixed: Corrected the parameter list and ID references
 func_def: FUNCTION id REF '(' id (',' id)* ')' context;
 
-fromToData: FROM STR ARR id;
+fromToData: FROM str ARR id;
 
 doIfElse: DO context IF bool_context (ELSE context)?;
 
-bool_stat: expr BOOL_OP expr;
 
 expr:
 	basic_val			# basicValExpr
-	| df				# dataframe
-	| column_method		# columnMethod
-	| column			# columnID
-	| id				# idVal
+	| assignable         # pathExpr
 	| func				# function
 	| list				# listValExpr
+	| df				# dataframe
 	| '(' expr ')'		# group
-	| expr MATH_OP expr	# mathOp;
+    | expr REF arg_list  # methodCall     // Handles the <- (...) trigger
+    | expr MATH_OP expr  # mathOp
+    ;
+
+assignable:
+    id                        # simpleTarget
+    | assignable '.' member   # memberTarget  // Allows x.y, df.col, df.1.sub
+    ;
 
 named_arg: id '=' expr;
 
@@ -70,13 +75,14 @@ df: '[' df_val (',' df_val)* ']';
 
 df_val: (id ':')? basic_list;
 
-column_id: id | INT;
 
-column:
-	id '.' column_id	# simpleColumn
-	| id '.' '@' id		# columnSet;
+member: 
+    id    #basicIDMember
+    | INT #intIDMember
+    | '@' id #listIDMember             // Keeps your label/set logic
+    ;
 
-column_method: column '.' id (REF arg_list)?;
+// column_method: column '.' id (REF arg_list)?;
 
 func: '.' id (REF arg_list)?;
 
@@ -85,6 +91,7 @@ basic_list:
 	| '(' str (',' str)* ')'	# strList;
 
 basic_val:
+	//Consider bool
 	num					# number
 	| str				# string
 	| '(' basic_val ')'	# group_basic_val;

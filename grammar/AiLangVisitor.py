@@ -44,6 +44,11 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by AiLangParser#bool_stat.
+    def visitBool_stat(self, ctx:AiLangParser.Bool_statContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by AiLangParser#assignment.
     def visitAssignment(self, ctx:AiLangParser.AssignmentContext):
         return self.visitChildren(ctx)
@@ -59,11 +64,6 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by AiLangParser#column_ref_op.
-    def visitColumn_ref_op(self, ctx:AiLangParser.Column_ref_opContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by AiLangParser#functionDef.
     def visitFunctionDef(self, ctx:AiLangParser.FunctionDefContext):
         return self.visitChildren(ctx)
@@ -76,11 +76,6 @@ class AiLangVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by AiLangParser#reference.
     def visitReference(self, ctx:AiLangParser.ReferenceContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by AiLangParser#column_reference.
-    def visitColumn_reference(self, ctx:AiLangParser.Column_referenceContext):
         return self.visitChildren(ctx)
 
 
@@ -119,21 +114,6 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by AiLangParser#bool_stat.
-    def visitBool_stat(self, ctx:AiLangParser.Bool_statContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by AiLangParser#columnMethod.
-    def visitColumnMethod(self, ctx:AiLangParser.ColumnMethodContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by AiLangParser#idVal.
-    def visitIdVal(self, ctx:AiLangParser.IdValContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by AiLangParser#mathOp.
     def visitMathOp(self, ctx:AiLangParser.MathOpContext):
         return self.visitChildren(ctx)
@@ -144,8 +124,8 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by AiLangParser#columnID.
-    def visitColumnID(self, ctx:AiLangParser.ColumnIDContext):
+    # Visit a parse tree produced by AiLangParser#pathExpr.
+    def visitPathExpr(self, ctx:AiLangParser.PathExprContext):
         return self.visitChildren(ctx)
 
 
@@ -166,6 +146,21 @@ class AiLangVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by AiLangParser#group.
     def visitGroup(self, ctx:AiLangParser.GroupContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#methodCall.
+    def visitMethodCall(self, ctx:AiLangParser.MethodCallContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#simpleTarget.
+    def visitSimpleTarget(self, ctx:AiLangParser.SimpleTargetContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#memberTarget.
+    def visitMemberTarget(self, ctx:AiLangParser.MemberTargetContext):
         return self.visitChildren(ctx)
 
 
@@ -204,23 +199,18 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by AiLangParser#column_id.
-    def visitColumn_id(self, ctx:AiLangParser.Column_idContext):
+    # Visit a parse tree produced by AiLangParser#basicIDMember.
+    def visitBasicIDMember(self, ctx:AiLangParser.BasicIDMemberContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by AiLangParser#simpleColumn.
-    def visitSimpleColumn(self, ctx:AiLangParser.SimpleColumnContext):
+    # Visit a parse tree produced by AiLangParser#intIDMember.
+    def visitIntIDMember(self, ctx:AiLangParser.IntIDMemberContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by AiLangParser#columnSet.
-    def visitColumnSet(self, ctx:AiLangParser.ColumnSetContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by AiLangParser#column_method.
-    def visitColumn_method(self, ctx:AiLangParser.Column_methodContext):
+    # Visit a parse tree produced by AiLangParser#listIDMember.
+    def visitListIDMember(self, ctx:AiLangParser.ListIDMemberContext):
         return self.visitChildren(ctx)
 
 

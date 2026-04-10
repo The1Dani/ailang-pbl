@@ -1,16 +1,17 @@
-12
-100_000
-100_000.12
-12.12
-"hello\n"
-'hello\n'
-[(12, 12, 12)]
-[hello: (13,13,13)]
-hello
-hello := 123
-("abc", "dbv", 'ytu')
-(123, "abc", 123.123)
-
+-> {
+    12
+    100_000
+    100_000.12
+    12.12
+    "hello\n"
+    'hello\n'
+    [(12, 12, 12)]
+    [hello: (13,13,13)]
+    hello
+    hello := 123
+    ("abc", "dbv", 'ytu')
+    (123, "abc", 123.123)
+}
 -> @Init {
 12
 } -> @Load {
@@ -19,38 +20,43 @@ hello := 123
 
 }
 
-do {
-12
-} if {
-(12, 12) > 12
-} else {
+-> {
+    do {
+    12
+    } if {
+    (12, 12) > 12
+    } else {
+}
+}
+-> {
+    do {
+    12
+    } if {
+    (12,12) > 12 &
+    (15,15) > 12
+    } else {
+    }
+}
+-> {
+    do {
+    12
+    } if {
+    (12,12) > 12 &
+    (15,15) > 12
+
+    (17,17) > 1
+    } else {
+    }
 }
 
-do {
-12
-} if {
-(12,12) > 12 &
-(15,15) > 12
-} else {
+-> {
+    from 'hello' -> data
+
+    data.name
+    data.name.rename
+
+    data.name.rename <- ('hello')
+
+    .func
+    .func <- ('hello')
 }
-
-do {
-12
-} if {
-(12,12) > 12 &
-(15,15) > 12
-
-(17,17) > 1
-} else {
-}
-
-from 'hello' -> data
-
-data.name
-data.name.rename
-
-data.name.rename <- ('hello')
-
-.func
-.func <- ('hello')
-

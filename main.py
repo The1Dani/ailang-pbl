@@ -1,5 +1,5 @@
 import sys
-from antlr4 import *
+from antlr4 import FileStream, CommonTokenStream
 from antlr4.InputStream import InputStream
 from grammar.AiLangLexer import AiLangLexer
 from grammar.AiLangParser import AiLangParser
