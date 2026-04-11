@@ -28,9 +28,9 @@ function custom_function <- (threshold, replace_value, what_to_replace, dataset)
     
 } -> @Transform {
     
-    y <- experiment_data.Survived
+    y <- [(1, 1, 1)]
+    y.Survived <- experiment_data.Survived
     X_std.rest <- (y, experiment_data)
-    
     
     scaler <- .StandardScaler
     

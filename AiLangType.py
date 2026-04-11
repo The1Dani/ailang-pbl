@@ -15,7 +15,7 @@ class NumTypes(StrEnum):
     FLOAT = auto()
 
 
-class AiLangType(ABC):
+class AiLangType:
     def __init__(self, val):
         self.val = val
 
@@ -24,7 +24,8 @@ class AiLangType(ABC):
 
     @staticmethod
     def make(node) -> AiLangType:
-        return AiLangType(None)
+        return NoneType()
+
 
 class BasicValType(AiLangType):
     def __init__(self, val):
@@ -35,7 +36,7 @@ class BasicValType(AiLangType):
         numCtx = node.getTypedRuleContext(ap.NumContext, 0)
         if numCtx is not None:
             return NumType.make(numCtx)
-            
+
         strCtx = node.getTypedRuleContext(ap.StrContext, 0)
         if strCtx is not None:
             return StrType.make(strCtx)
@@ -63,6 +64,7 @@ class NumType(BasicValType):
             return NumType(num, NumTypes.FLOAT)
         raise ValueError()
 
+
 class StrType(BasicValType):
     def __init__(self, val):
         super().__init__(val)
@@ -74,9 +76,8 @@ class StrType(BasicValType):
         return StrType(string)
 
 
-
 class DfItem(AiLangType):
-    def __init__(self, df:pd.DataFrame, item:str):
+    def __init__(self, df: pd.DataFrame, item: str):
         self.df = df
         self.item = item
 
@@ -84,6 +85,7 @@ class DfItem(AiLangType):
         if self.item not in self.df:
             self.df[self.item] = pd.Series()
         return ListType(list(self.df[self.item]))
+
 
 class DfType(AiLangType):
     def __init__(self, val):
@@ -94,12 +96,17 @@ class DfType(AiLangType):
         if not isinstance(node, ap.DfContext):
             raise ValueError()
 
+        if isinstance(node, ap.EmptyDfContext):
+            return DfType(pd.DataFrame())
+
         data = {}
         i = 0
-        for ch in node.getTypedRuleContexts( ap.Df_valContext):
+        for ch in node.getTypedRuleContexts(ap.Df_valContext):
             id = ch.getTypedRuleContext(ap.IdContext, 0)
             id = utils.getTerminalSymbol(id) if id else i
-            l_val = BasicListType.make(ch.getTypedRuleContext(ap.Basic_listContext, 0)).get()
+            l_val = BasicListType.make(
+                ch.getTypedRuleContext(ap.Basic_listContext, 0)
+            ).get()
             data[str(id)] = l_val
             i += 1
         return DfType(pd.DataFrame.from_dict(data))
@@ -114,8 +121,8 @@ class ListType(AiLangType):
 
         if isinstance(node, ap.Basic_listContext):
             return BasicListType.make(node)
-        else:
-            raise NotImplementedError()
+
+        raise ValueError()
 
 
 class BasicListType(ListType):
@@ -124,23 +131,28 @@ class BasicListType(ListType):
 
     @staticmethod
     def make(node) -> AiLangType:
-        l_val:list|None = None
+        l_val: list | None = None
         if isinstance(node, ap.NumListContext):
             l_val = []
-                  # Add float and boolean
+            # Add float and boolean
             for ch in node.getTypedRuleContexts(ap.IntigerLiteralContext):
                 l_val.append(NumType.make(ch).get())
         if isinstance(node, ap.StrListContext):
             l_val = []
             for ch in node.getTypedRuleContexts(ap.StrContext):
                 l_val.append(StrType.make(ch).get())
-        
+
         if l_val is not None:
             return BasicListType(l_val)
-            
+
         raise ValueError()
+
 
 class BoolType(AiLangType):
     def __init__(self, val):
         super().__init__(val)
 
+
+class NoneType(AiLangType, metaclass=utils.Singleton):
+    def __init__(self):
+        super().__init__(None)

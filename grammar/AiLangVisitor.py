@@ -64,6 +64,16 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by AiLangParser#NoneReturn.
+    def visitNoneReturn(self, ctx:AiLangParser.NoneReturnContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#ExprReturn.
+    def visitExprReturn(self, ctx:AiLangParser.ExprReturnContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by AiLangParser#functionDef.
     def visitFunctionDef(self, ctx:AiLangParser.FunctionDefContext):
         return self.visitChildren(ctx)
@@ -99,6 +109,11 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by AiLangParser#return.
+    def visitReturn(self, ctx:AiLangParser.ReturnContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by AiLangParser#func_def.
     def visitFunc_def(self, ctx:AiLangParser.Func_defContext):
         return self.visitChildren(ctx)
@@ -111,6 +126,11 @@ class AiLangVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by AiLangParser#doIfElse.
     def visitDoIfElse(self, ctx:AiLangParser.DoIfElseContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#func.
+    def visitFunc(self, ctx:AiLangParser.FuncContext):
         return self.visitChildren(ctx)
 
 
@@ -169,8 +189,13 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by AiLangParser#arg.
-    def visitArg(self, ctx:AiLangParser.ArgContext):
+    # Visit a parse tree produced by AiLangParser#NamedArg.
+    def visitNamedArg(self, ctx:AiLangParser.NamedArgContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#ExprArg.
+    def visitExprArg(self, ctx:AiLangParser.ExprArgContext):
         return self.visitChildren(ctx)
 
 
@@ -189,8 +214,13 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by AiLangParser#df.
-    def visitDf(self, ctx:AiLangParser.DfContext):
+    # Visit a parse tree produced by AiLangParser#NonEmptyDf.
+    def visitNonEmptyDf(self, ctx:AiLangParser.NonEmptyDfContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#EmptyDf.
+    def visitEmptyDf(self, ctx:AiLangParser.EmptyDfContext):
         return self.visitChildren(ctx)
 
 
@@ -211,11 +241,6 @@ class AiLangVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by AiLangParser#listIDMember.
     def visitListIDMember(self, ctx:AiLangParser.ListIDMemberContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by AiLangParser#func.
-    def visitFunc(self, ctx:AiLangParser.FuncContext):
         return self.visitChildren(ctx)
 
 

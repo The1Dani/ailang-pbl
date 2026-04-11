@@ -107,6 +107,24 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by AiLangParser#NoneReturn.
+    def enterNoneReturn(self, ctx:AiLangParser.NoneReturnContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#NoneReturn.
+    def exitNoneReturn(self, ctx:AiLangParser.NoneReturnContext):
+        pass
+
+
+    # Enter a parse tree produced by AiLangParser#ExprReturn.
+    def enterExprReturn(self, ctx:AiLangParser.ExprReturnContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#ExprReturn.
+    def exitExprReturn(self, ctx:AiLangParser.ExprReturnContext):
+        pass
+
+
     # Enter a parse tree produced by AiLangParser#functionDef.
     def enterFunctionDef(self, ctx:AiLangParser.FunctionDefContext):
         pass
@@ -170,6 +188,15 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by AiLangParser#return.
+    def enterReturn(self, ctx:AiLangParser.ReturnContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#return.
+    def exitReturn(self, ctx:AiLangParser.ReturnContext):
+        pass
+
+
     # Enter a parse tree produced by AiLangParser#func_def.
     def enterFunc_def(self, ctx:AiLangParser.Func_defContext):
         pass
@@ -194,6 +221,15 @@ class AiLangListener(ParseTreeListener):
 
     # Exit a parse tree produced by AiLangParser#doIfElse.
     def exitDoIfElse(self, ctx:AiLangParser.DoIfElseContext):
+        pass
+
+
+    # Enter a parse tree produced by AiLangParser#func.
+    def enterFunc(self, ctx:AiLangParser.FuncContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#func.
+    def exitFunc(self, ctx:AiLangParser.FuncContext):
         pass
 
 
@@ -296,12 +332,21 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by AiLangParser#arg.
-    def enterArg(self, ctx:AiLangParser.ArgContext):
+    # Enter a parse tree produced by AiLangParser#NamedArg.
+    def enterNamedArg(self, ctx:AiLangParser.NamedArgContext):
         pass
 
-    # Exit a parse tree produced by AiLangParser#arg.
-    def exitArg(self, ctx:AiLangParser.ArgContext):
+    # Exit a parse tree produced by AiLangParser#NamedArg.
+    def exitNamedArg(self, ctx:AiLangParser.NamedArgContext):
+        pass
+
+
+    # Enter a parse tree produced by AiLangParser#ExprArg.
+    def enterExprArg(self, ctx:AiLangParser.ExprArgContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#ExprArg.
+    def exitExprArg(self, ctx:AiLangParser.ExprArgContext):
         pass
 
 
@@ -332,12 +377,21 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by AiLangParser#df.
-    def enterDf(self, ctx:AiLangParser.DfContext):
+    # Enter a parse tree produced by AiLangParser#NonEmptyDf.
+    def enterNonEmptyDf(self, ctx:AiLangParser.NonEmptyDfContext):
         pass
 
-    # Exit a parse tree produced by AiLangParser#df.
-    def exitDf(self, ctx:AiLangParser.DfContext):
+    # Exit a parse tree produced by AiLangParser#NonEmptyDf.
+    def exitNonEmptyDf(self, ctx:AiLangParser.NonEmptyDfContext):
+        pass
+
+
+    # Enter a parse tree produced by AiLangParser#EmptyDf.
+    def enterEmptyDf(self, ctx:AiLangParser.EmptyDfContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#EmptyDf.
+    def exitEmptyDf(self, ctx:AiLangParser.EmptyDfContext):
         pass
 
 
@@ -374,15 +428,6 @@ class AiLangListener(ParseTreeListener):
 
     # Exit a parse tree produced by AiLangParser#listIDMember.
     def exitListIDMember(self, ctx:AiLangParser.ListIDMemberContext):
-        pass
-
-
-    # Enter a parse tree produced by AiLangParser#func.
-    def enterFunc(self, ctx:AiLangParser.FuncContext):
-        pass
-
-    # Exit a parse tree produced by AiLangParser#func.
-    def exitFunc(self, ctx:AiLangParser.FuncContext):
         pass
 
 

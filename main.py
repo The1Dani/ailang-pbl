@@ -5,7 +5,7 @@ from grammar.AiLangLexer import AiLangLexer
 from grammar.AiLangParser import AiLangParser
 from Interpreter import Interpreter
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if len(sys.argv) > 1:
         input_stream = FileStream(sys.argv[1])
     else:

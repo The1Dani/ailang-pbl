@@ -28,6 +28,12 @@ ref_op: assignable REF expr;
 
 // column_ref_op: column REF expr;
 
+RETURN: 'return';
+
+ret:  
+    RETURN #NoneReturn 
+    | RETURN expr #ExprReturn;
+
 stat:
 	func_def		# functionDef 
 	| assignment	# assign //ok
@@ -35,7 +41,8 @@ stat:
 	| expr			# printExpr //ok
 	| block			# block_stat //ok
 	| doIfElse		# do_if_else //ok
-	| fromToData	# load_op; //dummy implemented
+	| fromToData	# load_op //dummy implemented
+	| ret           # return;
 
 // Fixed: Corrected the parameter list and ID references
 func_def: FUNCTION id REF '(' id (',' id)* ')' context;
@@ -43,17 +50,18 @@ func_def: FUNCTION id REF '(' id (',' id)* ')' context;
 fromToData: FROM str ARR id;
 
 doIfElse: DO context IF bool_context (ELSE context)?;
+func: '.' id (REF arg_list)?;
 
 
 expr:
-	basic_val			# basicValExpr
-	| assignable         # pathExpr
-	| func				# function
-	| list				# listValExpr
-	| df				# dataframe
-	| '(' expr ')'		# group
-    | expr REF arg_list  # methodCall     // Handles the <- (...) trigger
-    | expr MATH_OP expr  # mathOp
+	basic_val			# basicValExpr //ok
+	| assignable         # pathExpr //ok
+	| func				# function //ok
+	| list				# listValExpr //ok
+	| df				# dataframe //ok
+	| '(' expr ')'		# group //ok
+    | expr REF arg_list  # methodCall   //ok
+    | expr MATH_OP expr  # mathOp // not compleate
     ;
 
 assignable:
@@ -63,15 +71,15 @@ assignable:
 
 named_arg: id '=' expr;
 
-arg: named_arg | expr;
+arg: named_arg #NamedArg | expr #ExprArg;
 
 arg_list: '(' (arg (',' arg)*)? ')';
 
 generic_list: '(' expr (',' expr)* ')';
 
-list: basic_list | generic_list | id;
+list: basic_list | generic_list;
 
-df: '[' df_val (',' df_val)* ']';
+df: '[' df_val (',' df_val)* ']' #NonEmptyDf | '[' ']' #EmptyDf;
 
 df_val: (id ':')? basic_list;
 
@@ -84,7 +92,6 @@ member:
 
 // column_method: column '.' id (REF arg_list)?;
 
-func: '.' id (REF arg_list)?;
 
 basic_list:
 	'(' num (',' num)* ')'		# numList

@@ -12,6 +12,6 @@ run_test() {
     sed -i 's/else/\n\telse/g' "$result_file"
 }
 
-run_test test.ail
-run_test test.df.ail
-# run_test test2.ail # This test does not run because of from2data
+# run_test test.ail
+# run_test test.df.ail
+run_test test2.ail # This test does not run because of from2data
