@@ -1,40 +1,42 @@
 from dataclasses import dataclass
 from io import StringIO
 from typing import Callable
+import copy
+from antlr4 import TerminalNode
+from grammar.AiLangLexer import AiLangLexer
+from grammar.AiLangParser import AiLangParser
 
 import AiLangLib as _  # Init Import
-from grammar.AiLangLexer import AiLangLexer
-from antlr4 import TerminalNode
-from grammar.AiLangParser import AiLangParser
 from AiLangType import (
     BasicValType,
     NumType,
     DfType,
     DfItem,
     ListType,
+    NumTypes,
     StrType,
     AiLangType,
     BoolType,
 )
 from AiLangObj import AiLangObj, NoneObj, fromDFtoObj
 from AiLangFunc import AiLangFunc, FunctionSpace, MethodSpace
-import copy
 import utils
 
 
 class BlockTree:
+    """A tree class for the block structure"""
 
-    def __init__(self, ctx, label=None, parent=None, isStart=True):
+    def __init__(self, ctx, label=None, parent=None, is_start=True):
         self.children: list[BlockTree] = []
         self.parent = parent
         self.label = label
         self.ctx = ctx
-        self.isStart = isStart
+        self.is_start = is_start
         self.level = 0 if parent is None else parent.level + 1
 
     def addChild(self, ctx, label) -> BlockTree:
 
-        block = BlockTree(ctx, label, parent=self, isStart=False)
+        block = BlockTree(ctx, label, parent=self, is_start=False)
         self.children.append(block)
         return block
 
@@ -44,9 +46,10 @@ class BlockTree:
         for child in self.children:
             if child.label == label:
                 return child
-            childReturn = child.findLabel(label)
-            if childReturn:
-                return childReturn
+            child_return = child.findLabel(label)
+            if child_return:
+                return child_return
+        return None
 
     def printTree(self, level=0) -> None:
         # Print current node with indentation based on its level
@@ -60,17 +63,18 @@ class BlockTree:
 
 
 class VariableStack:
+    """Variable Stack that stores variable spaces across blocks and context changes"""
 
     def __init__(self, interp: Interpreter | None = None):
         self.stack: list[dict[int, AiLangObj]] = []
         self.pushContext()
-        self.nextID: int = 0
+        self.next_id: int = 0
         self.interp: Interpreter | None = interp
 
     def _nextID(self) -> int:
-        id = self.nextID
-        self.nextID += 1
-        return id
+        ident = self.next_id
+        self.next_id += 1
+        return ident
 
     def pushContext(self) -> None:
         if len(self.stack) == 0:
@@ -110,62 +114,66 @@ class VariableStack:
     def putReturn(self, val: AiLangObj) -> None:
         self.getContext()[-1] = val
 
+    def _findObjInCtx(self, ctx: dict[int, AiLangObj], key: str) -> AiLangObj | None:
+        for _, obj in ctx.items():
+            if obj.ident == key:
+                return obj
+        return None
+
     def _get(self, key: str | AiLangObj) -> AiLangObj | list[AiLangObj] | None:
         ctx = self.getContext()
         if isinstance(key, str):
-            for _, obj in ctx.items():
-                if obj.id == key:
-                    return obj
-            return
+            return self._findObjInCtx(ctx, key)
+
         if len(key.members) == 0:
-            return self._get(key.id)
-        else:
-            result_obj = None
-            for _, obj in ctx.items():
-                if obj.id == key.getRoot().id:
-                    result_obj = obj
-            if result_obj is None:
+            return self._get(key.ident)
+
+        result_obj = None
+        for _, obj in ctx.items():
+            if obj.ident == key.getRoot().ident:
+                result_obj = obj
+        if result_obj is None:
+            return None
+
+        key_cur = key
+        cur = result_obj
+        result = []
+
+        def getResult():
+            nonlocal key_cur, cur, result
+            if len(key_cur.members) > 0:
+                memb = list(key_cur.members.values())
+                key_cur = memb[0]
+            if isinstance(cur.val, DfType):
+                item = cur.getDFItemByID(key_cur.ident)
+                if item:
+                    result.append(item)
+                    return
+                memb = list(key_cur.getParent().members.values())
+                vals = [(DfItem(m.get().get()), m.ident) for m in memb]
+                objs = [AiLangObj(ident, item) for item, ident in vals]
+                for obj in objs:
+                    cur.setMember(obj)
+                result += objs
+                return
+            if key_cur.ident in cur.members:
+                last_cur = cur
+                cur = cur.members[key_cur.ident]
+                if len(cur.members) == 0:
+                    result.append(cur)
+                    cur = last_cur
+                    getResult()
+                del last_cur.members[key_cur.ident]
+            else:
                 return
 
-            key_cur = key
-            cur = result_obj
-            result = []
+        getResult()
 
-            def get_result():
-                nonlocal key_cur, cur, result
-                if len(key_cur.members) > 0:
-                    memb = list(key_cur.members.values())
-                    key_cur = memb[0]
-                if isinstance(cur.val, DfType):
-                    item = cur.getDFItemByID(key_cur.id)
-                    if item:
-                        result.append(item)
-                        return
-                    memb = list(key_cur.getParent().members.values())
-                    vals = [DfItem(cur.val.get(), m.id) for m in memb]
-                    objs = [AiLangObj(df.item, df) for df in vals]
-                    [cur.setMember(obj) for obj in objs]
-                    result += objs
-                    return
-                if key_cur.id in cur.members:
-                    last_cur = cur
-                    cur = cur.members[key_cur.id]
-                    if len(cur.members) == 0:
-                        result.append(cur)
-                        cur = last_cur
-                        get_result()
-                    del last_cur.members[key_cur.id]
-                else:
-                    return
-
-            get_result()
-
-            if len(result) == 0:
-                return None
-            elif len(result) == 1:
-                return result[0]
-            else:
-                return result
+        if len(result) == 0:
+            return None
+        if len(result) == 1:
+            return result[0]
+        return result
 
     def get(self, key: str | AiLangObj) -> AiLangObj | FuncParams | list[AiLangObj]:
         ret = self._get(key)
@@ -176,13 +184,13 @@ class VariableStack:
                 and key.val is not None
                 and key.val.val is not None
             ):
-                methodID, parent = self.interp.getMethodAndParentFromKeyObj(
+                method_id, parent = self.interp.getMethodAndParentFromKeyObj(
                     copy.deepcopy(key)
                 )
-                if MethodSpace().hasMethod(type(parent.val), methodID):
-                    return FuncParams(methodID, parent)
+                if MethodSpace().hasMethod(type(parent.val), method_id):
+                    return FuncParams(method_id, parent)
             raise ValueError(
-                f"The key ({key.__repr__()}) is not in the stack frame {self.getContext()}"
+                f"The key ({key}) is not in the stack frame {self.getContext()}"
             )
         return ret
 
@@ -192,21 +200,25 @@ class VariableStack:
 
 @dataclass
 class FuncParams:
-    methodID: str
+    """A struct that represents a function/method attributes"""
+
+    method_id: str
     parent: AiLangObj
 
     @property
     def vals(self) -> tuple[str, AiLangObj]:
-        return self.methodID, self.parent
+        return self.method_id, self.parent
 
 
+# pylint: disable-next=too-many-public-methods
 class Interpreter:
+    """Interpreter"""
 
     def __init__(self, ast: AiLangParser.ProgContext):
         self.ast = ast
-        self.variableContextStack = VariableStack(self)
-        self.blockTree = None
-        self.lastLabel = None
+        self.variable_context_stack = VariableStack(self)
+        self.block_tree = None
+        self.last_label = None
         self.functions = FunctionSpace()
         self.methods = MethodSpace()
 
@@ -216,23 +228,23 @@ class Interpreter:
         blocks = self.ast.getTypedRuleContexts(AiLangParser.Block_statContext)
         for block in blocks:
             self.constructBlockTree(block)
-        funcDecls = self.ast.getTypedRuleContexts(AiLangParser.FunctionDefContext)
-        for fd in funcDecls:
+        func_decls = self.ast.getTypedRuleContexts(AiLangParser.FunctionDefContext)
+        for fd in func_decls:
             self.evalFunctionDecl(fd)
-        if self.blockTree is None:
+        if self.block_tree is None:
             raise ValueError("Block Tree is Empty")
         self.evaluateBlocks()
         # self.blockTree.printTree()
 
-    def evalFunctionDecl(self, funcDecl: AiLangParser.FunctionDefContext):
-        fd = funcDecl.getTypedRuleContext(AiLangParser.Func_defContext, 0)
+    def evalFunctionDecl(self, func_decl: AiLangParser.FunctionDefContext):
+        fd = func_decl.getTypedRuleContext(AiLangParser.Func_defContext, 0)
         if fd is None:
             raise ValueError()
         func = AiLangFunc.make(fd, self.ctxRunnerConstructer())
         self.functions.addFunc(func)
 
     def evaluateBlocks(self, blocks: BlockTree | None = None) -> None:
-        blocks = blocks if blocks is not None else self.blockTree
+        blocks = blocks if blocks is not None else self.block_tree
         if blocks is None:
             raise ValueError("The block tree is not set cannot evaluate")
         # Evaluate all statemnts inside the ctx
@@ -245,9 +257,9 @@ class Interpreter:
         else:
             # If the block has more thna 1 child we shoul duplicate state for each
             for block in blocks.children:
-                self.variableContextStack.pushContext()
+                self.variable_context_stack.pushContext()
                 self.evaluateBlocks(block)
-                self.variableContextStack.popContext()
+                self.variable_context_stack.popContext()
 
     def evalNonBlockContext(self, child: AiLangParser.BlockContext) -> bool:
         #!This evaluation uses the same VariableContext
@@ -271,16 +283,16 @@ class Interpreter:
                 Runner runs the lines of code in ctx and if there is a return
                 it puts to the stack frame on address '-1'
                 """
-                self.variableContextStack.pushFuncContext()
+                self.variable_context_stack.pushFuncContext()
                 for arg in args:
                     if not isinstance(arg, AiLangObj):
                         continue
-                    self.variableContextStack.put(arg)
+                    self.variable_context_stack.put(arg)
                 stats = ctx.getTypedRuleContexts(AiLangParser.StatContext)
                 for stat in stats:
                     if not self.evaluate(stat):
                         break
-                return self.variableContextStack.popContext()
+                return self.variable_context_stack.popContext()
 
             return runner
 
@@ -296,44 +308,45 @@ class Interpreter:
                     (AiLangParser.Block2BlockContext, AiLangParser.Label2BlockContext),
                 ):
                     raise ValueError()
-                fromLabel, label, ctx = self.getBlockCtx(ch)
+                from_label, label, ctx = self.getBlockCtx(ch)
                 # print(f"FromLabel: {fromLabel} Label: {label}")
 
-                if self.blockTree is None:
-                    if fromLabel:
+                if self.block_tree is None:
+                    if from_label:
                         raise ValueError("Start must be the first block")
 
-                    self.blockTree = BlockTree(ctx, label)
-                    self.lastLabel = self.blockTree
+                    self.block_tree = BlockTree(ctx, label)
+                    self.last_label = self.block_tree
                 else:
-                    if fromLabel:
-                        fromBlock = self.blockTree.findLabel(fromLabel)
-                        if fromBlock is None:
+                    if from_label:
+                        from_block = self.block_tree.findLabel(from_label)
+                        if from_block is None:
                             raise ValueError()
-                        self.lastLabel = fromBlock.addChild(ctx, label)
+                        self.last_label = from_block.addChild(ctx, label)
                     else:
-                        if self.lastLabel is None:
+                        if self.last_label is None:
                             raise ValueError()
-                        self.lastLabel = self.lastLabel.addChild(ctx, label)
+                        self.last_label = self.last_label.addChild(ctx, label)
 
     def getBlockCtx(
         self, child: AiLangParser.Block2BlockContext | AiLangParser.Label2BlockContext
-    ):
+    ) -> tuple[None | str, None | str, AiLangParser.ContextContext | None]:
         if isinstance(child, AiLangParser.Block2BlockContext):
             label = child.getTypedRuleContext(AiLangParser.LabelContext, 0)
             if label:
                 label = self.getFirstID(label)
             ctx = child.getTypedRuleContext(AiLangParser.ContextContext, 0)
             return None, label, ctx
-        elif isinstance(child, AiLangParser.Label2BlockContext):
-            fromLabel = child.getTypedRuleContext(AiLangParser.LabelContext, 0)
-            label = child.getTypedRuleContext(AiLangParser.LabelContext, 1)
-            ctx = child.getTypedRuleContext(AiLangParser.ContextContext, 0)
-            if fromLabel:
-                fromLabel = self.getFirstID(fromLabel)
-            if label:
-                label = self.getFirstID(label)
-            return fromLabel, label, ctx
+
+        # Label2BlockContext
+        from_label = child.getTypedRuleContext(AiLangParser.LabelContext, 0)
+        label = child.getTypedRuleContext(AiLangParser.LabelContext, 1)
+        ctx = child.getTypedRuleContext(AiLangParser.ContextContext, 0)
+        if from_label:
+            from_label = self.getFirstID(from_label)
+        if label:
+            label = self.getFirstID(label)
+        return from_label, label, ctx
 
     def evaluate(
         self, child: AiLangParser.StatContext | AiLangParser.ContextContext
@@ -341,78 +354,77 @@ class Interpreter:
         """
         Returns True on normal evaluation adn returns False if there was a return stat
         """
-        if isinstance(child, (AiLangParser.StatContext, AiLangParser.ContextContext)):
-            if child.children is None:
-                raise ValueError()
-            for ch in child.children:
-                if isinstance(ch, TerminalNode):
-                    continue
-                elif isinstance(ch, AiLangParser.ExprContext):
-                    self.evalExpr(ch)
-                    # print(exprRet.get())
-                elif isinstance(ch, AiLangParser.FromToDataContext):
-                    self.evalFrom2Data(ch)
-                elif isinstance(ch, AiLangParser.DoIfElseContext):
-                    self.evalDoIfElse(ch)
-                elif isinstance(ch, AiLangParser.AssignmentContext):
-                    self.evalAssignment(ch)
-                elif isinstance(ch, (AiLangParser.Ref_opContext)):
-                    self.evalReference(ch)
-                elif isinstance(ch, AiLangParser.RetContext):
-                    self.evalRet(ch)
-                    return False
-                else:
-                    raise ValueError(f"Type {type(ch)} is tried to be evaluated")
-            return True
-        # return True
+        if child.children is None:
+            raise ValueError()
+        for ch in child.children:
+            if isinstance(ch, TerminalNode):
+                continue
+            if isinstance(ch, AiLangParser.ExprContext):
+                self.evalExpr(ch)
+                # print(exprRet.get())
+            elif isinstance(ch, AiLangParser.FromToDataContext):
+                self.evalFrom2Data(ch)
+            elif isinstance(ch, AiLangParser.DoIfElseContext):
+                self.evalDoIfElse(ch)
+            elif isinstance(ch, AiLangParser.AssignmentContext):
+                self.evalAssignment(ch)
+            elif isinstance(ch, (AiLangParser.Ref_opContext)):
+                self.evalReference(ch)
+            elif isinstance(ch, AiLangParser.RetContext):
+                self.evalRet(ch)
+                return False
+            raise ValueError(f"Type {type(ch)} is tried to be evaluated")
+        return True
 
     def evalRet(self, child: AiLangParser.RetContext) -> None:
         if isinstance(child, AiLangParser.NoneReturnContext):
             return
-        elif isinstance(child, AiLangParser.ExprReturnContext):
+        if isinstance(child, AiLangParser.ExprReturnContext):
             expr = child.getTypedRuleContext(AiLangParser.ExprContext, 0)
             if expr is None:
                 raise ValueError()
             val = self.evalExpr(expr)
-            self.variableContextStack.putReturn(AiLangObj("Return", val))
+            self.variable_context_stack.putReturn(AiLangObj("Return", val))
 
     def evalFrom2Data(self, child: AiLangParser.FromToDataContext) -> None:
-        strCtx = child.getTypedRuleContext(AiLangParser.StrContext, 0)
-        if strCtx is None:
+        str_ctx = child.getTypedRuleContext(AiLangParser.StrContext, 0)
+        if str_ctx is None:
             raise ValueError()
-        fileStr = StrType.make(strCtx).get()
-        id = self.getFirstID(child)
+        file_str = StrType.make(str_ctx).get()
+        ident = self.getFirstID(child)
 
-        data = self.transformFile2Data(fileStr)
+        data = self.transformFile2Data(file_str)
         df = data.get()
-        obj = fromDFtoObj(id, df)
+        obj = fromDFtoObj(ident, df)
 
-        self.variableContextStack.put(obj)
+        self.variable_context_stack.put(obj)
 
-    def transformFile2Data(self, fileName):
-        data = utils.tf2d(fileName)
+    def transformFile2Data(self, file_name):
+        data = utils.tf2d(file_name)
         return DfType(data)
 
     def evalDoIfElse(self, child: AiLangParser.DoIfElseContext) -> bool:
         # Do Block mandatory
-        doCtx = child.getTypedRuleContext(AiLangParser.ContextContext, 0)
+        do_ctx = child.getTypedRuleContext(AiLangParser.ContextContext, 0)
         # If Block mandatory
-        ifBCtx = child.getTypedRuleContext(AiLangParser.Bool_contextContext, 0)
+        ifb_ctx = child.getTypedRuleContext(AiLangParser.Bool_contextContext, 0)
         # Else Block optional
-        elseCtx = child.getTypedRuleContext(AiLangParser.ContextContext, 1)
+        else_ctx = child.getTypedRuleContext(AiLangParser.ContextContext, 1)
         parent = self
 
         class DoIfElse:
-            def __init__(self, doCtx, ifBCtx, elseCtx):
-                self.doCtx = doCtx
-                self.ifBCtx: AiLangParser.Bool_contextContext = ifBCtx
-                self.elseCtx = elseCtx
+            """ResolveDoIfElse"""
+
+            def __init__(self, do_ctx, ifb_ctx, else_ctx):
+                self.do_ctx = do_ctx
+                self.ifb_ctx: AiLangParser.Bool_contextContext = ifb_ctx
+                self.else_ctx = else_ctx
 
             def eval(self) -> bool:
                 if self.resolveIf():
-                    ctx = self.doCtx
-                elif self.elseCtx is not None:
-                    ctx = self.elseCtx
+                    ctx = self.do_ctx
+                elif self.else_ctx is not None:
+                    ctx = self.else_ctx
                 else:
                     ctx = None
 
@@ -422,7 +434,7 @@ class Interpreter:
                 return parent.evalNonBlockContext(ctx)
 
             def resolveIf(self):
-                bool_groups = self.ifBCtx.getChildren(
+                bool_groups = self.ifb_ctx.getChildren(
                     lambda x: isinstance(x, AiLangParser.Bool_groupContext)
                 )
 
@@ -436,7 +448,7 @@ class Interpreter:
                     acc = acc or result
                 return acc
 
-        return DoIfElse(doCtx, ifBCtx, elseCtx).eval()
+        return DoIfElse(do_ctx, ifb_ctx, else_ctx).eval()
 
     def evalBoolGroup(self, child: AiLangParser.Bool_groupContext) -> bool:
 
@@ -507,7 +519,8 @@ class Interpreter:
             )
 
         # TODO: resolve other bool operations like DataFrame operations here
-        # To resolve this todo there is a need to decide how the capturing of the variables should resolve
+        # To resolve this todo there is a need to decide how the capturing of the
+        # variables should resolve
 
         return BoolType(
             bool(
@@ -521,31 +534,31 @@ class Interpreter:
             )
         )
 
+    # pylint: disable-next=too-many-return-statements
     def evalExpr(self, child: AiLangParser.ExprContext) -> AiLangType:
-
         if isinstance(child, AiLangParser.MathOpContext):
             return self.evalMathOp(child)
         if isinstance(child, AiLangParser.MethodCallContext):
             return self.evalMethod(child)
         if isinstance(child, AiLangParser.GroupContext):
-            exprCtx = child.getTypedRuleContext(AiLangParser.ExprContext, 0)
-            if exprCtx is None:
+            expr_ctx = child.getTypedRuleContext(AiLangParser.ExprContext, 0)
+            if expr_ctx is None:
                 raise ValueError()
-            return self.evalExpr(exprCtx)
+            return self.evalExpr(expr_ctx)
 
         ch = child.getChild(0)
         if isinstance(ch, AiLangParser.Basic_valContext):
             return BasicValType.make(ch)
-        elif isinstance(ch, AiLangParser.DfContext):
+        if isinstance(ch, AiLangParser.DfContext):
             return DfType.make(ch)
-        elif isinstance(ch, AiLangParser.ListContext):
+        if isinstance(ch, AiLangParser.ListContext):
             chch = ch.getChild(0)
             if isinstance(chch, AiLangParser.Generic_listContext):
                 return self.getGenericList(chch)
             return ListType.make(chch)
-        elif isinstance(ch, AiLangParser.AssignableContext):
+        if isinstance(ch, AiLangParser.AssignableContext):
             return self.evalAssignable(ch).get()
-        elif isinstance(ch, AiLangParser.FuncContext):
+        if isinstance(ch, AiLangParser.FuncContext):
             return self.evalFunc(ch)
 
         raise NotADirectoryError()
@@ -557,12 +570,12 @@ class Interpreter:
         return ListType(l_val)
 
     def getMethodAndParentFromKeyObj(self, key: AiLangObj) -> tuple[str, AiLangObj]:
-        methodID = key.getLast().id
+        method_id = key.getLast().ident
         key.killMembers()
-        parent = self.variableContextStack.get(key)
+        parent = self.variable_context_stack.get(key)
         if not isinstance(parent, AiLangObj):
             raise NotImplementedError()
-        return methodID, parent
+        return method_id, parent
 
     def evalMethod(self, child: AiLangParser.MethodCallContext) -> AiLangType:
         obj = child.getTypedRuleContext(AiLangParser.ExprContext, 0)
@@ -572,17 +585,17 @@ class Interpreter:
         if obj is None:
             raise ValueError()
         obj = AiLangObj.make(obj)
-        methodID, parent = self.getMethodAndParentFromKeyObj(obj)
-        argList = child.getTypedRuleContext(AiLangParser.Arg_listContext, 0)
-        if argList is None:
+        method_id, parent = self.getMethodAndParentFromKeyObj(obj)
+        arg_list = child.getTypedRuleContext(AiLangParser.Arg_listContext, 0)
+        if arg_list is None:
             raise ValueError()
-        args = self.evalArgsList(argList)
+        args = self.evalArgsList(arg_list)
         if isinstance(parent, list):
             raise NotImplementedError()
-        if MethodSpace().hasMethod(type(parent.val), methodID):
-            return MethodSpace().call(parent, methodID, args).get()
+        if MethodSpace().hasMethod(type(parent.val), method_id):
+            return MethodSpace().call(parent, method_id, args).get()
         raise ValueError(
-            f"Method {methodID} is not available for type {str(type(parent.val))}"
+            f"Method {method_id} is not available for type {str(type(parent.val))}"
         )
 
     def evalArgsList(self, child: AiLangParser.Arg_listContext) -> list[AiLangObj]:
@@ -593,11 +606,11 @@ class Interpreter:
 
     def evalArg(self, child: AiLangParser.ArgContext) -> AiLangObj:
         if isinstance(child, AiLangParser.NamedArgContext):
-            namedArg = child.getTypedRuleContext(AiLangParser.Named_argContext, 0)
-            if namedArg is None:
+            named_arg = child.getTypedRuleContext(AiLangParser.Named_argContext, 0)
+            if named_arg is None:
                 raise ValueError()
-            return self.evalNamedArg(namedArg)
-        elif isinstance(child, AiLangParser.ExprArgContext):
+            return self.evalNamedArg(named_arg)
+        if isinstance(child, AiLangParser.ExprArgContext):
             expr = child.getTypedRuleContext(AiLangParser.ExprContext, 0)
             if expr is None:
                 raise ValueError()
@@ -606,32 +619,32 @@ class Interpreter:
         raise ValueError()
 
     def evalNamedArg(self, child: AiLangParser.Named_argContext) -> AiLangObj:
-        id = child.getTypedRuleContext(AiLangParser.IdContext, 0)
-        if id is None:
+        ident = child.getTypedRuleContext(AiLangParser.IdContext, 0)
+        if ident is None:
             raise ValueError()
         expr = child.getTypedRuleContext(AiLangParser.ExprContext, 0)
         if expr is None:
             raise ValueError()
-        id = utils.getTerminalSymbol(id)
+        ident = utils.getTerminalSymbol(ident)
         val = self.evalExpr(expr)
-        return AiLangObj(id, val)
+        return AiLangObj(ident, val)
 
     def evalFunc(self, child: AiLangParser.FuncContext) -> AiLangType:
         ids = utils.getAllIds(child)
         if len(ids) != 1:
             raise ValueError()
-        funcId = ids[0]
+        func_id = ids[0]
 
-        argList = child.getTypedRuleContext(AiLangParser.Arg_listContext, 0)
-        if argList is None:
-            argList = []
+        arg_list = child.getTypedRuleContext(AiLangParser.Arg_listContext, 0)
+        if arg_list is None:
+            arg_list = []
         else:
-            argList = self.evalArgsList(argList)
+            arg_list = self.evalArgsList(arg_list)
 
-        if FunctionSpace().hasFunc(funcId):
-            return FunctionSpace().call(funcId, argList).get()
+        if FunctionSpace().hasFunc(func_id):
+            return FunctionSpace().call(func_id, arg_list).get()
 
-        raise ValueError(f"Function {funcId} is not in FunctionSpace")
+        raise ValueError(f"Function {func_id} is not in FunctionSpace")
 
     def evalMathOp(self, child: AiLangParser.MathOpContext):
         """
@@ -646,26 +659,28 @@ class Interpreter:
             raise ValueError()
 
         lop = self.evalExpr(expr1)
-        opToken = utils.getTerminalSymbol(child.getChild(1))
+        optoken = utils.getTerminalSymbol(child.getChild(1))
         rop = self.evalExpr(expr2)
 
         # When a and b are Numerals
         if isinstance(lop, NumType) and isinstance(rop, NumType):
             num = eval(
-                f"a {opToken} b",
+                f"a {optoken} b",
                 locals={
                     "a": lop.get(),
                     "b": rop.get(),
                 },
             )
-            return NumType(num, int if isinstance(num, int) else float)
+            return NumType(
+                num, NumTypes.INT if isinstance(num, int) else NumTypes.FLOAT
+            )
 
         # When a is df and b is a Numeral
         if isinstance(lop, (DfType, DfItem)) and isinstance(
             rop, (NumType, DfType, DfItem)
         ):
             df = eval(
-                f"a {opToken} b",
+                f"a {optoken} b",
                 locals={
                     "a": lop.get(),
                     "b": rop.get(),
@@ -674,17 +689,17 @@ class Interpreter:
             return DfType(df)
 
         raise ValueError(
-            f"{lop} and {rop} has been tried to be conneted with {opToken}"
+            f"{lop} and {rop} has been tried to be conneted with {optoken}"
         )
 
     def evalAssignable(self, child: AiLangParser.AssignableContext) -> AiLangObj:
         obj = AiLangObj.make(child)
-        val = self.variableContextStack.get(obj)
+        val = self.variable_context_stack.get(obj)
         if isinstance(val, list):
             raise NotImplementedError()
         if isinstance(val, FuncParams):
-            methodID, parent = val.vals
-            MethodSpace().call(parent, methodID, [])
+            method_id, parent = val.vals
+            MethodSpace().call(parent, method_id, [])
             return NoneObj()
 
         return val
@@ -699,7 +714,7 @@ class Interpreter:
         val = copy.deepcopy(val)
         obj.set(val)
 
-        self.variableContextStack.put(obj)
+        self.variable_context_stack.put(obj)
 
     def evalReference(self, child):
         if isinstance(child, AiLangParser.Ref_opContext):
@@ -710,18 +725,18 @@ class Interpreter:
 
             # Check If there is a method assisated with the parent
             if obj.parent:
-                if MethodSpace().hasMethod(type(obj.parent.val), obj.id):
+                if MethodSpace().hasMethod(type(obj.parent.val), obj.ident):
                     expr = child.getTypedRuleContext(AiLangParser.ExprContext, 0)
                     if expr is None:
                         raise ValueError()
                     ret = self.evalExpr(expr)
                     if not isinstance(ret, ListType):
                         raise ValueError()
-                    MethodSpace().call(obj.parent, obj.id, ret.get())
+                    MethodSpace().call(obj.parent, obj.ident, ret.get())
                     return
 
             expr = child.getTypedRuleContext(AiLangParser.ExprContext, 0)
             if not expr:
                 raise ValueError()
             val = self.evalExpr(expr)
-            self.variableContextStack.put(AiLangObj("", val), obj.getRoot())
+            self.variable_context_stack.put(AiLangObj("", val), obj.getRoot())

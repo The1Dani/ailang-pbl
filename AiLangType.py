@@ -1,21 +1,25 @@
 from __future__ import annotations
 
-from antlr4 import ParserRuleContext
-
-from grammar.AiLangParser import AiLangParser as ap
 from typing import Any, override
 from enum import StrEnum, auto
-import utils
+
+from antlr4 import ParserRuleContext
 import pandas as pd
-from abc import ABC
+
+from grammar.AiLangParser import AiLangParser as ap
+import utils
 
 
 class NumTypes(StrEnum):
+    """Enum for available Numerical types in BasicValType"""
+
     INT = auto()
     FLOAT = auto()
 
 
 class AiLangType:
+    """Type Implementation for AiLang, Types are wrappers for the actual values"""
+
     def __init__(self, val):
         self.val = val
 
@@ -29,30 +33,31 @@ class AiLangType:
 
 
 class BasicValType(AiLangType):
-    def __init__(self, val):
-        super().__init__(val)
+    """Basic Value Type in AiLang it is parent class for Num and Str Types"""
 
     @staticmethod
     def make(node: ParserRuleContext) -> BasicValType:
-        numCtx = node.getTypedRuleContext(ap.NumContext, 0)
-        if numCtx is not None:
-            return NumType.make(numCtx)
+        num_ctx = node.getTypedRuleContext(ap.NumContext, 0)
+        if num_ctx is not None:
+            return NumType.make(num_ctx)
 
-        strCtx = node.getTypedRuleContext(ap.StrContext, 0)
-        if strCtx is not None:
-            return StrType.make(strCtx)
+        str_ctx = node.getTypedRuleContext(ap.StrContext, 0)
+        if str_ctx is not None:
+            return StrType.make(str_ctx)
 
-        basicValCtx = node.getTypedRuleContext(ap.Basic_valContext, 0)
-        if basicValCtx is not None:
-            return BasicValType.make(basicValCtx)
+        basic_val_ctx = node.getTypedRuleContext(ap.Basic_valContext, 0)
+        if basic_val_ctx is not None:
+            return BasicValType.make(basic_val_ctx)
 
         raise ValueError("NonImplemented type")
 
 
 class NumType(BasicValType):
-    def __init__(self, val, type):
+    """Num Type"""
+
+    def __init__(self, val, numerical_type: NumTypes):
         super().__init__(val)
-        self.type = type
+        self.type = numerical_type
 
     @staticmethod
     @override
@@ -67,8 +72,7 @@ class NumType(BasicValType):
 
 
 class StrType(BasicValType):
-    def __init__(self, val):
-        super().__init__(val)
+    """Str Type"""
 
     @staticmethod
     @override
@@ -78,19 +82,13 @@ class StrType(BasicValType):
 
 
 class DfItem(AiLangType):
-    def __init__(self, df: pd.DataFrame, item: str):
-        self.df = df
-        self.item = item
+    """Df Item type is a field of a DataFrameType and it ussually stores pd.Series as a value"""
 
-    def get(self):
-        if self.item not in self.df:
-            self.df[self.item] = pd.Series()
-        return self.df[self.item]
+    # TODO: add a setter that will update the parent Dataframe Type as well
 
 
 class DfType(AiLangType):
-    def __init__(self, val):
-        super().__init__(val)
+    """DataFrame Type of AiLang stores Dataframes"""
 
     @staticmethod
     def make(node):
@@ -103,19 +101,18 @@ class DfType(AiLangType):
         data = {}
         i = 0
         for ch in node.getTypedRuleContexts(ap.Df_valContext):
-            id = ch.getTypedRuleContext(ap.IdContext, 0)
-            id = utils.getTerminalSymbol(id) if id else i
+            ident = ch.getTypedRuleContext(ap.IdContext, 0)
+            ident = utils.getTerminalSymbol(ident) if ident else i
             l_val = BasicListType.make(
                 ch.getTypedRuleContext(ap.Basic_listContext, 0)
             ).get()
-            data[str(id)] = l_val
+            data[str(ident)] = l_val
             i += 1
         return DfType(pd.DataFrame.from_dict(data))
 
 
 class ListType(AiLangType):
-    def __init__(self, val):
-        super().__init__(val)
+    """List Type"""
 
     @staticmethod
     def make(node) -> AiLangType:
@@ -127,8 +124,7 @@ class ListType(AiLangType):
 
 
 class BasicListType(ListType):
-    def __init__(self, val):
-        super().__init__(val)
+    """Basic List Type, lists of basic values"""
 
     @staticmethod
     def make(node) -> AiLangType:
@@ -150,10 +146,11 @@ class BasicListType(ListType):
 
 
 class BoolType(AiLangType):
-    def __init__(self, val):
-        super().__init__(val)
+    """Implement me!"""
 
 
 class NoneType(AiLangType, metaclass=utils.Singleton):
+    """None Type"""
+
     def __init__(self):
         super().__init__(None)

@@ -1,14 +1,15 @@
+import pandas as pd
+
 import AiLangType
 from grammar.AiLangParser import AiLangParser as ap
 from utils import getTerminalSymbol, Singleton
 
-import pandas as pd
-
 
 class AiLangObj:
+    """AiLang Object Implementation, This class wraps AiLang, This is used to assosiate objects"""
 
-    def __init__(self, id, val: AiLangType.AiLangType | None = None, parent=None):
-        self.id = id
+    def __init__(self, ident, val: AiLangType.AiLangType | None = None, parent=None):
+        self.ident: str = ident
         self.val: AiLangType.AiLangType | None = val
         self.parent: AiLangObj | None = parent
         self.members: dict[str, AiLangObj] = {}
@@ -35,13 +36,12 @@ class AiLangObj:
         self.val = val
 
     def setMember(self, member: AiLangObj):
-        self.members[member.id] = member
+        self.members[member.ident] = member
 
-    def getMember(self, id) -> None | AiLangObj:
-        if id in self.members:
-            return self.members[id]
-        else:
-            return None
+    def getMember(self, ident) -> None | AiLangObj:
+        if ident in self.members:
+            return self.members[ident]
+        return None
 
     def getLast(self) -> AiLangObj:
         if len(self.members) == 0:
@@ -50,19 +50,20 @@ class AiLangObj:
 
         return memb[0].getLast()
 
-    def getDFItemByID(self, id):
+    def getDFItemByID(self, ident) -> AiLangObj | None:
         items = filter(
             lambda v: isinstance(v.val, AiLangType.DfItem), list(self.members.values())
         )
         for item in items:
-            if item.id == id:
+            if item.ident == ident:
                 return item
+        return None
 
     @staticmethod
     def make(node: ap.AssignableContext) -> AiLangObj:
         if isinstance(node, ap.SimpleTargetContext):
-            id = getTerminalSymbol(node)
-            return AiLangObj(id)
+            ident = getTerminalSymbol(node)
+            return AiLangObj(ident)
         if isinstance(node, ap.MemberTargetContext):
             ctx = node.getTypedRuleContext(ap.AssignableContext, 0)
             if ctx is None:
@@ -76,13 +77,15 @@ class AiLangObj:
         raise ValueError()
 
     def __repr__(self) -> str:
-        return f"{self.id}({str(type(self.val))}) {f"-> {repr(self.members)}" if len(self.members) > 0 else ""}"
+        return f"{self.ident}({str(type(self.val))}) {f"-> {repr(self.members)}" if len(self.members) > 0 else ""}"  # pylint: disable=line-too-long
 
     def update(self, other: AiLangObj) -> None:
         self.__dict__ = other.__dict__
 
 
 class NoneObj(AiLangObj, metaclass=Singleton):
+    """Object that is None in AiLang"""
+
     def __init__(self):
         super().__init__("None", AiLangType.NoneType(), None)
 
@@ -95,9 +98,9 @@ def evalMember(node, parent):
     raise ValueError()
 
 
-def fromDFtoObj(id: str, df: pd.DataFrame) -> AiLangObj:
-    obj = AiLangObj(id, AiLangType.DfType(df))
+def fromDFtoObj(ident: str, df: pd.DataFrame) -> AiLangObj:
+    obj = AiLangObj(ident, AiLangType.DfType(df))
     for col, ser in df.items():
-        colObj = AiLangObj(col, AiLangType.ListType(ser))
-        obj.setMember(colObj)
+        column_obj = AiLangObj(col, AiLangType.DfItem(ser))
+        obj.setMember(column_obj)
     return obj
