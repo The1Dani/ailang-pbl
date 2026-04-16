@@ -10,21 +10,21 @@ jobs:
   name: Fromatting
   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Set up Python 3.14
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.14"  
-      
-      - uses: astral-sh/setup-uv@v1
-        with:
-          version: "latest"
+    - name: Set up Python 3.14
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.14"  
+    
+    - uses: astral-sh/setup-uv@v1
+      with:
+        version: "latest"
 
-      - name: Install dependencies
-        run: uv sync -p 3.14
+    - name: Install dependencies
+      run: uv sync -p 3.14
 
-      - name: Pylint
-        run: uv run pylint "*py"
+    - name: Pylint
+      run: uv run pylint "*py"
