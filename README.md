@@ -49,14 +49,14 @@ python -m pip install antlr4-python3-runtime
 ```uv sync```
 ### Generate parser from grammar
 ```uv run -- antlr4 -Dlanguage=Python3 AiLang.g4 -visitor -o grammar/```
-### Run all tests
+### Run all tests and build antlr
 ```bash build.sh```
 ### Run a specific file
 ```
 uv run main.py <file.ail>
 
 # Example
-uv run main.py test.ail
+uv run main.py helloWorld.ail
 ```
 
 ## AST Visualization
@@ -81,7 +81,7 @@ uv run main.py test.ail -g ast.png
   * Interprets the structure
 
 ## Example
-```uv run main.py test.ail```
+```uv run main.py helloWorld.ail```
 Executes an AiLang program and processes it through the parser.
 
 ## Notes

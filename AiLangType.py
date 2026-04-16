@@ -24,6 +24,7 @@ class AiLangType:
 
     @staticmethod
     def make(node) -> AiLangType:
+        _ = node
         return NoneType()
 
 
@@ -84,7 +85,7 @@ class DfItem(AiLangType):
     def get(self):
         if self.item not in self.df:
             self.df[self.item] = pd.Series()
-        return ListType(list(self.df[self.item]))
+        return self.df[self.item]
 
 
 class DfType(AiLangType):

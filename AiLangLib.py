@@ -1,6 +1,7 @@
 from AiLangFunc import makeFunc, makeMethod
 from AiLangObj import AiLangObj, NoneObj
 from AiLangType import AiLangType, NumType, NumTypes
+import AiLangBuiltinDfLib as _
 
 
 @makeFunc("print")

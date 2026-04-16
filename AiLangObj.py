@@ -1,12 +1,13 @@
-from typing import Any
 import AiLangType
 from grammar.AiLangParser import AiLangParser as ap
 from utils import getTerminalSymbol, Singleton
 
+import pandas as pd
+
 
 class AiLangObj:
 
-    def __init__(self, id, val=None, parent=None):
+    def __init__(self, id, val: AiLangType.AiLangType | None = None, parent=None):
         self.id = id
         self.val: AiLangType.AiLangType | None = val
         self.parent: AiLangObj | None = parent
@@ -17,7 +18,7 @@ class AiLangObj:
 
     def get(self) -> AiLangType.AiLangType:
         if self.val is None:
-            raise ValueError("No Type to get")
+            return AiLangType.NoneType()
         return self.val
 
     def getParent(self) -> AiLangObj:
@@ -33,7 +34,7 @@ class AiLangObj:
     def set(self, val: AiLangType.AiLangType | None) -> None:
         self.val = val
 
-    def setMember(self, member):
+    def setMember(self, member: AiLangObj):
         self.members[member.id] = member
 
     def getMember(self, id) -> None | AiLangObj:
@@ -75,7 +76,10 @@ class AiLangObj:
         raise ValueError()
 
     def __repr__(self) -> str:
-        return f"{self.id}({str(type(self.val))}) -> {repr(self.members)}"
+        return f"{self.id}({str(type(self.val))}) {f"-> {repr(self.members)}" if len(self.members) > 0 else ""}"
+
+    def update(self, other: AiLangObj) -> None:
+        self.__dict__ = other.__dict__
 
 
 class NoneObj(AiLangObj, metaclass=Singleton):
@@ -88,3 +92,12 @@ def evalMember(node, parent):
         return AiLangObj(getTerminalSymbol(node), parent=parent)
     if isinstance(node, ap.ListIDMemberContext):
         raise NotImplementedError()
+    raise ValueError()
+
+
+def fromDFtoObj(id: str, df: pd.DataFrame) -> AiLangObj:
+    obj = AiLangObj(id, AiLangType.DfType(df))
+    for col, ser in df.items():
+        colObj = AiLangObj(col, AiLangType.ListType(ser))
+        obj.setMember(colObj)
+    return obj

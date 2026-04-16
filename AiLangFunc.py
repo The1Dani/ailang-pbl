@@ -1,8 +1,7 @@
 from typing import Callable
 from AiLangObj import AiLangObj, NoneObj
-from AiLangType import AiLangType
 from grammar.AiLangParser import AiLangParser as ap
-from utils import getTerminalSymbol, Singleton
+from utils import Singleton
 import utils
 
 
@@ -41,6 +40,10 @@ class AiLangFunc:
             return vars[-1]
 
         return wrapper
+
+    def __repr__(self) -> str:
+        args = ", ".join(self.args)
+        return f"{self.id}({args})"
 
 
 class Space(metaclass=Singleton):
@@ -84,13 +87,13 @@ class MethodSpace(Space):
         self.functions[str(ttype)][func.id] = func
 
     def hasMethod(self, ttype: type, id: str) -> bool:
-        print(str(ttype))
+        # print(str(ttype))
         if str(ttype) in self.functions:
             if id in self.functions[str(ttype)]:
                 return True
         return False
 
-    def call(self, parent: AiLangObj, id: str, args) -> AiLangObj:
+    def call(self, parent: AiLangObj, id: str, args: list[AiLangObj]) -> AiLangObj:
         """As a convention the first arg of every method is the parent object"""
         ttype = type(parent.val)
         if str(ttype) in self.functions:
@@ -118,6 +121,7 @@ def makeFunc(funcId: str, argNames: list[str] = []):
 
 
 def makeMethod(methodId: str, ttype: type, argNames: list[str] = []):
+    """As a convention the first arg of every method is the parent object"""
 
     def wrapper(func: Callable[..., AiLangObj]):
         aMethod = AiLangFunc(id=methodId, func=func, args=argNames)

@@ -1,7 +1,8 @@
+from dataclasses import dataclass
 from io import StringIO
 from typing import Callable
 
-import AiLangLib  # Init Import
+import AiLangLib as _  # Init Import
 from grammar.AiLangLexer import AiLangLexer
 from antlr4 import TerminalNode
 from grammar.AiLangParser import AiLangParser
@@ -13,10 +14,10 @@ from AiLangType import (
     ListType,
     StrType,
     AiLangType,
+    BoolType,
 )
-from AiLangObj import AiLangObj
+from AiLangObj import AiLangObj, NoneObj, fromDFtoObj
 from AiLangFunc import AiLangFunc, FunctionSpace, MethodSpace
-import pandas as pd
 import copy
 import utils
 
@@ -32,6 +33,7 @@ class BlockTree:
         self.level = 0 if parent is None else parent.level + 1
 
     def addChild(self, ctx, label) -> BlockTree:
+
         block = BlockTree(ctx, label, parent=self, isStart=False)
         self.children.append(block)
         return block
@@ -59,10 +61,11 @@ class BlockTree:
 
 class VariableStack:
 
-    def __init__(self):
+    def __init__(self, interp: Interpreter | None = None):
         self.stack: list[dict[int, AiLangObj]] = []
         self.pushContext()
         self.nextID: int = 0
+        self.interp: Interpreter | None = interp
 
     def _nextID(self) -> int:
         id = self.nextID
@@ -164,21 +167,44 @@ class VariableStack:
             else:
                 return result
 
-    def get(self, key: str | AiLangObj) -> AiLangObj | list[AiLangObj]:
+    def get(self, key: str | AiLangObj) -> AiLangObj | FuncParams | list[AiLangObj]:
         ret = self._get(key)
         if ret is None:
-            raise ValueError("The key is not in the stack frame")
+            if (
+                self.interp is not None
+                and isinstance(key, AiLangObj)
+                and key.val is not None
+                and key.val.val is not None
+            ):
+                methodID, parent = self.interp.getMethodAndParentFromKeyObj(
+                    copy.deepcopy(key)
+                )
+                if MethodSpace().hasMethod(type(parent.val), methodID):
+                    return FuncParams(methodID, parent)
+            raise ValueError(
+                f"The key ({key.__repr__()}) is not in the stack frame {self.getContext()}"
+            )
         return ret
 
     def deepcopy(self) -> dict:
         return copy.deepcopy(self.getContext())
 
 
+@dataclass
+class FuncParams:
+    methodID: str
+    parent: AiLangObj
+
+    @property
+    def vals(self) -> tuple[str, AiLangObj]:
+        return self.methodID, self.parent
+
+
 class Interpreter:
 
     def __init__(self, ast: AiLangParser.ProgContext):
         self.ast = ast
-        self.variableContextStack = VariableStack()
+        self.variableContextStack = VariableStack(self)
         self.blockTree = None
         self.lastLabel = None
         self.functions = FunctionSpace()
@@ -261,7 +287,6 @@ class Interpreter:
         return constructor
 
     def constructBlockTree(self, child: AiLangParser.Block_statContext) -> None:
-        # TODO Add function definitions in this method
         if isinstance(child, AiLangParser.Block_statContext):
             if child.children is None:
                 raise ValueError()
@@ -323,7 +348,7 @@ class Interpreter:
                 if isinstance(ch, TerminalNode):
                     continue
                 elif isinstance(ch, AiLangParser.ExprContext):
-                    exprRet = self.evalExpr(ch)
+                    self.evalExpr(ch)
                     # print(exprRet.get())
                 elif isinstance(ch, AiLangParser.FromToDataContext):
                     self.evalFrom2Data(ch)
@@ -339,7 +364,7 @@ class Interpreter:
                 else:
                     raise ValueError(f"Type {type(ch)} is tried to be evaluated")
             return True
-        return True
+        # return True
 
     def evalRet(self, child: AiLangParser.RetContext) -> None:
         if isinstance(child, AiLangParser.NoneReturnContext):
@@ -359,13 +384,14 @@ class Interpreter:
         id = self.getFirstID(child)
 
         data = self.transformFile2Data(fileStr)
-        data = DfType(data)
-        obj = AiLangObj(id, data)
+        df = data.get()
+        obj = fromDFtoObj(id, df)
 
         self.variableContextStack.put(obj)
 
     def transformFile2Data(self, fileName):
-        return pd.DataFrame()  # TODO: implement me
+        data = utils.tf2d(fileName)
+        return DfType(data)
 
     def evalDoIfElse(self, child: AiLangParser.DoIfElseContext) -> bool:
         # Do Block mandatory
@@ -429,13 +455,12 @@ class Interpreter:
                 for stat in statements
             ]
             ops = [utils.getTerminalSymbol(op) for op in ops]
-            ops = [self.getPythonOp(op) for op in ops]
+            ops = [self.getPythonBoolOp(op) for op in ops]
         else:
             if not isinstance(statements[0], AiLangParser.Bool_statContext):
                 raise ValueError()
-            return self.evalBoolStat(statements[0])
+            return self.evalBoolStat(statements[0]).get()
 
-        bool_str = ""
         with StringIO() as builder:
             for result in results:
                 builder.write(str(result))
@@ -446,32 +471,53 @@ class Interpreter:
 
         return bool(eval(bool_str))
 
-    def getPythonOp(self, op):
+    def getPythonBoolOp(self, op):
+        operations = {
+            "&": "and",
+            "|": "or",  # not in parser
+            "&&": "and",
+            "||": "or",  # not in parser
+        }
+        if op in operations:
+            return operations[op]
         return op  # TODO: ADD ailang bool translation to python here
 
-    def evalBoolStat(self, child: AiLangParser.Bool_statContext) -> bool:
+    def evalBoolStat(self, child: AiLangParser.Bool_statContext) -> BoolType:
         val1 = child.getTypedRuleContext(AiLangParser.ExprContext, 0)
         val2 = child.getTypedRuleContext(AiLangParser.ExprContext, 1)
         if not (val1 and val2):
             raise ValueError()
-        val1 = self.evalExpr(val1).get()
-        val2 = self.evalExpr(val2).get()
+        val1 = self.evalExpr(val1)
+        val2 = self.evalExpr(val2)
 
-        op = self.getPythonOp(
+        op = self.getPythonBoolOp(
             utils.getTerminalSymbol(
                 child.getToken(AiLangLexer.BOOL_OP, 0)
             )  # Gets the first Terminals Text
         )
 
-        # TODO: resolve other bool operations like DataFrame operations here
+        if not (
+            isinstance(val1, BoolType)
+            and isinstance(val2, BoolType)
+            and op in ["and", "or"]
+        ):
 
-        return bool(
-            eval(
-                f"x {op} y",
-                {
-                    "x": val1,
-                    "y": val2,
-                },
+            raise ValueError(
+                "Operators '&' and '|' can only be used for other booleans"
+            )
+
+        # TODO: resolve other bool operations like DataFrame operations here
+        # To resolve this todo there is a need to decide how the capturing of the variables should resolve
+
+        return BoolType(
+            bool(
+                eval(
+                    f"x {op} y",
+                    {
+                        "x": val1.get(),
+                        "y": val2.get(),
+                    },
+                )
             )
         )
 
@@ -498,7 +544,7 @@ class Interpreter:
                 return self.getGenericList(chch)
             return ListType.make(chch)
         elif isinstance(ch, AiLangParser.AssignableContext):
-            return self.evalIdVal(ch).get()
+            return self.evalAssignable(ch).get()
         elif isinstance(ch, AiLangParser.FuncContext):
             return self.evalFunc(ch)
 
@@ -510,6 +556,14 @@ class Interpreter:
             l_val.append(self.evalExpr(ch))
         return ListType(l_val)
 
+    def getMethodAndParentFromKeyObj(self, key: AiLangObj) -> tuple[str, AiLangObj]:
+        methodID = key.getLast().id
+        key.killMembers()
+        parent = self.variableContextStack.get(key)
+        if not isinstance(parent, AiLangObj):
+            raise NotImplementedError()
+        return methodID, parent
+
     def evalMethod(self, child: AiLangParser.MethodCallContext) -> AiLangType:
         obj = child.getTypedRuleContext(AiLangParser.ExprContext, 0)
         if obj is None:
@@ -517,10 +571,8 @@ class Interpreter:
         obj = obj.getTypedRuleContext(AiLangParser.AssignableContext, 0)
         if obj is None:
             raise ValueError()
-        obj = self.evalAssignable(obj)
-        methodID = obj.getLast().id
-        obj.killMembers()
-        parent = self.variableContextStack.get(obj)
+        obj = AiLangObj.make(obj)
+        methodID, parent = self.getMethodAndParentFromKeyObj(obj)
         argList = child.getTypedRuleContext(AiLangParser.Arg_listContext, 0)
         if argList is None:
             raise ValueError()
@@ -582,7 +634,11 @@ class Interpreter:
         raise ValueError(f"Function {funcId} is not in FunctionSpace")
 
     def evalMathOp(self, child: AiLangParser.MathOpContext):
-
+        """
+        Supported Cases:
+        a) num {op} num
+        b) df{or dfItem} {op} num
+        """
         expr1, expr2 = child.getTypedRuleContext(
             AiLangParser.ExprContext, 0
         ), child.getTypedRuleContext(AiLangParser.ExprContext, 1)
@@ -593,6 +649,7 @@ class Interpreter:
         opToken = utils.getTerminalSymbol(child.getChild(1))
         rop = self.evalExpr(expr2)
 
+        # When a and b are Numerals
         if isinstance(lop, NumType) and isinstance(rop, NumType):
             num = eval(
                 f"a {opToken} b",
@@ -602,23 +659,41 @@ class Interpreter:
                 },
             )
             return NumType(num, int if isinstance(num, int) else float)
-        raise ValueError()
 
-    def evalIdVal(self, child: AiLangParser.AssignableContext) -> AiLangObj:
+        # When a is df and b is a Numeral
+        if isinstance(lop, (DfType, DfItem)) and isinstance(
+            rop, (NumType, DfType, DfItem)
+        ):
+            df = eval(
+                f"a {opToken} b",
+                locals={
+                    "a": lop.get(),
+                    "b": rop.get(),
+                },
+            )
+            return DfType(df)
+
+        raise ValueError(
+            f"{lop} and {rop} has been tried to be conneted with {opToken}"
+        )
+
+    def evalAssignable(self, child: AiLangParser.AssignableContext) -> AiLangObj:
         obj = AiLangObj.make(child)
         val = self.variableContextStack.get(obj)
         if isinstance(val, list):
             raise NotImplementedError()
+        if isinstance(val, FuncParams):
+            methodID, parent = val.vals
+            MethodSpace().call(parent, methodID, [])
+            return NoneObj()
+
         return val
 
     def getFirstID(self, child):
         return utils.getTerminalSymbol(child.getChild(0, ttype=AiLangParser.IdContext))
 
-    def evalAssignable(self, child: AiLangParser.AssignableContext):
-        return AiLangObj.make(child)
-
     def evalAssignment(self, child):
-        obj = self.evalAssignable(child.getChild(0))
+        obj = AiLangObj.make(child.getChild(0))
 
         val = self.evalExpr(child.getChild(0, AiLangParser.ExprContext))
         val = copy.deepcopy(val)
@@ -631,7 +706,9 @@ class Interpreter:
             assignable = child.getTypedRuleContext(AiLangParser.AssignableContext, 0)
             if assignable is None:
                 raise ValueError()
-            obj = self.evalAssignable(assignable).getLast()
+            obj = AiLangObj.make(assignable).getLast()
+
+            # Check If there is a method assisated with the parent
             if obj.parent:
                 if MethodSpace().hasMethod(type(obj.parent.val), obj.id):
                     expr = child.getTypedRuleContext(AiLangParser.ExprContext, 0)

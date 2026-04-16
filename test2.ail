@@ -14,15 +14,27 @@ function custom_function <- (threshold, replace_value, what_to_replace, dataset)
     experiment_data := train_data
 } -> @Features {
     
-    // experiment_data.FamilySize <- experiment_data.SibSp + experiment_data.Parch + 1
+    experiment_data.FamilySize <- experiment_data.SibSp + experiment_data.Parch + 1
     
+/*
+    experiment_data.Sex |s| (s == "male") ? s <- 1 : s <- 0
+
     do {
-        experiment_data.Sex <- 1 //make df operations seperate
-        } if {
+	s <- 1
+    } where s in experiment_data.Sex {
+	s == "male"
+    } else {
+	s <- 0
+    }
+
+    do {
+        experiment_data.NewSexCol <- 1 //make df operations seperate
+        } if |experiment_data.NewSexCol| {
         experiment_data.Sex == "male"
     } else {// Consider 'do else' instead of 'else'
-        experiment_data.Sex <- 0
+        experiment_data.NewSexCol <- 0
     }
+*/  
     // Do we want C style ternary?
     // like experiment_data.Sex = 1 ? experiment_data.Sex == "male" : 0 
     
@@ -32,16 +44,10 @@ function custom_function <- (threshold, replace_value, what_to_replace, dataset)
     y.Survived <- experiment_data.Survived
     X_std.rest <- (y, experiment_data)
     
-    scaler <- .StandardScaler
-    
-    
-    
-    
-    std_scaler_main.fit_transform <- X_std
-        
-        
-        
-        
+    //y.print
+
+    .print <- (y * 2)
+
     X_std.StandardScaler.fit_transform
     
     X_scaled <- X_std
