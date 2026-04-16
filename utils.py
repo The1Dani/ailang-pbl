@@ -1,20 +1,13 @@
+# pylint: disable=invalid-name
+import sys
 import os
-from typing import Any, Type, TypeGuard, TypeVar
+from pathlib import Path
 from antlr4.ParserRuleContext import TerminalNodeImpl
 from antlr4.Token import Token
 from antlr4 import ParserRuleContext
-
-from grammar.AiLangParser import AiLangParser
 import pandas as pd
-from pathlib import Path
+from grammar.AiLangParser import AiLangParser
 
-
-        def fromDFtoObj(df):
-            if not isinstance(df, pd.DataFrame):
-                raise ValueError()
-            for col, ser in df.items():
-                colObj = AiLangObj(col, ListType(ser))
-                obj.setMember(colObj)
 
 def getTerminalSymbol(child) -> str:
     if isinstance(child, Token):
@@ -27,8 +20,8 @@ def getTerminalSymbol(child) -> str:
 def getAllIds(node: ParserRuleContext) -> list[str]:
     ids = node.getTypedRuleContexts(AiLangParser.IdContext)
     result: list[str] = []
-    for id in ids:
-        result.append(getTerminalSymbol(id))
+    for ident in ids:
+        result.append(getTerminalSymbol(ident))
     return result
 
 
@@ -40,7 +33,7 @@ def tf2d(filename: str) -> pd.DataFrame:
             return pd.read_csv(f)
     except Exception as e:
         print(e)
-        exit(1)
+        sys.exit(1)
     return pd.DataFrame()
 
 

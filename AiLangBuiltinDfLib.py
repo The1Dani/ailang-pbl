@@ -1,11 +1,12 @@
+import pandas as pd
+
 from AiLangFunc import makeMethod
 from AiLangObj import AiLangObj, fromDFtoObj
 from AiLangType import DfType
-import pandas as pd
 
 
 @makeMethod("dropna_ip", DfType, [])
-def DfBuiltinDropnaInplace(parent, *items):
+def dfBuiltinDropnaInplace(parent, *items):
     if not isinstance(parent, AiLangObj):
         raise ValueError()
     df = parent.get()
@@ -13,13 +14,13 @@ def DfBuiltinDropnaInplace(parent, *items):
         raise ValueError()
 
     df.dropna(*items)
-    parent.update(fromDFtoObj(parent.id, df))
+    parent.update(fromDFtoObj(parent.ident, df))
 
     return parent
 
 
 @makeMethod("dropna", DfType, [])
-def DfBuiltinDropna(parent, *items):
+def dfBuiltinDropna(parent, *items):
     if not isinstance(parent, AiLangObj):
         raise ValueError()
     df = parent.get()
@@ -28,4 +29,4 @@ def DfBuiltinDropna(parent, *items):
 
     df.dropna(*items)
 
-    return fromDFtoObj(parent.id, df)
+    return fromDFtoObj(parent.ident, df)

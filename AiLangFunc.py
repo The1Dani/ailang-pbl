@@ -6,8 +6,12 @@ import utils
 
 
 class AiLangFunc:
-    def __init__(self, id: str, func: Callable[..., AiLangObj], args: list[str]):
-        self.id: str = id
+    """
+    The function class for AiLang
+    """
+
+    def __init__(self, ident: str, func: Callable[..., AiLangObj], args: list[str]):
+        self.ident: str = ident
         self.func: Callable[..., AiLangObj] = func
         self.args: list[str] = args
 
@@ -17,7 +21,7 @@ class AiLangFunc:
     @staticmethod
     def make(
         node: ap.Func_defContext,
-        ctxRunnerConstructor: Callable[
+        ctx_runner_constructor: Callable[
             [ap.ContextContext], Callable[..., dict[int, AiLangObj]]
         ],
     ) -> AiLangFunc:
@@ -25,56 +29,61 @@ class AiLangFunc:
         ctx = node.getTypedRuleContext(ap.ContextContext, 0)
         if ctx is None:
             raise ValueError()
-        funcID = ids.pop(0)
-        func = AiLangFunc.constructCallableFromCtx(ctxRunnerConstructor(ctx))
-        return AiLangFunc(funcID, func, ids)
+        func_id = ids.pop(0)
+        func = AiLangFunc.constructCallableFromCtx(ctx_runner_constructor(ctx))
+        return AiLangFunc(func_id, func, ids)
 
     @staticmethod
     def constructCallableFromCtx(
-        ctxRunner: Callable[..., dict[int, AiLangObj]],
+        ctx_runner: Callable[..., dict[int, AiLangObj]],
     ) -> Callable[..., AiLangObj]:
         def wrapper(*args) -> AiLangObj:
-            vars = ctxRunner(*args)
-            if -1 not in vars:
+            variables = ctx_runner(*args)
+            if -1 not in variables:
                 return NoneObj()
-            return vars[-1]
+            return variables[-1]
 
         return wrapper
 
     def __repr__(self) -> str:
         args = ", ".join(self.args)
-        return f"{self.id}({args})"
+        return f"{self.ident}({args})"
 
 
 class Space(metaclass=Singleton):
+    """Abstract Class for Spaces that needs to be Singletons"""
+
     def __init__(self) -> None:
         pass
 
 
 class FunctionSpace(Space):
+    """Function Space that stores the available functions, Its a singleton class"""
 
     def __init__(self):
         super().__init__()
         self.functions: dict[str, AiLangFunc] = {}
 
     def addFunc(self, func: AiLangFunc) -> None:
-        if func.id in self.functions:
+        if func.ident in self.functions:
             raise ValueError("The function already exists")
-        self.functions[func.id] = func
+        self.functions[func.ident] = func
 
-    def hasFunc(self, id: str) -> bool:
-        if id in self.functions:
+    def hasFunc(self, ident: str) -> bool:
+        if ident in self.functions:
             return True
         return False
 
-    def call(self, id: str, args) -> AiLangObj:
-        if id in self.functions:
-            func = self.functions[id]
+    def call(self, ident: str, args) -> AiLangObj:
+        if ident in self.functions:
+            func = self.functions[ident]
             return func.call(args)
         raise ValueError("The function is not available")
 
 
 class MethodSpace(Space):
+    """Method Space that stores the available methods, Its a singleton class"""
+
     def __init__(self):
         super().__init__()
         self.functions: dict[str, dict[str, AiLangFunc]] = {}
@@ -82,51 +91,55 @@ class MethodSpace(Space):
     def addFunc(self, ttype: type, func: AiLangFunc) -> None:
         if str(ttype) not in self.functions:
             self.functions[str(ttype)] = {}
-        if func.id in self.functions[str(ttype)]:
+        if func.ident in self.functions[str(ttype)]:
             raise ValueError("The method already exists")
-        self.functions[str(ttype)][func.id] = func
+        self.functions[str(ttype)][func.ident] = func
 
-    def hasMethod(self, ttype: type, id: str) -> bool:
+    def hasMethod(self, ttype: type, ident: str) -> bool:
         # print(str(ttype))
         if str(ttype) in self.functions:
-            if id in self.functions[str(ttype)]:
+            if ident in self.functions[str(ttype)]:
                 return True
         return False
 
-    def call(self, parent: AiLangObj, id: str, args: list[AiLangObj]) -> AiLangObj:
+    def call(self, parent: AiLangObj, ident: str, args: list[AiLangObj]) -> AiLangObj:
         """As a convention the first arg of every method is the parent object"""
         ttype = type(parent.val)
         if str(ttype) in self.functions:
-            if id in self.functions[str(ttype)]:
-                func = self.functions[str(ttype)][id]
+            if ident in self.functions[str(ttype)]:
+                func = self.functions[str(ttype)][ident]
                 args.append(parent)
                 return func.call(args)
-            raise ValueError(f"type {str(ttype)} does not have method {id}")
+            raise ValueError(f"type {str(ttype)} does not have method {ident}")
         raise ValueError(f"Type {ttype} does not have methods")
 
 
-def makeFunc(funcId: str, argNames: list[str] = []):
+def makeFunc(func_id: str, arg_names: list[str] | None = None):
+
+    arg_names = [] if arg_names is None else arg_names
 
     def wrapper(func: Callable[..., AiLangObj]):
-        aFunc = AiLangFunc(
-            id=funcId,
+        fn = AiLangFunc(
+            ident=func_id,
             func=func,
-            args=argNames,
+            args=arg_names,
         )
-        FunctionSpace().addFunc(aFunc)
+        FunctionSpace().addFunc(fn)
 
         return func
 
     return wrapper
 
 
-def makeMethod(methodId: str, ttype: type, argNames: list[str] = []):
+def makeMethod(method_id: str, ttype: type, arg_names: list[str] | None = None):
     """As a convention the first arg of every method is the parent object"""
 
-    def wrapper(func: Callable[..., AiLangObj]):
-        aMethod = AiLangFunc(id=methodId, func=func, args=argNames)
+    arg_names = [] if arg_names is None else arg_names
 
-        MethodSpace().addFunc(ttype=ttype, func=aMethod)
+    def wrapper(func: Callable[..., AiLangObj]):
+        method = AiLangFunc(ident=method_id, func=func, args=arg_names)
+
+        MethodSpace().addFunc(ttype=ttype, func=method)
 
         return func
 

@@ -13,5 +13,4 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pylint>=4.0.5",
-    "ruff>=0.15.9",
 ]
