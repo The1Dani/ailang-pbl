@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Callable
 from AiLangObj import AiLangObj, NoneObj
 from grammar.AiLangParser import AiLangParser as ap
