@@ -9,7 +9,7 @@ import pandas as pd
 from grammar.AiLangParser import AiLangParser
 
 
-def getTerminalSymbol(child) -> str:
+def getTerminalSymbol(child: any) -> str:
     if isinstance(child, Token):
         return child.text
     if isinstance(child, TerminalNodeImpl):

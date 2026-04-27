@@ -18,7 +18,7 @@ if __name__ == "__main__":
     tree = parser.prog()
     if len(sys.argv) >= 3 and sys.argv[2] == "-parse":
         print(tree.toStringTree(recog=parser))
-        sys.exit(0)
+        # sys.exit(0)
     Interpreter(tree).interp()
     # lisp_tree_str = tree.toStringTree(recog=parser)
     # print(lisp_tree_str)
