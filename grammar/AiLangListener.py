@@ -206,6 +206,15 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by AiLangParser#def_arg.
+    def enterDef_arg(self, ctx:AiLangParser.Def_argContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#def_arg.
+    def exitDef_arg(self, ctx:AiLangParser.Def_argContext):
+        pass
+
+
     # Enter a parse tree produced by AiLangParser#fromToData.
     def enterFromToData(self, ctx:AiLangParser.FromToDataContext):
         pass

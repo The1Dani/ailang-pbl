@@ -1,3 +1,7 @@
+function hello <- (hello_person="hello") {
+    .print <- ("Hello ", hello_person)
+}
+
 -> {
-    .print <- ("Hello, World!")
+    .hello
 }
