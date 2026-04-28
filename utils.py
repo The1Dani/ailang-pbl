@@ -2,6 +2,7 @@
 import sys
 import os
 from pathlib import Path
+from typing import Any
 from antlr4.ParserRuleContext import TerminalNodeImpl
 from antlr4.Token import Token
 from antlr4 import ParserRuleContext
@@ -9,7 +10,7 @@ import pandas as pd
 from grammar.AiLangParser import AiLangParser
 
 
-def getTerminalSymbol(child: any) -> str:
+def getTerminalSymbol(child: Any) -> str:
     if isinstance(child, Token):
         return child.text
     if isinstance(child, TerminalNodeImpl):
