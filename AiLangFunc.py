@@ -1,7 +1,27 @@
 from __future__ import annotations
-from typing import Callable
+from typing import Callable, NoReturn, Protocol, Union
+import copy
+
 from AiLangObj import AiLangObj, NoneObj
 from utils import Singleton
+
+
+# Python typing black magic for function types
+class AiLangCallable0(Protocol):
+    """AiLang Callable definition with no arguments"""
+
+    def __call__(self) -> AiLangObj: ...
+class AiLangCallable1(Protocol):
+    """AiLang Callable definition with positional arguments"""
+
+    def __call__(self, *args: AiLangObj) -> AiLangObj: ...
+class AiLangCallable2(Protocol):
+    """AiLang Callable definition with positional arguments and keyword arguments"""
+
+    def __call__(self, *args: AiLangObj, **kwargs: AiLangObj) -> AiLangObj: ...
+
+
+AiLangCallable = Union[AiLangCallable0, AiLangCallable1, AiLangCallable2]
 
 
 class AiLangFunc:
@@ -12,24 +32,28 @@ class AiLangFunc:
     def __init__(
         self,
         ident: str,
-        func: Callable[..., AiLangObj],
+        func: AiLangCallable,
         args: list[str],
-        kwargs: dict[str:AiLangObj],
+        kwargs: dict[str, AiLangObj],
     ):
         self.ident: str = ident
-        self.func: Callable[..., AiLangObj] = func
+        self.func: AiLangCallable = func
         self.args: list[str] = args
-        self.kwargs: dict[str:AiLangObj] = kwargs
+        self.kwargs: dict[str, AiLangObj] = kwargs
 
-    def call(self, args: list[AiLangObj]) -> AiLangObj:
-        return self.func(*args)
+    def call(self, args: list[AiLangObj], kwargs: dict[str, AiLangObj]) -> AiLangObj:
+        local_kwargs = copy.deepcopy(self.kwargs)
+        local_kwargs = {} if local_kwargs is None else local_kwargs
+        for key, val in kwargs.items():
+            local_kwargs[key] = val
+        return self.func(*args, **local_kwargs)
 
     @staticmethod
     def constructCallableFromCtx(
-        ctx_runner: Callable[..., dict[int, AiLangObj]],
-    ) -> Callable[..., AiLangObj]:
-        def wrapper(*args) -> AiLangObj:
-            variables = ctx_runner(*args)
+        ctx_runner: Callable[[AiLangCallable], dict[int, AiLangObj]],
+    ) -> AiLangCallable:
+        def wrapper(*args, **kwargs) -> AiLangObj:
+            variables = ctx_runner(*args, **kwargs)
             if -1 not in variables:
                 return NoneObj()
             return variables[-1]
@@ -107,7 +131,7 @@ class MethodSpace(Space):
         if str(ttype) in self.functions:
             if ident in self.functions[str(ttype)]:
                 func = self.functions[str(ttype)][ident]
-                args.append(parent)
+                args.insert(0, parent)
                 return func.call(args, kwargs)
             raise ValueError(f"type {str(ttype)} does not have method {ident}")
         raise ValueError(f"Type {ttype} does not have methods")
@@ -117,11 +141,12 @@ def makeFunc(
     func_id: str,
     arg_names: list[str] | None = None,
     kwargs: dict[str, AiLangObj] | None = None,
-):
+) -> Callable[[AiLangCallable], AiLangCallable] | NoReturn:
 
     arg_names = [] if arg_names is None else arg_names
+    kwargs = {} if kwargs is None else kwargs
 
-    def wrapper(func: Callable[..., AiLangObj]):
+    def wrapper(func: AiLangCallable):
         fn = AiLangFunc(ident=func_id, func=func, args=arg_names, kwargs=kwargs)
         FunctionSpace().addFunc(fn)
 
@@ -139,8 +164,9 @@ def makeMethod(
     """As a convention the first arg of every method is the parent object"""
 
     arg_names = [] if arg_names is None else arg_names
+    kwargs = {} if kwargs is None else kwargs
 
-    def wrapper(func: Callable[..., AiLangObj]):
+    def wrapper(func: AiLangCallable):
         method = AiLangFunc(ident=method_id, func=func, args=arg_names, kwargs=kwargs)
 
         MethodSpace().addFunc(ttype=ttype, func=method)
