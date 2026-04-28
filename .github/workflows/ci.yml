@@ -26,5 +26,11 @@ jobs:
       - name: Install dependencies
         run: uv sync -p 3.14
 
+      - name: PyRight
+        run: pyright --warnings "*.py"
+
       - name: Pylint
-        run: uv run pylint "*py"
+        run: uv run pylint -- *py
+
+      - name: Check Formatting
+        run: uv run black --check -- *.py
