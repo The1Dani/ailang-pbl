@@ -119,6 +119,11 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by AiLangParser#def_arg.
+    def visitDef_arg(self, ctx:AiLangParser.Def_argContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by AiLangParser#fromToData.
     def visitFromToData(self, ctx:AiLangParser.FromToDataContext):
         return self.visitChildren(ctx)

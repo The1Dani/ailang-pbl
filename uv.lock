@@ -21,7 +21,9 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "black" },
     { name = "pylint" },
+    { name = "pyright" },
 ]
 
 [package.metadata]
@@ -34,7 +36,11 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pylint", specifier = ">=4.0.5" }]
+dev = [
+    { name = "black", specifier = ">=26.3.1" },
+    { name = "pylint", specifier = ">=4.0.5" },
+    { name = "pyright", specifier = ">=1.1.409" },
+]
 
 [[package]]
 name = "antlr4-grun"
@@ -340,6 +346,15 @@ wheels = [
 ]
 
 [[package]]
+name = "packaging"
+version = "26.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d7/f1/e7a6dd94a8d4a5626c03e4e99c87f241ba9e350cd9e6d75123f992427270/packaging-26.2.tar.gz", hash = "sha256:ff452ff5a3e828ce110190feff1178bb1f2ea2281fa2075aadb987c2fb221661", size = 228134, upload-time = "2026-04-24T20:15:23.917Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/df/b2/87e62e8c3e2f4b32e5fe99e0b86d576da1312593b39f47d8ceef365e95ed/packaging-26.2-py3-none-any.whl", hash = "sha256:5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e", size = 100195, upload-time = "2026-04-24T20:15:22.081Z" },
+]
+
+[[package]]
 name = "pandas"
 version = "3.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -556,6 +571,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/fb/9e/8ae5ef480622282fc98507c0226e95de0accdf5e98ab7f57a5c8ba054339/typer-0.4.2.tar.gz", hash = "sha256:b8261c6c0152dd73478b5ba96ba677e5d6948c715c310f7c91079f311f62ec03", size = 223132, upload-time = "2022-07-02T18:05:28.861Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9d/ea/b565bc44a1af5278ef2ff9d571cdb4f4bc31fd450b0630441c93401c243c/typer-0.4.2-py3-none-any.whl", hash = "sha256:023bae00d1baf358a6cc7cea45851639360bb716de687b42b0a4641cd99173f1", size = 27955, upload-time = "2022-07-02T18:05:26.022Z" },
+]
+
+[[package]]
+name = "typing-extensions"
+version = "4.15.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/72/94/1a15dd82efb362ac84269196e94cf00f187f7ed21c242792a923cdb1c61f/typing_extensions-4.15.0.tar.gz", hash = "sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466", size = 109391, upload-time = "2025-08-25T13:49:26.313Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/18/67/36e9267722cc04a6b9f15c7f3441c2363321a3ea07da7ae0c0707beb2a9c/typing_extensions-4.15.0-py3-none-any.whl", hash = "sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548", size = 44614, upload-time = "2025-08-25T13:49:24.86Z" },
 ]
 
 [[package]]

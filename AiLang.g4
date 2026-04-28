@@ -45,7 +45,9 @@ stat:
 	| ret           # return;
 
 // Fixed: Corrected the parameter list and ID references
-func_def: FUNCTION id REF '(' id (',' id)* ')' context;
+func_def: FUNCTION id REF '(' def_arg (',' def_arg)* ')' context;
+
+def_arg: id|named_arg;
 
 fromToData: FROM str ARR id;
 

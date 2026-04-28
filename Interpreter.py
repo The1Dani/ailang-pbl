@@ -19,7 +19,7 @@ from AiLangType import (
     BoolType,
 )
 from AiLangObj import AiLangObj, NoneObj, fromDFtoObj
-from AiLangFunc import AiLangFunc, FunctionSpace, MethodSpace
+from AiLangFunc import AiLangCallable, AiLangFunc, FunctionSpace, MethodSpace
 import utils
 
 
@@ -178,14 +178,9 @@ class VariableStack:
     def get(self, key: str | AiLangObj) -> AiLangObj | FuncParams | list[AiLangObj]:
         ret = self._get(key)
         if ret is None:
-            if (
-                self.interp is not None
-                and isinstance(key, AiLangObj)
-                and key.val is not None
-                and key.val.val is not None
-            ):
+            if self.interp is not None and isinstance(key, AiLangObj):
                 method_id, parent = self.interp.getMethodAndParentFromKeyObj(
-                    copy.deepcopy(key)
+                    copy.deepcopy(key), True
                 )
                 if MethodSpace().hasMethod(type(parent.val), method_id):
                     return FuncParams(method_id, parent)
@@ -214,7 +209,7 @@ class FuncParams:
 class Interpreter:
     """Interpreter"""
 
-    def __init__(self, ast: AiLangParser.ProgContext):
+    def __init__(self, ast: AiLangParser.ProgContext) -> None:
         self.ast = ast
         self.variable_context_stack = VariableStack(self)
         self.block_tree = None
@@ -240,7 +235,7 @@ class Interpreter:
         fd = func_decl.getTypedRuleContext(AiLangParser.Func_defContext, 0)
         if fd is None:
             raise ValueError()
-        func = AiLangFunc.make(fd, self.ctxRunnerConstructer())
+        func = self.evalFuncDef(fd, self.ctxRunnerConstructer())
         self.functions.addFunc(func)
 
     def evaluateBlocks(self, blocks: BlockTree | None = None) -> None:
@@ -249,6 +244,8 @@ class Interpreter:
             raise ValueError("The block tree is not set cannot evaluate")
         # Evaluate all statemnts inside the ctx
         for ch in blocks.ctx.children:
+            if isinstance(ch, TerminalNode):
+                continue
             if not self.evaluate(ch):
                 break
         if len(blocks.children) == 1:
@@ -277,8 +274,8 @@ class Interpreter:
     ) -> Callable[[AiLangParser.ContextContext], Callable[..., dict[int, AiLangObj]]]:
         def constructor(
             ctx: AiLangParser.ContextContext,
-        ) -> Callable[..., dict[int, AiLangObj]]:
-            def runner(*args):
+        ) -> Callable[[AiLangCallable], dict[int, AiLangObj]]:
+            def runner(*args, **kwargs) -> dict[int, AiLangObj]:
                 """
                 Runner runs the lines of code in ctx and if there is a return
                 it puts to the stack frame on address '-1'
@@ -288,6 +285,10 @@ class Interpreter:
                     if not isinstance(arg, AiLangObj):
                         continue
                     self.variable_context_stack.put(arg)
+                for _, arg_val in kwargs.items():
+                    if not isinstance(arg_val, AiLangObj):
+                        continue
+                    self.variable_context_stack.put(arg_val)
                 stats = ctx.getTypedRuleContexts(AiLangParser.StatContext)
                 for stat in stats:
                     if not self.evaluate(stat):
@@ -373,7 +374,8 @@ class Interpreter:
             elif isinstance(ch, AiLangParser.RetContext):
                 self.evalRet(ch)
                 return False
-            raise ValueError(f"Type {type(ch)} is tried to be evaluated")
+            else:
+                raise ValueError(f"Type {type(ch)} is tried to be evaluated")
         return True
 
     def evalRet(self, child: AiLangParser.RetContext) -> None:
@@ -569,11 +571,23 @@ class Interpreter:
             l_val.append(self.evalExpr(ch))
         return ListType(l_val)
 
-    def getMethodAndParentFromKeyObj(self, key: AiLangObj) -> tuple[str, AiLangObj]:
+    def getMethodAndParentFromKeyObj(
+        self, key: AiLangObj, parent_found=False
+    ) -> tuple[str, AiLangObj]:
         method_id = key.getLast().ident
         key.killMembers()
-        parent = self.variable_context_stack.get(key)
-        if not isinstance(parent, AiLangObj):
+        try:
+            if not parent_found:
+                # NOTE: this will get the key value there is a chance its not the correct parent
+                parent = self.variable_context_stack.get(key)
+                if not isinstance(parent, AiLangObj):
+                    raise ValueError()
+            else:
+                parent = key
+
+        except ValueError:
+            parent = key
+        if not isinstance(key, AiLangObj):
             raise NotImplementedError()
         return method_id, parent
 
@@ -589,20 +603,27 @@ class Interpreter:
         arg_list = child.getTypedRuleContext(AiLangParser.Arg_listContext, 0)
         if arg_list is None:
             raise ValueError()
-        args = self.evalArgsList(arg_list)
+        args, kwargs = self.evalArgsList(arg_list)
         if isinstance(parent, list):
             raise NotImplementedError()
         if MethodSpace().hasMethod(type(parent.val), method_id):
-            return MethodSpace().call(parent, method_id, args).get()
+            return MethodSpace().call(parent, method_id, args, kwargs).get()
         raise ValueError(
             f"Method {method_id} is not available for type {str(type(parent.val))}"
         )
 
-    def evalArgsList(self, child: AiLangParser.Arg_listContext) -> list[AiLangObj]:
-        evaluated = []
+    def evalArgsList(
+        self, child: AiLangParser.Arg_listContext
+    ) -> tuple[list[AiLangObj], dict[str, AiLangObj]]:
+        args = []
+        kwargs = {}
         for arg in child.getTypedRuleContexts(AiLangParser.ArgContext):
-            evaluated.append(self.evalArg(arg))
-        return evaluated
+            arg_val = self.evalArg(arg)
+            if arg_val.ident != "":
+                kwargs[arg_val.ident] = arg_val
+            elif arg_val:
+                args.append(arg_val)
+        return args, kwargs
 
     def evalArg(self, child: AiLangParser.ArgContext) -> AiLangObj:
         if isinstance(child, AiLangParser.NamedArgContext):
@@ -635,16 +656,48 @@ class Interpreter:
             raise ValueError()
         func_id = ids[0]
 
-        arg_list = child.getTypedRuleContext(AiLangParser.Arg_listContext, 0)
-        if arg_list is None:
-            arg_list = []
+        args_node = child.getTypedRuleContext(AiLangParser.Arg_listContext, 0)
+        if args_node is None:
+            args = []
+            kwargs: dict[str, AiLangObj] = {}
         else:
-            arg_list = self.evalArgsList(arg_list)
+            args, kwargs = self.evalArgsList(args_node)
 
         if FunctionSpace().hasFunc(func_id):
-            return FunctionSpace().call(func_id, arg_list).get()
+            return FunctionSpace().call(func_id, args, kwargs).get()
 
         raise ValueError(f"Function {func_id} is not in FunctionSpace")
+
+    def evalFuncDef(
+        self,
+        node: AiLangParser.Func_defContext,
+        ctx_runner_constructor: Callable[
+            [AiLangParser.ContextContext],
+            Callable[[AiLangCallable], dict[int, AiLangObj]],
+        ],
+    ) -> AiLangFunc:
+        func_id = node.getTypedRuleContext(AiLangParser.IdContext, 0)
+        if func_id is None:
+            raise ValueError()
+        func_id = utils.getTerminalSymbol(func_id)
+        ids = []
+        kwargs = {}
+
+        args = node.getTypedRuleContexts(AiLangParser.Def_argContext)
+        for arg in args:
+            ch = arg.getChild(0)
+            if isinstance(ch, AiLangParser.IdContext):
+                ids.append(utils.getTerminalSymbol(ch))
+            elif isinstance(ch, AiLangParser.Named_argContext):
+                obj = self.evalNamedArg(ch)
+                key = obj.ident
+                kwargs[key] = obj
+
+        ctx = node.getTypedRuleContext(AiLangParser.ContextContext, 0)
+        if ctx is None:
+            raise ValueError()
+        func = AiLangFunc.constructCallableFromCtx(ctx_runner_constructor(ctx))
+        return AiLangFunc(func_id, func, ids, kwargs)
 
     def evalMathOp(self, child: AiLangParser.MathOpContext):
         """
@@ -699,7 +752,7 @@ class Interpreter:
             raise NotImplementedError()
         if isinstance(val, FuncParams):
             method_id, parent = val.vals
-            MethodSpace().call(parent, method_id, [])
+            MethodSpace().call(parent, method_id, [], {})
             return NoneObj()
 
         return val
@@ -732,7 +785,7 @@ class Interpreter:
                     ret = self.evalExpr(expr)
                     if not isinstance(ret, ListType):
                         raise ValueError()
-                    MethodSpace().call(obj.parent, obj.ident, ret.get())
+                    MethodSpace().call(obj.parent, obj.ident, ret.get(), {})
                     return
 
             expr = child.getTypedRuleContext(AiLangParser.ExprContext, 0)
