@@ -7,7 +7,7 @@ on:
 jobs:
 
   style:
-    name: Fromatting
+    name: Linting and Fromatting
     runs-on: ubuntu-latest
 
     steps:
@@ -27,7 +27,7 @@ jobs:
         run: uv sync -p 3.14
 
       - name: PyRight
-        run: pyright --warnings "*.py"
+        run: uv run pyright --warnings "*.py"
 
       - name: Pylint
         run: uv run pylint -- *py
