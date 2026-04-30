@@ -104,3 +104,11 @@ def fromDFtoObj(ident: str, df: pd.DataFrame) -> AiLangObj:
         column_obj = AiLangObj(col, AiLangType.DfItem(ser))
         obj.setMember(column_obj)
     return obj
+
+class ModelType(AiLangType.AiLangType):
+    """
+    Wrapper type for ML models in AiLang DSL.
+    Stores and manages trained machine learning model objects.
+    """
+    def __init__(self, model):
+        super().__init__(model)
