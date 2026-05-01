@@ -11,7 +11,7 @@ def toStringDecoded(obj: AiLangObj) -> str:
     return codecs.decode(str(val), "unicode-escape")
 
 
-@makeFunc("print")
+@makeFunc("print", ignore_arg_count=True)
 def aiLangBuiltinPrint(*args, **kwargs) -> AiLangObj:
 
     args = list(args)
@@ -38,15 +38,13 @@ def aiLangBuiltinPrint(*args, **kwargs) -> AiLangObj:
     return NoneObj()
 
 
-@makeFunc("exit")
-def aiLangBuiltinExit(*items: AiLangObj):
-    ret_code = None
-    if len(items) > 0:
-        first = items[0]
-        first_type = first.get()
-        if isinstance(first_type, NumType):
-            if first_type.type == NumTypes.INT:
-                ret_code = first_type.get()
+@makeFunc("exit", kwargs={"ret_code": AiLangObj("ret_code", NumType(0, NumTypes.INT))})
+def aiLangBuiltinExit(*_, **kwargs):
+    ret_code = kwargs["ret_code"]
+    first_type = ret_code.get()
+    if isinstance(first_type, NumType):
+        if first_type.type == NumTypes.INT:
+            ret_code = first_type.get()
 
     ret_code = ret_code if ret_code else 0
     sys.exit(ret_code)
@@ -58,3 +56,9 @@ def aiLangBuiltinDFRest(
 ) -> AiLangObj:  # pylint: disable=unused-argument
     print(f"[DEBUG] {parent=} {args=} {kwargs=}")
     return AiLangObj("")
+
+
+@makeFunc("breakpoint")
+def aiLangInternalBreakPoint() -> AiLangObj:
+    breakpoint()  # pylint: disable=forgotten-debug-statement
+    return NoneObj()
