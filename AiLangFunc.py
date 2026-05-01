@@ -44,6 +44,9 @@ class AiLangFunc:
     def call(self, args: list[AiLangObj], kwargs: dict[str, AiLangObj]) -> AiLangObj:
         local_kwargs = copy.deepcopy(self.kwargs)
         local_kwargs = {} if local_kwargs is None else local_kwargs
+        if len(self.args) == len(args):
+            for arg, arg_name in zip(args, self.args):
+                arg.ident = arg_name
         for key, val in kwargs.items():
             local_kwargs[key] = val
         return self.func(*args, **local_kwargs)
