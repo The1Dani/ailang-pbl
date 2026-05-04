@@ -1,6 +1,8 @@
 import sys
 import codecs
 
+from typing import Any, cast
+
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split as sk_split
 
@@ -14,14 +16,7 @@ from FuncUtils import getVars
 import AiLangSimpleAlgLib as _
 
 from Registry import MODEL_REGISTRY
-
-
-def unwrap(value):
-    if isinstance(value, AiLangObj):
-        value = value.get()
-    if hasattr(value, "get"):
-        value = value.get()
-    return value
+from protocols import NumpyArrayLike
 
 
 def toStringDecoded(obj: AiLangObj) -> str:
@@ -80,22 +75,14 @@ def aiLangInternalBreakPoint() -> AiLangObj:
     return NoneObj()
 
 
-@makeFunc("fit")
-def aiLangFit(*items):
+@makeFunc("fit", ["model_name", "x", "y", "params"])
+def aiLangFit(*args, **kwargs):
+    vs = getVars(args, kwargs)
 
-    if len(items) < 3:
-        raise ValueError()
-
-    model_name = unwrap(items[0])
-    x = unwrap(items[1])
-    y = unwrap(items[2])
-
-    params = unwrap(items[3]) if len(items) > 3 else {}
-
-    if isinstance(model_name, str):
-        model_name = model_name
-    else:
-        model_name = model_name.get()
+    model_name = vs["model_name"]
+    x = vs["x"]
+    y = vs["y"]
+    params = vs.get("params", {})
 
     if model_name not in MODEL_REGISTRY:
         raise ValueError(f"Unknown model: {model_name}")
@@ -116,14 +103,12 @@ def aiLangFit(*items):
     return result
 
 
-@makeFunc("predict")
-def aiLangPredict(*items):
+@makeFunc("predict", ["model_obj", "x"])
+def aiLangPredict(*args, **kwargs):
+    vs = getVars(args, kwargs)
 
-    if len(items) < 2:
-        raise ValueError()
-
-    model_obj = unwrap(items[0])
-    x = unwrap(items[1])
+    model_obj = vs["model_obj"]
+    x = vs["x"]
 
     model = model_obj.getMember("model").get()
 
@@ -141,15 +126,13 @@ def aiLangPredict(*items):
     return result
 
 
-@makeFunc("score")
-def aiLangScore(*items):
+@makeFunc("score", ["model", "x_test", "y_test"])
+def aiLangScore(*args, **kwargs):
+    vs = getVars(args, kwargs)
 
-    if len(items) < 3:
-        raise ValueError()
-
-    model_obj = unwrap(items[0])
-    x_test = unwrap(items[1])
-    y_test = unwrap(items[2])
+    model_obj = vs["model"]
+    x_test = vs["x_test"]
+    y_test = vs["y_test"]
 
     model = model_obj.getMember("model").get()
 
@@ -161,22 +144,15 @@ def aiLangScore(*items):
     return result
 
 
-@makeFunc("cross_validate")
-def aiLangCrossValidate(*items):
+@makeFunc("cross_validate", ["model_name", "x", "y", "cv", "metric"])
+def aiLangCrossValidate(*args, **kwargs):
+    vs = getVars(args, kwargs)
 
-    if len(items) < 4:
-        raise ValueError()
-
-    model_name = unwrap(items[0])
-    x = unwrap(items[1])
-    y = unwrap(items[2])
-    cv = int(unwrap(items[3]))
-    metric = unwrap(items[4]) if len(items) > 4 else "accuracy"
-
-    if isinstance(model_name, str):
-        model_name = model_name
-    else:
-        model_name = model_name.get()
+    model_name = vs["model_name"]
+    x = vs["x"]
+    y = vs["y"]
+    cv = int(vs["cv"])
+    metric = vs.get("metric", "accuracy")
 
     if model_name not in MODEL_REGISTRY:
         raise ValueError("Unknown model")
@@ -197,14 +173,12 @@ def aiLangCrossValidate(*items):
     return result
 
 
-@makeFunc("save_model")
-def aiLangSaveModel(*items):
+@makeFunc("save_model", ["model_obj", "path"])
+def aiLangSaveModel(*args, **kwargs):
+    vs = getVars(args, kwargs)
 
-    if len(items) < 2:
-        raise ValueError()
-
-    model_obj = unwrap(items[0])
-    path = unwrap(items[1])
+    model_obj = vs["model_obj"]
+    path = vs["path"]
 
     model = model_obj.getMember("model").get()
 
@@ -213,13 +187,11 @@ def aiLangSaveModel(*items):
     return NoneObj()
 
 
-@makeFunc("load_model")
-def aiLangLoadModel(*items):
+@makeFunc("load_model", ["path"])
+def aiLangLoadModel(*args, **kwargs):
+    vs = getVars(args, kwargs)
 
-    if len(items) < 1:
-        raise ValueError()
-
-    path = unwrap(items[0])
+    path = vs["path"]
 
     model = joblib.load(path)
 
@@ -230,34 +202,29 @@ def aiLangLoadModel(*items):
     return result
 
 
-@makeFunc("train_test_split")
-def aiLangTrainTestSplit(*items):
+@makeFunc("train_test_split", ["x", "y", "test_size"])
+def aiLangTrainTestSplit(*args, **kwargs):
+    vs = getVars(args, kwargs)
 
-    if len(items) < 3:
-        raise ValueError()
-
-    x = unwrap(items[0])
-    y = unwrap(items[1])
-    test_size = float(unwrap(items[2]))
+    x: Any = vs["x"]
+    y: Any = vs["y"]
+    test_size = float(vs["test_size"])
 
     x_train, x_test, y_train, y_test = sk_split(x, y, test_size=test_size)
 
     result = AiLangObj("split", NoneType())
 
     result.setMember(
-        AiLangObj("X_train", AiLangObj("X_train", BasicListType(x_train.tolist())))
+        AiLangObj("X_train", BasicListType(cast(NumpyArrayLike, x_train).tolist()))
     )
-
     result.setMember(
-        AiLangObj("X_test", AiLangObj("X_test", BasicListType(x_test.tolist())))
+        AiLangObj("X_test", BasicListType(cast(NumpyArrayLike, x_test).tolist()))
     )
-
     result.setMember(
-        AiLangObj("y_train", AiLangObj("y_train", BasicListType(y_train.tolist())))
+        AiLangObj("y_train", BasicListType(cast(NumpyArrayLike, y_train).tolist()))
     )
-
     result.setMember(
-        AiLangObj("y_test", AiLangObj("y_test", BasicListType(y_test.tolist())))
+        AiLangObj("y_test", BasicListType(cast(NumpyArrayLike, y_test).tolist()))
     )
 
     return result
