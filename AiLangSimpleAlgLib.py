@@ -1,17 +1,14 @@
-from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
-from sklearn.svm import SVC, SVR
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import cross_val_score
+from sklearn.metrics import r2_score
+
+from catboost import Pool
 
 import numpy as np
 
-from catboost import CatBoostClassifier, CatBoostRegressor
-
 from AiLangFunc import makeFunc
 from AiLangObj import AiLangObj
-from AiLangType import NumType, NumTypes, BasicListType, NoneType, AiLangType
+from AiLangType import NumType, NumTypes, BasicListType, NoneType
 
 
 def unwrap(value):
@@ -22,364 +19,137 @@ def unwrap(value):
     return value
 
 
-def _wrap(data: dict) -> AiLangObj:
-    """Wrap a plain dict into an AiLangObj result."""
-    return AiLangObj("result", AiLangType(data))
-
-
-def _toList(arr) -> list:
-    """convert numpy arrays / lists / None to plain Python list."""
-    if arr is None:
-        return []
-    if hasattr(arr, "tolist"):
-        return arr.tolist()
-    return list(arr)
-
-
 # -----------------------------
 # Logistic Regression
 # -----------------------------
-@makeFunc("fit_logistic_regression")
-def aiLangFitLogisticRegression(*items):
-    # ---- argument validation ----
-    if len(items) < 2:
-        raise ValueError()
+@makeFunc("predict_proba_logistic")
+def predictProbaLogistic(*items):
+    model = items[0]
+    x = items[1]
 
-    x = unwrap(items[0])
-    y = unwrap(items[1])
+    if isinstance(model, AiLangObj):
+        model = model.get()
 
-    penalty = unwrap(items[2]) if len(items) > 2 else "l2"
-    c = unwrap(items[3]) if len(items) > 3 else 1.0
-    max_iter = unwrap(items[4]) if len(items) > 4 else 100
-    solver = unwrap(items[5]) if len(items) > 5 else "lbfgs"
+    if isinstance(x, AiLangObj):
+        x = x.get()
 
-    # create model
-    model = LogisticRegression(
-        penalty=penalty, C=float(c), max_iter=int(max_iter), solver=solver
+    proba = model.predict_proba(x)
+
+    return AiLangObj(
+        "proba",
+        BasicListType(proba.tolist())
     )
-    # train model
-    model.fit(x, y)
 
-    # ---- wrap outputs properly ----
-    coef = BasicListType(model.coef_.tolist())
-    intercept = BasicListType(model.intercept_.tolist())
+@makeFunc("get_coef_table")
+def getCoefTable(*items):
+    model = items[0]
+    feature_names = items[1]
 
-    result = AiLangObj("result", NoneType())
+    if isinstance(model, AiLangObj):
+        model = model.get()
 
-    result.setMember(AiLangObj("coef_", coef))
-    result.setMember(AiLangObj("intercept_", intercept))
+    if isinstance(feature_names, AiLangObj):
+        feature_names = feature_names.get()
 
-    # store model internally (opaque)
-    result.setMember(AiLangObj("model", model))
+    coefs = model.coef_[0]
 
-    return result
+    table = []
+    for name, coef in zip(feature_names, coefs):
+        table.append([name, float(coef)])
 
-
-@makeFunc("predict_logistic")
-def aiLangPredictLogistic(*items):
-    if len(items) < 2:
-        raise ValueError()
-    # unwrap parameters
-    model_obj = unwrap(items[0])
-    x = unwrap(items[1])
-
-    model = model_obj.getMember("model").get()
-
-    # make predictions
-    y_pred = model.predict(x)
-    y_proba = model.predict_proba(x)
-
-    # return result
-    result = AiLangObj("result", NoneType())
-    result.setMember(AiLangObj("y_pred", y_pred))
-    result.setMember(AiLangObj("y_proba", y_proba))
-
-    return result
-
+    return AiLangObj("coef_table", BasicListType(table))
 
 # -----------------------------
 # Linear Regression
 # -----------------------------
 
 
-@makeFunc("fit_linear_regression")
-def aiLangFitLinearRegression(*items) -> AiLangObj:
-    if len(items) < 2:
-        raise ValueError()
-    # unwrap parameters
-    x = unwrap(items[0])
-    y = unwrap(items[1])
+@makeFunc("residuals")
+def residuals(*items):
+    y_true = items[0]
+    y_pred = items[1]
 
-    fit_intercept = unwrap(items[2]) if len(items) > 2 else True
-    regularization = unwrap(items[3]) if len(items) > 3 else "none"
-    alpha = unwrap(items[4]) if len(items) > 4 else 1.0
-    l1_ratio = unwrap(items[5]) if len(items) > 5 else 0.5
+    if isinstance(y_true, AiLangObj):
+        y_true = y_true.get()
 
-    reg = regularization.lower() if isinstance(regularization, str) else "none"
+    if isinstance(y_pred, AiLangObj):
+        y_pred = y_pred.get()
 
-    if reg == "ridge":
-        model = Ridge(alpha=float(alpha), fit_intercept=bool(fit_intercept))
-    elif reg == "lasso":
-        model = Lasso(alpha=float(alpha), fit_intercept=bool(fit_intercept))
-    elif reg == "elasticnet":
-        model = ElasticNet(
-            alpha=float(alpha),
-            l1_ratio=float(l1_ratio),
-            fit_intercept=bool(fit_intercept),
-        )
-    else:
-        model = LinearRegression(fit_intercept=bool(fit_intercept))
+    res = (y_true - y_pred).tolist()
 
-    model.fit(x, y)
-
-      # ---- wrap outputs ----
-    coef = BasicListType(model.coef_.tolist())
-
-    # intercept can be scalar or array
-    if np.ndim(model.intercept_) == 0:
-        intercept = NumType(float(model.intercept_), NumTypes.FLOAT)
-    else:
-        intercept = BasicListType(model.intercept_.tolist())
-
-    r2 = NumType(float(model.score(x, y)), NumTypes.FLOAT)
-
-    # ---- build result object ----
-    result = AiLangObj("result", NoneType())
-
-    result.setMember(AiLangObj("coef_", coef))
-    result.setMember(AiLangObj("intercept_", intercept))
-    result.setMember(AiLangObj("r2_score", r2))
-
-    # store model (opaque)
-    result.setMember(AiLangObj("model", model))
-
-    return result
+    return AiLangObj("residuals", BasicListType(res))
 
 
-@makeFunc("predict_linear")
-def aiLangPredictLinear(*items)  -> AiLangObj:
-    if len(items) < 2:
-        raise ValueError()
-    model_obj = unwrap(items[0])
-    x = unwrap(items[1])
+@makeFunc("score_r2")
+def scoreR2(*items):
+    model = items[0]
+    x_test = items[1]
+    y_test = items[2]
 
-    # retrieve stored model
-    model = model_obj.getMember("model").get()
+    if isinstance(model, AiLangObj):
+        model = model.get()
 
-    y_pred = model.predict(x)
+    if isinstance(x_test, AiLangObj):
+        x_test = x_test.get()
 
-    result = AiLangObj("result", NoneType())
-    result.setMember(
-        AiLangObj("y_pred", BasicListType(y_pred.tolist()))
-    )
+    if isinstance(y_test, AiLangObj):
+        y_test = y_test.get()
 
-    return result
+    pred = model.predict(x_test)
+    score = r2_score(y_test, pred)
 
+    return AiLangObj("r2", NumType(score, NumTypes.FLOAT))
 
 # -----------------------------
 # Support Vector classifier (SVc)
 # -----------------------------
-@makeFunc("fit_svc")
-def aiLangFitSVc(*items) -> AiLangObj:
-    if len(items) < 2:
-        raise ValueError()
+@makeFunc("get_support_vectors")
+def getSupportVectors(*items):
+    model = items[0]
 
-    x = unwrap(items[0])
-    y = unwrap(items[1])
+    if isinstance(model, AiLangObj):
+        model = model.get()
 
-    kernel = unwrap(items[2]) if len(items) > 2 else "rbf"
-    c = unwrap(items[3]) if len(items) > 3 else 1.0
-    gamma = unwrap(items[4]) if len(items) > 4 else "scale"
-    degree = unwrap(items[5]) if len(items) > 5 else 3
-    probability = unwrap(items[6]) if len(items) > 6 else False
+    sv = model.support_vectors_
 
-    model = SVC(
-        kernel=kernel,
-        C=float(c),
-        gamma=gamma,
-        degree=int(degree),
-        probability=bool(probability),
-    )
-    model.fit(x, y)
+    return AiLangObj("support_vectors", BasicListType(sv.tolist()))
 
-      # ---- wrap outputs ----
-    support_vectors = BasicListType(model.support_vectors_.tolist())
-    n_support = BasicListType(model.n_support_.tolist())
+@makeFunc("predict_proba_svc")
+def predictProbaSVC(*items):
+    model = items[0]
+    x = items[1]
 
-    result = AiLangObj("result", NoneType())
+    if isinstance(model, AiLangObj):
+        model = model.get()
 
-    result.setMember(AiLangObj("support_vectors_", support_vectors))
-    result.setMember(AiLangObj("n_support_", n_support))
+    if isinstance(x, AiLangObj):
+        x = x.get()
 
-    # store model (opaque)
-    result.setMember(AiLangObj("model", model))
+    if not hasattr(model, "predict_proba"):
+        raise ValueError("SVC model not calibrated for probabilities")
 
-    return result
+    proba = model.predict_proba(x)
 
-
-@makeFunc("predict_svc")
-def aiLangPredictSVc(*items) -> AiLangObj:
-
-    if len(items) < 2:
-        raise ValueError()
-
-    model_obj = unwrap(items[0])
-    x = unwrap(items[1])
-
-     # retrieve model safely
-    model = model_obj.getMember("model").get()
-
-    y_pred = model.predict(x)
-    decision_scores = model.decision_function(x)
-
-    result = AiLangObj("result", NoneType())
-
-    result.setMember(
-        AiLangObj("y_pred", BasicListType(y_pred.tolist()))
-    )
-
-    result.setMember(
-        AiLangObj("decision_scores", BasicListType(decision_scores.tolist()))
-    )
-    return result
-
+    return AiLangObj("svc_proba", BasicListType(proba.tolist()))
 
 # -----------------------------
 # Support Vector Regressor (SVR)
 # -----------------------------
-@makeFunc("fit_svr")
-def aiLangFitSVR(*items) -> AiLangObj:
+@makeFunc("get_epsilon_band")
+def getEpsilonBand(*items):
+    model = items[0]
 
-    if len(items) < 2:
-        raise ValueError()
+    if isinstance(model, AiLangObj):
+        model = model.get()
 
-    x = unwrap(items[0])
-    y = unwrap(items[1])
+    eps = model.epsilon
 
-    kernel = unwrap(items[2]) if len(items) > 2 else "rbf"
-    c = unwrap(items[3]) if len(items) > 3 else 1.0
-    epsilon = unwrap(items[4]) if len(items) > 4 else 0.1
-    gamma = unwrap(items[5]) if len(items) > 5 else "scale"
-
-    model = SVR(
-        kernel=kernel,
-        C=float(c),
-        epsilon=float(epsilon),
-        gamma=gamma
-    )
-
-    model.fit(x, y)
-
-    result = AiLangObj("result", NoneType())
-
-    result.setMember(
-        AiLangObj("support_vectors_", BasicListType(model.support_vectors_.tolist()))
-    )
-
-    result.setMember(AiLangObj("model", model))
-
-    return result
-
-@makeFunc("predict_svr")
-def aiLangPredictSVR(*items) -> AiLangObj:
-
-    if len(items) < 2:
-        raise ValueError()
-
-    model_obj = unwrap(items[0])
-    x = unwrap(items[1])
-
-    model = model_obj.getMember("model").get()
-
-    y_pred = model.predict(x)
-
-    result = AiLangObj("result", NoneType())
-    result.setMember(AiLangObj("y_pred", BasicListType(y_pred.tolist())))
-
-    return result
-
+    return AiLangObj("epsilon", NumType(eps, NumTypes.FLOAT))
 # -----------------------------
 # Random Forest
 # -----------------------------
-@makeFunc("fit_random_forest")
-def aiLangFitRandomForest(*items) -> AiLangObj:
 
-    if len(items) < 2:
-        raise ValueError()
-
-    x = unwrap(items[0])
-    y = unwrap(items[1])
-
-    task = unwrap(items[2]) if len(items) > 2 else "classification"
-    n_estimators = unwrap(items[3]) if len(items) > 3 else 100
-    max_depth = unwrap(items[4]) if len(items) > 4 else None
-    max_features = unwrap(items[5]) if len(items) > 5 else "sqrt"
-    min_samples_split = unwrap(items[6]) if len(items) > 6 else 2
-    min_samples_leaf = unwrap(items[7]) if len(items) > 7 else 1
-    bootstrap = unwrap(items[8]) if len(items) > 8 else True
-    random_state = unwrap(items[9]) if len(items) > 9 else None
-    n_jobs = unwrap(items[10]) if len(items) > 10 else -1
-
-    kwargs = {
-        "n_estimators": int(n_estimators),
-        "max_depth": max_depth,
-        "max_features": max_features,
-        "min_samples_split": int(min_samples_split),
-        "min_samples_leaf": int(min_samples_leaf),
-        "bootstrap": bool(bootstrap),
-        "oob_score": bool(bootstrap),
-        "random_state": random_state,
-        "n_jobs": int(n_jobs),
-    }
-
-    model = (
-        RandomForestRegressor(**kwargs)
-        if task == "regression"
-        else RandomForestClassifier(**kwargs)
-    )
-
-    model.fit(x, y)
-
-    result = AiLangObj("result", NoneType())
-
-    result.setMember(
-        AiLangObj("feature_importances_", BasicListType(model.feature_importances_.tolist()))
-    )
-
-    if bootstrap:
-        result.setMember(
-            AiLangObj("oob_score_", NumType(float(model.oob_score_), NumTypes.FLOAT))
-        )
-
-    result.setMember(AiLangObj("model", model))
-
-    return result
-
-@makeFunc("predict_random_forest")
-def aiLangPredictRandomForest(*items) -> AiLangObj:
-
-    if len(items) < 2:
-        raise ValueError()
-
-    model_obj = unwrap(items[0])
-    x = unwrap(items[1])
-
-    model = model_obj.getMember("model").get()
-
-    result = AiLangObj("result", NoneType())
-
-    result.setMember(
-        AiLangObj("y_pred", BasicListType(model.predict(x).tolist()))
-    )
-
-    if hasattr(model, "predict_proba"):
-        result.setMember(
-            AiLangObj("y_proba", BasicListType(model.predict_proba(x).tolist()))
-        )
-
-    return result
-
-@makeFunc("get_feature_importance_rf")
+@makeFunc("get_feature_importance")
 def aiLangGetFeatureImportanceRF(*items) -> AiLangObj:
 
     if len(items) < 1:
@@ -416,60 +186,20 @@ def aiLangGetFeatureImportanceRF(*items) -> AiLangObj:
 # -----------------------------
 # catBoost
 # -----------------------------
-@makeFunc("fit_catboost")
-def aiLangFitcatBoost(*items) -> AiLangObj:
+@makeFunc("to_catboost_pool")
+def toCatboostPool(*items):
+    x = items[0]
+    y = items[1]
+    cat_features = items[2] if len(items) > 2 else None
 
-    if len(items) < 2:
-        raise ValueError()
+    if isinstance(x, AiLangObj):
+        x = x.get()
+    if isinstance(y, AiLangObj):
+        y = y.get()
 
-    x = unwrap(items[0])
-    y = unwrap(items[1])
+    pool = Pool(data=x, label=y, cat_features=cat_features)
 
-    task = unwrap(items[2]) if len(items) > 2 else "classification"
-    iterations = unwrap(items[3]) if len(items) > 3 else 1000
-    depth = unwrap(items[4]) if len(items) > 4 else 6
-
-    model = (
-        CatBoostRegressor(iterations=iterations, depth=depth, verbose=0)
-        if task == "regression"
-        else CatBoostClassifier(iterations=iterations, depth=depth, verbose=0)
-    )
-
-    model.fit(x, y)
-
-    result = AiLangObj("result", NoneType())
-
-    result.setMember(
-        AiLangObj("feature_importances_", BasicListType(model.feature_importances_.tolist()))
-    )
-
-    result.setMember(AiLangObj("model", model))
-
-    return result
-
-@makeFunc("predict_catboost")
-def aiLangPredictcatBoost(*items) -> AiLangObj:
-
-    if len(items) < 2:
-        raise ValueError()
-
-    model_obj = unwrap(items[0])
-    x = unwrap(items[1])
-
-    model = model_obj.getMember("model").get()
-
-    result = AiLangObj("result", NoneType())
-
-    result.setMember(
-        AiLangObj("y_pred", BasicListType(model.predict(x).tolist()))
-    )
-
-    if isinstance(model, CatBoostClassifier):
-        result.setMember(
-            AiLangObj("y_proba", BasicListType(model.predict_proba(x).tolist()))
-        )
-
-    return result
+    return AiLangObj("catboost_pool", pool)
 
 @makeFunc("get_feature_importance_catboost")
 def aiLangGetFeatureImportancecatBoost(*items) -> AiLangObj:
@@ -527,61 +257,23 @@ def aiLangGetFeatureImportancecatBoost(*items) -> AiLangObj:
 
     return result
 
+@makeFunc("get_shap_values")
+def getShapValues(*items):
+    model = items[0]
+    x = items[1]
+
+    if isinstance(model, AiLangObj):
+        model = model.get()
+
+    if isinstance(x, AiLangObj):
+        x = x.get()
+
+    shap_vals = model.get_feature_importance(data=x, type="ShapValues")
+
+    return AiLangObj("shap_values", BasicListType(shap_vals.tolist()))
 # -----------------------------
 # K-Nearest Neighbors
 # -----------------------------
-@makeFunc("fit_knn")
-def aiLangFitKNN(*items) -> AiLangObj:
-
-    if len(items) < 2:
-        raise ValueError()
-
-    x = unwrap(items[0])
-    y = unwrap(items[1])
-
-    task = unwrap(items[2]) if len(items) > 2 else "classification"
-    k = unwrap(items[3]) if len(items) > 3 else 5
-
-    model = (
-        KNeighborsRegressor(n_neighbors=int(k))
-        if task == "regression"
-        else KNeighborsClassifier(n_neighbors=int(k))
-    )
-
-    model.fit(x, y)
-
-    result = AiLangObj("result", NoneType())
-    result.setMember(AiLangObj("model", model))
-
-    return result
-
-@makeFunc("predict_knn")
-def aiLangPredictKNN(*items) -> AiLangObj:
-
-    if len(items) < 2:
-        raise ValueError()
-
-    model_obj = unwrap(items[0])
-    x = unwrap(items[1])
-
-    model = model_obj.getMember("model").get()
-
-    y_pred = model.predict(x)
-    distances, indices = model.kneighbors(x)
-
-    result = AiLangObj("result", NoneType())
-
-    result.setMember(AiLangObj("y_pred", BasicListType(y_pred.tolist())))
-    result.setMember(AiLangObj("neighbor_indices", BasicListType(indices.tolist())))
-    result.setMember(AiLangObj("neighbor_distances", BasicListType(distances.tolist())))
-
-    if hasattr(model, "predict_proba"):
-        result.setMember(
-            AiLangObj("y_proba", BasicListType(model.predict_proba(x).tolist()))
-        )
-
-    return result
-
 @makeFunc("find_optimal_k")
 def aiLangFindOptimalK(*items) -> AiLangObj:
 
@@ -617,3 +309,21 @@ def aiLangFindOptimalK(*items) -> AiLangObj:
     result.setMember(AiLangObj("best_k", NumType(int(best_k), NumTypes.INT)))
     result.setMember(AiLangObj("cv_scores", BasicListType(scores_list)))
     return result
+
+@makeFunc("get_neighbors")
+def getNeighbors(*items):
+    model = items[0]
+    x_query = items[1]
+
+    if isinstance(model, AiLangObj):
+        model = model.get()
+
+    if isinstance(x_query, AiLangObj):
+        x_query = x_query.get()
+
+    distances, indices = model.kneighbors(x_query)
+
+    return AiLangObj("neighbors", BasicListType([
+        distances.tolist(),
+        indices.tolist()
+    ]))
