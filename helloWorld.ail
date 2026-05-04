@@ -1,7 +1,8 @@
-function hello <- (hello_person="hello") {
-    .print <- ("Hello ", hello_person)
+function hello <- (hi, hello_person="hello") {
+    .print <- ("Hello ", hello_person, "hi=", hi, sep="")
+    .exit <- (2)
 }
 
 -> {
-    .hello
+    .hello <- ("hello")
 }

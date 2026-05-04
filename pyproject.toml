@@ -18,3 +18,7 @@ dev = [
     "pylint>=4.0.5",
     "pyright>=1.1.409",
 ]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
