@@ -29,7 +29,7 @@ class AiLangFunc:
     The function class for AiLang
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self,
         ident: str,
         func: AiLangCallable,
@@ -46,11 +46,18 @@ class AiLangFunc:
     def call(self, args: list[AiLangObj], kwargs: dict[str, AiLangObj]) -> AiLangObj:
         local_kwargs = copy.deepcopy(self.kwargs)
         local_kwargs = {} if local_kwargs is None else local_kwargs
+
+        # Tag arguments with their arg_names
         if len(self.args) == len(args):
             for arg, arg_name in zip(args, self.args):
                 arg.ident = arg_name
         for key, val in kwargs.items():
             local_kwargs[key] = val
+
+        # Tag kwargs with their dict_keys
+        for k, v in local_kwargs.items():
+            v.ident = k
+
         return self.func(*args, **local_kwargs)
 
     @staticmethod
@@ -177,7 +184,15 @@ def makeFunc(
 ) -> Callable[[AiLangCallable], AiLangCallable] | NoReturn:
 
     arg_names = [] if arg_names is None else arg_names
-    kwargs = {} if kwargs is None else kwargs
+    kwargs = (
+        {}
+        if kwargs is None
+        else {
+            ident: (setattr(obj, "ident", ident) if obj is not NoneObj() else None)
+            or obj
+            for ident, obj in kwargs.items()
+        }
+    )
 
     def wrapper(func: AiLangCallable):
         fn = AiLangFunc(
