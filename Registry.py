@@ -1,6 +1,12 @@
 # Registry.py
 
-from sklearn.linear_model import LogisticRegression, LinearRegression, Ridge, Lasso, ElasticNet
+from sklearn.linear_model import (
+    LogisticRegression,
+    LinearRegression,
+    Ridge,
+    Lasso,
+    ElasticNet,
+)
 from sklearn.svm import SVC, SVR
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor

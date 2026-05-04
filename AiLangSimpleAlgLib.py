@@ -35,10 +35,8 @@ def predictProbaLogistic(*items):
 
     proba = model.predict_proba(x)
 
-    return AiLangObj(
-        "proba",
-        BasicListType(proba.tolist())
-    )
+    return AiLangObj("proba", BasicListType(proba.tolist()))
+
 
 @makeFunc("get_coef_table")
 def getCoefTable(*items):
@@ -58,6 +56,7 @@ def getCoefTable(*items):
         table.append([name, float(coef)])
 
     return AiLangObj("coef_table", BasicListType(table))
+
 
 # -----------------------------
 # Linear Regression
@@ -100,6 +99,7 @@ def scoreR2(*items):
 
     return AiLangObj("r2", NumType(score, NumTypes.FLOAT))
 
+
 # -----------------------------
 # Support Vector classifier (SVc)
 # -----------------------------
@@ -113,6 +113,7 @@ def getSupportVectors(*items):
     sv = model.support_vectors_
 
     return AiLangObj("support_vectors", BasicListType(sv.tolist()))
+
 
 @makeFunc("predict_proba_svc")
 def predictProbaSVC(*items):
@@ -132,6 +133,7 @@ def predictProbaSVC(*items):
 
     return AiLangObj("svc_proba", BasicListType(proba.tolist()))
 
+
 # -----------------------------
 # Support Vector Regressor (SVR)
 # -----------------------------
@@ -145,9 +147,12 @@ def getEpsilonBand(*items):
     eps = model.epsilon
 
     return AiLangObj("epsilon", NumType(eps, NumTypes.FLOAT))
+
+
 # -----------------------------
 # Random Forest
 # -----------------------------
+
 
 @makeFunc("get_feature_importance")
 def aiLangGetFeatureImportanceRF(*items) -> AiLangObj:
@@ -172,16 +177,17 @@ def aiLangGetFeatureImportanceRF(*items) -> AiLangObj:
     )
 
     if top_n is not None:
-        paired = paired[:int(top_n)]
+        paired = paired[: int(top_n)]
 
-    result_list = BasicListType([
-        {"feature": f, "importance": round(v, 6)} for f, v in paired
-    ])
+    result_list = BasicListType(
+        [{"feature": f, "importance": round(v, 6)} for f, v in paired]
+    )
 
     result = AiLangObj("result", NoneType())
     result.setMember(AiLangObj("importance_df", result_list))
 
     return result
+
 
 # -----------------------------
 # catBoost
@@ -200,6 +206,7 @@ def toCatboostPool(*items):
     pool = Pool(data=x, label=y, cat_features=cat_features)
 
     return AiLangObj("catboost_pool", pool)
+
 
 @makeFunc("get_feature_importance_catboost")
 def aiLangGetFeatureImportancecatBoost(*items) -> AiLangObj:
@@ -240,10 +247,9 @@ def aiLangGetFeatureImportancecatBoost(*items) -> AiLangObj:
     )
 
     # ---- wrap importance list ----
-    importance_list = BasicListType([
-        {"feature": f, "importance": round(v, 6)}
-        for f, v in paired
-    ])
+    importance_list = BasicListType(
+        [{"feature": f, "importance": round(v, 6)} for f, v in paired]
+    )
 
     result = AiLangObj("result", NoneType())
 
@@ -251,11 +257,10 @@ def aiLangGetFeatureImportancecatBoost(*items) -> AiLangObj:
 
     # ---- wrap shap values only if present ----
     if shap_values:
-        result.setMember(
-            AiLangObj("shap_values", BasicListType(shap_values))
-        )
+        result.setMember(AiLangObj("shap_values", BasicListType(shap_values)))
 
     return result
+
 
 @makeFunc("get_shap_values")
 def getShapValues(*items):
@@ -271,6 +276,8 @@ def getShapValues(*items):
     shap_vals = model.get_feature_importance(data=x, type="ShapValues")
 
     return AiLangObj("shap_values", BasicListType(shap_vals.tolist()))
+
+
 # -----------------------------
 # K-Nearest Neighbors
 # -----------------------------
@@ -310,6 +317,7 @@ def aiLangFindOptimalK(*items) -> AiLangObj:
     result.setMember(AiLangObj("cv_scores", BasicListType(scores_list)))
     return result
 
+
 @makeFunc("get_neighbors")
 def getNeighbors(*items):
     model = items[0]
@@ -323,7 +331,4 @@ def getNeighbors(*items):
 
     distances, indices = model.kneighbors(x_query)
 
-    return AiLangObj("neighbors", BasicListType([
-        distances.tolist(),
-        indices.tolist()
-    ]))
+    return AiLangObj("neighbors", BasicListType([distances.tolist(), indices.tolist()]))
