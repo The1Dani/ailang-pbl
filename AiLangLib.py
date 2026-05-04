@@ -2,8 +2,8 @@ import sys
 import codecs
 from AiLangFunc import makeFunc, makeMethod
 from AiLangObj import AiLangObj, NoneObj
-from AiLangType import NumType, NumTypes
 import AiLangBuiltinDfLib as _
+from FuncUtils import getVars
 
 
 def toStringDecoded(obj: AiLangObj) -> str:
@@ -38,13 +38,11 @@ def aiLangBuiltinPrint(*args, **kwargs) -> AiLangObj:
     return NoneObj()
 
 
-@makeFunc("exit", kwargs={"ret_code": AiLangObj("ret_code", NumType(0, NumTypes.INT))})
-def aiLangBuiltinExit(*_, **kwargs):
-    ret_code = kwargs["ret_code"]
-    first_type = ret_code.get()
-    if isinstance(first_type, NumType):
-        if first_type.type == NumTypes.INT:
-            ret_code = first_type.get()
+@makeFunc("exit", [], kwargs={"ret_code": NoneObj()})
+def aiLangBuiltinExit(*args, **kwargs):
+
+    vs = getVars(args, kwargs)
+    ret_code = vs["ret_code"] if isinstance(vs["ret_code"], int) else 0
 
     ret_code = ret_code if ret_code else 0
     sys.exit(ret_code)

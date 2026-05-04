@@ -1,6 +1,5 @@
 function hello <- (hi, hello_person="hello") {
-    .print <- ("Hello ", hello_person)
-    .breakpoint
+    .print <- ("Hello ", hello_person, "hi=", hi, sep="")
     .exit <- (2)
 }
 

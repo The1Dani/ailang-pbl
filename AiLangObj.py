@@ -77,7 +77,8 @@ class AiLangObj:
         raise ValueError()
 
     def __repr__(self) -> str:
-        return f"{self.ident}({str(type(self.val))}) {f"-> {repr(self.members)}" if len(self.members) > 0 else ""}"  # pylint: disable=line-too-long
+        name = self.ident if self.ident else "NoName"
+        return f"{name}({str(type(self.val))}) {f"-> {repr(self.members)}" if len(self.members) > 0 else ""}"  # pylint: disable=line-too-long
 
     def update(self, other: AiLangObj) -> None:
         self.__dict__ = other.__dict__

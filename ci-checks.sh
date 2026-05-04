@@ -2,9 +2,10 @@
 
 check() {
     uv sync && \
-    pyright --warnings "*.py" && \
+    uv run pyright --warnings "*.py" && \
     uv run pylint -- *py && \
     uv run black --check -- *.py
+    uv run black -- *.py
 }
 
 if check; then
