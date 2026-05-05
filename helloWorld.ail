@@ -4,5 +4,12 @@ function hello <- (hi, hello_person="hello") {
 }
 
 -> {
-    .hello <- ("hello")
+    someVal := True
+
+    do {
+        .hello <- ("hello")
+    }
+    if {
+        someVal
+    }
 }

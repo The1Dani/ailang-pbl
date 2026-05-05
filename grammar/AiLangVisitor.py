@@ -264,6 +264,11 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by AiLangParser#boolean.
+    def visitBoolean(self, ctx:AiLangParser.BooleanContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by AiLangParser#string.
     def visitString(self, ctx:AiLangParser.StringContext):
         return self.visitChildren(ctx)
@@ -281,6 +286,11 @@ class AiLangVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by AiLangParser#floatLiteral.
     def visitFloatLiteral(self, ctx:AiLangParser.FloatLiteralContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#bool.
+    def visitBool(self, ctx:AiLangParser.BoolContext):
         return self.visitChildren(ctx)
 
 
