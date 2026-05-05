@@ -9,8 +9,8 @@ from sklearn.model_selection import train_test_split as sk_split
 import joblib
 
 from AiLangFunc import makeFunc, makeMethod
-from AiLangObj import AiLangObj, NoneObj, ModelType
-from AiLangType import NumType, NumTypes, NoneType, BasicListType
+from AiLangObj import AiLangObj, NoneObj
+from AiLangType import NumType, NumTypes, NoneType, BasicListType, ModelType
 import AiLangBuiltinDfLib as _
 from FuncUtils import getVars
 import AiLangSimpleAlgLib as _

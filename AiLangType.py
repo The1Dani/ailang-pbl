@@ -84,8 +84,6 @@ class StrType(BasicValType):
 class DfItem(AiLangType):
     """Df Item type is a field of a DataFrameType and it ussually stores pd.Series as a value"""
 
-    # TODO: add a setter that will update the parent Dataframe Type as well
-
 
 class DfType(AiLangType):
     """DataFrame Type of AiLang stores Dataframes"""
@@ -154,3 +152,10 @@ class NoneType(AiLangType, metaclass=utils.Singleton):
 
     def __init__(self):
         super().__init__(None)
+
+
+class ModelType(AiLangType):
+    """
+    Wrapper type for ML models in AiLang DSL.
+    Stores and manages trained machine learning model objects.
+    """

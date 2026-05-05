@@ -10,7 +10,7 @@ import numpy as np
 
 from AiLangFunc import makeFunc
 from AiLangObj import AiLangObj
-from AiLangType import NumType, NumTypes, BasicListType, NoneType
+from AiLangType import NumType, NumTypes, ListType, NoneType
 from FuncUtils import getVars
 from protocols import (
     SklearnClassifier,
@@ -43,7 +43,7 @@ def predictProbaLogistic(*args, **kwargs):
     clf = cast(SklearnClassifier, model)
     proba: NumpyArrayLike = clf.predict_proba(cast(Any, x))
 
-    return AiLangObj("proba", BasicListType(proba.tolist()))
+    return AiLangObj("proba", ListType(proba.tolist()))
 
 
 @makeFunc("get_coef_table", ["model", "feature_names"])
@@ -66,7 +66,7 @@ def getCoefTable(*args, **kwargs):
     for name, coef in zip(cast(Any, feature_names), cast(Any, coefs)):
         table.append([name, float(cast(Any, coef))])
 
-    return AiLangObj("coef_table", BasicListType(table))
+    return AiLangObj("coef_table", ListType(table))
 
 
 # -----------------------------
@@ -91,7 +91,7 @@ def residuals(*args, **kwargs):
     y_pred_arr = cast(NumpyArrayLike, y_pred)
     res: list[Any] = (y_true_arr - y_pred_arr).tolist()
 
-    return AiLangObj("residuals", BasicListType(res))
+    return AiLangObj("residuals", ListType(res))
 
 
 @makeFunc("score_r2", ["model", "x_test", "y_test"])
@@ -133,7 +133,7 @@ def getSupportVectors(*args, **kwargs):
     svc = cast(SklearnSVC, model)
     sv: NumpyArrayLike = svc.support_vectors_
 
-    return AiLangObj("support_vectors", BasicListType(sv.tolist()))
+    return AiLangObj("support_vectors", ListType(sv.tolist()))
 
 
 @makeFunc("predict_proba_svc", ["model", "x"])
@@ -155,7 +155,7 @@ def predictProbaSVC(*args, **kwargs):
     svc = cast(SklearnSVC, model)
     proba: NumpyArrayLike = svc.predict_proba(cast(Any, x))
 
-    return AiLangObj("svc_proba", BasicListType(proba.tolist()))
+    return AiLangObj("svc_proba", ListType(proba.tolist()))
 
 
 # -----------------------------
@@ -205,7 +205,7 @@ def aiLangGetFeatureImportanceRF(*args, **kwargs) -> AiLangObj:
     if top_n is not None:
         paired = paired[: int(top_n)]
 
-    result_list = BasicListType(
+    result_list = ListType(
         [{"feature": f, "importance": round(v, 6)} for f, v in paired]
     )
 
@@ -273,7 +273,7 @@ def aiLangGetFeatureImportancecatBoost(*args, **kwargs) -> AiLangObj:
     )
 
     # ---- wrap importance list ----
-    importance_list = BasicListType(
+    importance_list = ListType(
         [{"feature": f, "importance": round(v, 6)} for f, v in paired]
     )
 
@@ -283,7 +283,7 @@ def aiLangGetFeatureImportancecatBoost(*args, **kwargs) -> AiLangObj:
 
     # ---- wrap shap values only if present ----
     if shap_values:
-        result.setMember(AiLangObj("shap_values", BasicListType(shap_values)))
+        result.setMember(AiLangObj("shap_values", ListType(shap_values)))
 
     return result
 
@@ -306,7 +306,7 @@ def getShapValues(*args, **kwargs):
         data=x, type="ShapValues"
     )
 
-    return AiLangObj("shap_values", BasicListType(shap_vals.tolist()))
+    return AiLangObj("shap_values", ListType(shap_vals.tolist()))
 
 
 # -----------------------------
@@ -342,7 +342,7 @@ def aiLangFindOptimalK(*args, **kwargs) -> AiLangObj:  # pylint: disable=too-man
     result = AiLangObj("result", NoneType())
 
     result.setMember(AiLangObj("best_k", NumType(int(best_k), NumTypes.INT)))
-    result.setMember(AiLangObj("cv_scores", BasicListType(scores_list)))
+    result.setMember(AiLangObj("cv_scores", ListType(scores_list)))
     return result
 
 
@@ -364,4 +364,4 @@ def getNeighbors(*args, **kwargs):
     indices: NumpyArrayLike
     distances, indices = knn.kneighbors(cast(Any, x_query))
 
-    return AiLangObj("neighbors", BasicListType([distances.tolist(), indices.tolist()]))
+    return AiLangObj("neighbors", ListType([distances.tolist(), indices.tolist()]))

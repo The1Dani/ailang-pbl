@@ -2,6 +2,7 @@ import pandas as pd
 
 import AiLangType
 from grammar.AiLangParser import AiLangParser as ap
+from protocols import NumpyArrayLike
 from utils import getTerminalSymbol, Singleton
 
 
@@ -91,6 +92,27 @@ class NoneObj(AiLangObj, metaclass=Singleton):
         super().__init__("None", AiLangType.NoneType(), None)
 
 
+class DfObject(AiLangObj):
+    """Helper Object that implements a df set"""
+
+    def setDfAttr(self, name: str, other: NumpyArrayLike) -> None:
+
+        if not self.parent:
+            raise ValueError("Parent does not exist")
+
+        parent = self.parent
+
+        if not isinstance(parent.get(), AiLangType.DfType):
+            raise ValueError("Parent is not DfType")
+
+        parent_df = parent.get().get()
+
+        if not isinstance(parent_df, pd.DataFrame):
+            raise ValueError("Parent DfType value is not dataframe")
+
+        parent_df[name] = other
+
+
 def evalMember(node, parent):
     if isinstance(node, (ap.BasicIDMemberContext, ap.IntIDMemberContext)):
         return AiLangObj(getTerminalSymbol(node), parent=parent)
@@ -105,10 +127,3 @@ def fromDFtoObj(ident: str, df: pd.DataFrame) -> AiLangObj:
         column_obj = AiLangObj(col, AiLangType.DfItem(ser))
         obj.setMember(column_obj)
     return obj
-
-
-class ModelType(AiLangType.AiLangType):
-    """
-    Wrapper type for ML models in AiLang DSL.
-    Stores and manages trained machine learning model objects.
-    """
