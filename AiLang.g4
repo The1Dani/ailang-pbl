@@ -5,7 +5,7 @@ grammar AiLang;
 prog: stat+;
 
 block:
-	ARR label? context	# Block2Block
+	ARR label? context			# Block2Block
 	| label ARR label? context	# Label2Block;
 
 label: '@' id;
@@ -17,7 +17,7 @@ bool_context: '{' bool_group* '}';
 
 bool_group: bool_stat (BOOL_OP bool_stat)*;
 
-bool_stat: expr BOOL_OP expr;
+bool_stat: expr BOOL_OP expr | expr;
 
 assignment: assignable ':=' expr;
 
@@ -30,50 +30,46 @@ ref_op: assignable REF expr;
 
 RETURN: 'return';
 
-ret:  
-    RETURN #NoneReturn 
-    | RETURN expr #ExprReturn;
+ret: RETURN # NoneReturn | RETURN expr # ExprReturn;
 
 stat:
-	func_def		# functionDef 
+	func_def		# functionDef
 	| assignment	# assign //ok
 	| ref_op		# reference //ok
 	| expr			# printExpr //ok
 	| block			# block_stat //ok
 	| doIfElse		# do_if_else //ok
 	| fromToData	# load_op //dummy implemented
-	| ret           # return;
+	| ret			# return;
 
 // Fixed: Corrected the parameter list and ID references
-func_def: FUNCTION id REF '(' def_arg (',' def_arg)* ')' context;
+func_def:
+	FUNCTION id REF '(' def_arg (',' def_arg)* ')' context;
 
-def_arg: id|named_arg;
+def_arg: id | named_arg;
 
 fromToData: FROM str ARR id;
 
 doIfElse: DO context IF bool_context (ELSE context)?;
 func: '.' id (REF arg_list)?;
 
-
 expr:
 	basic_val			# basicValExpr //ok
-	| assignable         # pathExpr //ok
+	| assignable		# pathExpr //ok
 	| func				# function //ok
 	| list				# listValExpr //ok
 	| df				# dataframe //ok
 	| '(' expr ')'		# group //ok
-    | expr REF arg_list  # methodCall   //ok
-    | expr MATH_OP expr  # mathOp // not compleate
-    ;
+	| expr REF arg_list	# methodCall //ok
+	| expr MATH_OP expr	# mathOp ; // not compleate
 
 assignable:
-    id                        # simpleTarget
-    | assignable '.' member   # memberTarget  // Allows x.y, df.col, df.1.sub
-    ;
+	id						# simpleTarget
+	| assignable '.' member	# memberTarget ; // Allows x.y, df.col, df.1.sub
 
 named_arg: id '=' expr;
 
-arg: named_arg #NamedArg | expr #ExprArg;
+arg: named_arg # NamedArg | expr # ExprArg;
 
 arg_list: '(' (arg (',' arg)*)? ')';
 
@@ -81,19 +77,18 @@ generic_list: '(' expr (',' expr)* ')';
 
 list: basic_list | generic_list;
 
-df: '[' df_val (',' df_val)* ']' #NonEmptyDf | '[' ']' #EmptyDf;
+df:
+	'[' df_val (',' df_val)* ']'	# NonEmptyDf
+	| '[' ']'						# EmptyDf;
 
 df_val: (id ':')? basic_list;
 
-
-member: 
-    id    #basicIDMember
-    | INT #intIDMember
-    | '@' id #listIDMember             // Keeps your label/set logic
-    ;
+member:
+	id			# basicIDMember
+	| INT		# intIDMember
+	| '@' id	# listIDMember ; // Keeps your label/set logic
 
 // column_method: column '.' id (REF arg_list)?;
-
 
 basic_list:
 	'(' num (',' num)* ')'		# numList
@@ -102,10 +97,13 @@ basic_list:
 basic_val:
 	//Consider bool
 	num					# number
+	| bool				# boolean
 	| str				# string
 	| '(' basic_val ')'	# group_basic_val;
 
 num: INT # intigerLiteral | FLOAT # floatLiteral;
+
+bool: TRUE | FALSE;
 
 str: STR;
 
@@ -117,10 +115,13 @@ ELSE: 'else';
 FROM: 'from';
 FUNCTION: 'function';
 
+TRUE: [tT]'rue';
+FALSE: [fF]'alse';
+
 ARR: '->';
 REF: '<-';
 
-MATH_OP: '+' | '-' | '*' | '/' | '/''/' | '%' | '**';
+MATH_OP: '+' | '-' | '*' | '/' | '/' '/' | '%' | '**';
 BOOL_OP: '>' | '<' | '>=' | '<=' | '!=' | '==' | '&' | '|';
 
 STR: '"' ~["]*? '"' | '\'' ~[']*? '\'';
