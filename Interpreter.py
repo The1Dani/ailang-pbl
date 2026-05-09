@@ -3,9 +3,10 @@ from io import StringIO
 from typing import Callable
 import copy
 from antlr4 import TerminalNode
+import pandas as pd
+
 from grammar.AiLangLexer import AiLangLexer
 from grammar.AiLangParser import AiLangParser
-import pandas as pd
 
 import AiLangLib as _  # Init Import
 from AiLangType import (

@@ -120,11 +120,12 @@ class DfItemObject:
 
         parent_df[name] = other
 
-    def setDfItem(self, item:AiLangObj) -> None:
+    def setDfItem(self, item: AiLangObj) -> None:
         if isinstance(item.get(), AiLangType.DfItem):
             self.setDfAttr(item.ident, item.get().get())
         else:
             raise ValueError("The Item is not DfItem")
+
 
 def evalMember(node, parent):
     if isinstance(node, (ap.BasicIDMemberContext, ap.IntIDMemberContext)):
