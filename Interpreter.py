@@ -505,10 +505,18 @@ class Interpreter:
         return op  # TODO: ADD ailang bool translation to python here
 
     def evalBoolStat(self, child: AiLangParser.Bool_statContext) -> BoolType:
-        val1 = child.getTypedRuleContext(AiLangParser.ExprContext, 0)
-        val2 = child.getTypedRuleContext(AiLangParser.ExprContext, 1)
-        if not (val1 and val2):
-            raise ValueError()
+        # val1 = child.getTypedRuleContext(AiLangParser.ExprContext, 0)
+        # val2 = child.getTypedRuleContext(AiLangParser.ExprContext, 1)
+        values = child.getTypedRuleContexts(AiLangParser.ExprContext)
+
+        if len(values) == 1:
+            val = values[0]
+            ttype = self.evalExpr(val)
+            if not isinstance(ttype, BoolType):
+                raise ValueError("Value is not boolean")
+            return ttype
+
+        val1, val2 = values[0], values[1]
         val1 = self.evalExpr(val1)
         val2 = self.evalExpr(val2)
 

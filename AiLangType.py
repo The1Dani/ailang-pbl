@@ -49,6 +49,10 @@ class BasicValType(AiLangType):
         if basic_val_ctx is not None:
             return BasicValType.make(basic_val_ctx)
 
+        bool_ctx = node.getTypedRuleContext(ap.BoolContext, 0)
+        if bool_ctx is not None:
+            return BoolType.make(bool_ctx)
+
         raise ValueError("NonImplemented type")
 
 
@@ -79,6 +83,22 @@ class StrType(BasicValType):
     def make(node: ParserRuleContext) -> BasicValType:
         string = utils.getTerminalSymbol(node.getChild(0))[1:-1]
         return StrType(string)
+
+
+class BoolType(BasicValType):
+    """Boolean Type"""
+
+    @staticmethod
+    @override
+    def make(node: ParserRuleContext) -> BasicValType:
+        boolean_str = utils.getTerminalSymbol(node.getChild(0))
+        if boolean_str in ["True", "true"]:
+            return BoolType(True)
+
+        if boolean_str in ["False", "false"]:
+            return BoolType(False)
+
+        raise ValueError("Unreachable")
 
 
 class DfItem(AiLangType):
@@ -141,10 +161,6 @@ class BasicListType(ListType):
             return BasicListType(l_val)
 
         raise ValueError()
-
-
-class BoolType(AiLangType):
-    """Implement me!"""
 
 
 class NoneType(AiLangType, metaclass=utils.Singleton):

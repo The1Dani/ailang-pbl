@@ -467,6 +467,15 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by AiLangParser#boolean.
+    def enterBoolean(self, ctx:AiLangParser.BooleanContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#boolean.
+    def exitBoolean(self, ctx:AiLangParser.BooleanContext):
+        pass
+
+
     # Enter a parse tree produced by AiLangParser#string.
     def enterString(self, ctx:AiLangParser.StringContext):
         pass
@@ -500,6 +509,15 @@ class AiLangListener(ParseTreeListener):
 
     # Exit a parse tree produced by AiLangParser#floatLiteral.
     def exitFloatLiteral(self, ctx:AiLangParser.FloatLiteralContext):
+        pass
+
+
+    # Enter a parse tree produced by AiLangParser#bool.
+    def enterBool(self, ctx:AiLangParser.BoolContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#bool.
+    def exitBool(self, ctx:AiLangParser.BoolContext):
         pass
 
 
