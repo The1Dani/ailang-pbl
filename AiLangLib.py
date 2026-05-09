@@ -42,7 +42,7 @@ def aiLangBuiltinPrint(*args, **kwargs) -> AiLangObj:
     kwarg_vals = list(kwargs.values())
     args += kwarg_vals
 
-    print(f"DEBUG: {args}")
+    # print(f"DEBUG: {args}")
 
     values = [toStringDecoded(val) for val in args]
 

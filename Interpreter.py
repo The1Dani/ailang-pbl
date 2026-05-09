@@ -5,6 +5,7 @@ import copy
 from antlr4 import TerminalNode
 from grammar.AiLangLexer import AiLangLexer
 from grammar.AiLangParser import AiLangParser
+import pandas as pd
 
 import AiLangLib as _  # Init Import
 from AiLangType import (
@@ -18,7 +19,7 @@ from AiLangType import (
     AiLangType,
     BoolType,
 )
-from AiLangObj import AiLangObj, NoneObj, fromDFtoObj
+from AiLangObj import AiLangObj, DfItemObject, NoneObj, fromDFtoObj
 from AiLangFunc import AiLangCallable, AiLangFunc, FunctionSpace, MethodSpace
 import utils
 
@@ -106,8 +107,15 @@ class VariableStack:
         if isinstance(available, list):
             raise NotImplementedError()
 
-        if available:
-            available.set(val.val)
+        if available and key:
+            if (
+                isinstance(available.get(), DfItem)
+                and available.parent
+                and isinstance(available.parent.get(), DfType)
+            ):
+                val.ident = key.getLast().ident
+                DfItemObject(available).setDfItem(val)
+
         else:
             self.getContext()[self._nextID()] = val
 
@@ -732,14 +740,18 @@ class Interpreter:
         if isinstance(lop, (DfType, DfItem)) and isinstance(
             rop, (NumType, DfType, DfItem)
         ):
-            df = eval(
+            # TODO:The result should be DFItem if its done on DfItem else DfType
+            res = eval(
                 f"a {optoken} b",
                 locals={
                     "a": lop.get(),
                     "b": rop.get(),
                 },
             )
-            return DfType(df)
+            # print("DEBUG:", type(res))
+            if isinstance(res, pd.Series):
+                return DfItem(res)
+            return DfType(res)
 
         raise ValueError(
             f"{lop} and {rop} has been tried to be conneted with {optoken}"

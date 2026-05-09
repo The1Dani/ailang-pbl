@@ -37,6 +37,7 @@ class AiLangObj:
         self.val = val
 
     def setMember(self, member: AiLangObj):
+        member.parent = self
         self.members[member.ident] = member
 
     def getMember(self, ident) -> None | AiLangObj:
@@ -92,15 +93,22 @@ class NoneObj(AiLangObj, metaclass=Singleton):
         super().__init__("None", AiLangType.NoneType(), None)
 
 
-class DfObject(AiLangObj):
+class DfItemObject:
     """Helper Object that implements a df set"""
+
+    def __init__(self, item) -> None:
+        self.item_obj = item
 
     def setDfAttr(self, name: str, other: NumpyArrayLike) -> None:
 
-        if not self.parent:
+        if not self.item_obj.parent:
             raise ValueError("Parent does not exist")
 
-        parent = self.parent
+        parent = self.item_obj.parent
+
+        df_item = parent.getDFItemByID(name)
+
+        df_item.get().val = other
 
         if not isinstance(parent.get(), AiLangType.DfType):
             raise ValueError("Parent is not DfType")
@@ -112,6 +120,11 @@ class DfObject(AiLangObj):
 
         parent_df[name] = other
 
+    def setDfItem(self, item:AiLangObj) -> None:
+        if isinstance(item.get(), AiLangType.DfItem):
+            self.setDfAttr(item.ident, item.get().get())
+        else:
+            raise ValueError("The Item is not DfItem")
 
 def evalMember(node, parent):
     if isinstance(node, (ap.BasicIDMemberContext, ap.IntIDMemberContext)):
