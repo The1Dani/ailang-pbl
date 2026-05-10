@@ -12,7 +12,7 @@ from AiLangFunc import makeFunc, makeMethod
 from AiLangObj import AiLangObj, NoneObj
 from AiLangType import NumType, NumTypes, NoneType, BasicListType, ModelType
 import AiLangBuiltinDfLib as _
-from FuncUtils import getVars
+from FuncUtils import getVars, unwrapValue
 import AiLangSimpleAlgLib as _
 
 from Registry import MODEL_REGISTRY
@@ -75,14 +75,23 @@ def aiLangInternalBreakPoint() -> AiLangObj:
     return NoneObj()
 
 
-@makeFunc("fit", ["model_name", "x", "y", "params"])
+@makeFunc("fit", ["model_name", "x", "y", "params"], ignore_arg_count=True)
 def aiLangFit(*args, **kwargs):
     vs = getVars(args, kwargs)
 
-    model_name = vs["model_name"]
-    x = vs["x"]
-    y = vs["y"]
-    params = vs.get("params", {})
+    if "model_name" in vs:
+        model_name = vs["model_name"]
+        x = vs["x"]
+        y = vs["y"]
+        params = vs.get("params", {})
+    else:
+        model_name = unwrapValue(args[0])
+        x = unwrapValue(args[1])
+        y = unwrapValue(args[2])
+        params = unwrapValue(args[3]) if len(args) > 3 else {}
+
+    if params is None or not isinstance(params, dict):
+        params = {}
 
     if model_name not in MODEL_REGISTRY:
         raise ValueError(f"Unknown model: {model_name}")
@@ -110,20 +119,14 @@ def aiLangPredict(*args, **kwargs):
     model_obj = vs["model_obj"]
     x = vs["x"]
 
-    model = model_obj.getMember("model").get()
+    if isinstance(model_obj, AiLangObj):
+        model = model_obj.getMember("model").get()
+    else:
+        model = model_obj
 
     y_pred = model.predict(x)
 
-    result = AiLangObj("result", NoneType())
-    result.setMember(AiLangObj("y_pred", BasicListType(y_pred.tolist())))
-
-    # optional probability support
-    if hasattr(model, "predict_proba"):
-        result.setMember(
-            AiLangObj("y_proba", BasicListType(model.predict_proba(x).tolist()))
-        )
-
-    return result
+    return AiLangObj("y_pred", BasicListType(y_pred.tolist()))
 
 
 @makeFunc("score", ["model", "x_test", "y_test"])
@@ -134,14 +137,14 @@ def aiLangScore(*args, **kwargs):
     x_test = vs["x_test"]
     y_test = vs["y_test"]
 
-    model = model_obj.getMember("model").get()
+    if isinstance(model_obj, AiLangObj):
+        model = model_obj.getMember("model").get()
+    else:
+        model = model_obj
 
     score_value = model.score(x_test, y_test)
 
-    result = AiLangObj("result", NoneType())
-    result.setMember(AiLangObj("score", NumType(float(score_value), NumTypes.FLOAT)))
-
-    return result
+    return AiLangObj("score", NumType(float(score_value), NumTypes.FLOAT))
 
 
 @makeFunc("cross_validate", ["model_name", "x", "y", "cv", "metric"])

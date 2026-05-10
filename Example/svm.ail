@@ -1,0 +1,14 @@
+-> @Load {
+    from "Example/train_features.csv" -> train_features
+    from "Example/train_labels.csv" -> train_labels
+    from "Example/test_features.csv"  -> test_features
+} -> @Train {
+    y := train_labels.Survived
+
+    model <- .fit <- ("svc", train_features, y)
+
+    predictions := .predict <- (model, test_features)
+
+    score := .score <- (model, train_features, y)
+    .print <- (score)
+}
