@@ -172,6 +172,6 @@ class NoneType(AiLangType, metaclass=utils.Singleton):
 
 class PyType(AiLangType):
     """
-    Wrapper type for any Python objects that 
+    Wrapper type for any Python objects that
     doesnt have an immidiate repr like ML model type
     """
