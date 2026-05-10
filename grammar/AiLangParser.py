@@ -59,7 +59,7 @@ def serializedATN():
         6,0,105,106,5,24,0,0,106,108,3,12,6,0,107,105,1,0,0,0,108,111,1,
         0,0,0,109,107,1,0,0,0,109,110,1,0,0,0,110,11,1,0,0,0,111,109,1,0,
         0,0,112,113,3,34,17,0,113,114,5,24,0,0,114,115,3,34,17,0,115,118,
-        1,0,0,0,116,118,3,60,30,0,117,112,1,0,0,0,117,116,1,0,0,0,118,13,
+        1,0,0,0,116,118,3,34,17,0,117,112,1,0,0,0,117,116,1,0,0,0,118,13,
         1,0,0,0,119,120,3,36,18,0,120,121,5,4,0,0,121,122,3,34,17,0,122,
         15,1,0,0,0,123,124,5,28,0,0,124,17,1,0,0,0,125,126,3,36,18,0,126,
         127,5,22,0,0,127,128,3,34,17,0,128,19,1,0,0,0,129,133,5,13,0,0,130,
@@ -694,10 +694,6 @@ class AiLangParser ( Parser ):
         def BOOL_OP(self):
             return self.getToken(AiLangParser.BOOL_OP, 0)
 
-        def bool_(self):
-            return self.getTypedRuleContext(AiLangParser.BoolContext,0)
-
-
         def getRuleIndex(self):
             return AiLangParser.RULE_bool_stat
 
@@ -739,7 +735,7 @@ class AiLangParser ( Parser ):
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 116
-                self.bool_()
+                self.expr(0)
                 pass
 
 

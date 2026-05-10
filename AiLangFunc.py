@@ -1,9 +1,11 @@
 from __future__ import annotations
+from types import UnionType
 from typing import Callable, NoReturn, Protocol, Union
 import copy
 
 from AiLangObj import AiLangObj, NoneObj
 from utils import Singleton
+from AiLangType import NoneType
 
 
 # Python typing black magic for function types
@@ -47,10 +49,22 @@ class AiLangFunc:
         local_kwargs = copy.deepcopy(self.kwargs)
         local_kwargs = {} if local_kwargs is None else local_kwargs
 
+        special_args = list(
+            filter(
+                lambda arg: (
+                    len(arg.ident) > 2 and arg.ident[0] == "_" and arg.ident[-1] == "_"
+                ),
+                args,
+            )
+        )
+
         # Tag arguments with their arg_names
-        if len(self.args) == len(args):
-            for arg, arg_name in zip(args, self.args):
+        # Note that we are modifing the original args list implicitly
+        filtered_args = list(filter(lambda arg: arg not in special_args, args))
+        if len(self.args) == len(filtered_args):
+            for arg, arg_name in zip(filtered_args, self.args):
                 arg.ident = arg_name
+
         for key, val in kwargs.items():
             local_kwargs[key] = val
 
@@ -170,7 +184,16 @@ class MethodSpace(Space):
         if str(ttype) in self.functions:
             if ident in self.functions[str(ttype)]:
                 func = self.functions[str(ttype)][ident]
+
+                former_parent = parent
+                parent = copy.copy(parent)
+                parent.original_reference = former_parent
+
+                parent.ident = "_parent_"
                 args.insert(0, parent)
+
+                if parent.val is None:
+                    parent.val = NoneType()
                 return func.call(args, kwargs)
             raise ValueError(f"type {str(ttype)} does not have method {ident}")
         raise ValueError(f"Type {ttype} does not have methods")
@@ -211,7 +234,7 @@ def makeFunc(
 
 def makeMethod(
     method_id: str,
-    ttype: type,
+    ttype: type | UnionType,
     arg_names: list[str] | None = None,
     kwargs: dict[str, AiLangObj] | None = None,
     ignore_arg_count: bool = False,
@@ -220,6 +243,13 @@ def makeMethod(
 
     arg_names = [] if arg_names is None else arg_names
     kwargs = {} if kwargs is None else kwargs
+
+    types_to_add = []
+
+    if isinstance(ttype, type):
+        types_to_add.append(ttype)
+    if isinstance(ttype, UnionType):
+        types_to_add += list(ttype.__args__)
 
     def wrapper(func: AiLangCallable):
         method = AiLangFunc(
@@ -230,7 +260,8 @@ def makeMethod(
             ignore_arg_count=ignore_arg_count,
         )
 
-        MethodSpace().addFunc(ttype=ttype, func=method)
+        for _type in types_to_add:
+            MethodSpace().addFunc(ttype=_type, func=method)
 
         return func
 

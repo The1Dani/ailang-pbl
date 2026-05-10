@@ -2,6 +2,7 @@ import pandas as pd
 
 import AiLangType
 from grammar.AiLangParser import AiLangParser as ap
+from protocols import NumpyArrayLike
 from utils import getTerminalSymbol, Singleton
 
 
@@ -13,6 +14,7 @@ class AiLangObj:
         self.val: AiLangType.AiLangType | None = val
         self.parent: AiLangObj | None = parent
         self.members: dict[str, AiLangObj] = {}
+        self.original_reference: AiLangObj | None = None
 
     def killMembers(self) -> None:
         self.members = {}
@@ -36,6 +38,7 @@ class AiLangObj:
         self.val = val
 
     def setMember(self, member: AiLangObj):
+        member.parent = self
         self.members[member.ident] = member
 
     def getMember(self, ident) -> None | AiLangObj:
@@ -89,6 +92,40 @@ class NoneObj(AiLangObj, metaclass=Singleton):
 
     def __init__(self):
         super().__init__("None", AiLangType.NoneType(), None)
+
+
+class DfItemObject:
+    """Helper Object that implements a df set"""
+
+    def __init__(self, item) -> None:
+        self.item_obj = item
+
+    def setDfAttr(self, name: str, other: NumpyArrayLike) -> None:
+
+        if not self.item_obj.parent:
+            raise ValueError("Parent does not exist")
+
+        parent = self.item_obj.parent
+
+        df_item = parent.getDFItemByID(name)
+
+        df_item.get().val = other
+
+        if not isinstance(parent.get(), AiLangType.DfType):
+            raise ValueError("Parent is not DfType")
+
+        parent_df = parent.get().get()
+
+        if not isinstance(parent_df, pd.DataFrame):
+            raise ValueError("Parent DfType value is not dataframe")
+
+        parent_df[name] = other
+
+    def setDfItem(self, item: AiLangObj) -> None:
+        if isinstance(item.get(), AiLangType.DfItem):
+            self.setDfAttr(item.ident, item.get().get())
+        else:
+            raise ValueError("The Item is not DfItem")
 
 
 def evalMember(node, parent):

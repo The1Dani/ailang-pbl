@@ -104,8 +104,6 @@ class BoolType(BasicValType):
 class DfItem(AiLangType):
     """Df Item type is a field of a DataFrameType and it ussually stores pd.Series as a value"""
 
-    # TODO: add a setter that will update the parent Dataframe Type as well
-
 
 class DfType(AiLangType):
     """DataFrame Type of AiLang stores Dataframes"""
@@ -170,3 +168,10 @@ class NoneType(AiLangType, metaclass=utils.Singleton):
 
     def __init__(self):
         super().__init__(None)
+
+
+class PyType(AiLangType):
+    """
+    Wrapper type for any Python objects that
+    doesnt have an immidiate repr like ML model type
+    """

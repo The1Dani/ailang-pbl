@@ -3,6 +3,8 @@ from io import StringIO
 from typing import Callable
 import copy
 from antlr4 import TerminalNode
+import pandas as pd
+
 from grammar.AiLangLexer import AiLangLexer
 from grammar.AiLangParser import AiLangParser
 
@@ -18,7 +20,7 @@ from AiLangType import (
     AiLangType,
     BoolType,
 )
-from AiLangObj import AiLangObj, NoneObj, fromDFtoObj
+from AiLangObj import AiLangObj, DfItemObject, NoneObj, fromDFtoObj
 from AiLangFunc import AiLangCallable, AiLangFunc, FunctionSpace, MethodSpace
 import utils
 
@@ -68,7 +70,7 @@ class VariableStack:
     def __init__(self, interp: Interpreter | None = None):
         self.stack: list[dict[int, AiLangObj]] = []
         self.pushContext()
-        self.next_id: int = 0
+        self.next_id: int = 1
         self.interp: Interpreter | None = interp
 
     def _nextID(self) -> int:
@@ -78,7 +80,7 @@ class VariableStack:
 
     def pushContext(self) -> None:
         if len(self.stack) == 0:
-            self.stack.append({})
+            self.stack.append({0: NoneObj()})
         else:
             self.stack.append(self.deepcopy())
 
@@ -106,8 +108,15 @@ class VariableStack:
         if isinstance(available, list):
             raise NotImplementedError()
 
-        if available:
-            available.set(val.val)
+        if available and key:
+            if (
+                isinstance(available.get(), DfItem)
+                and available.parent
+                and isinstance(available.parent.get(), DfType)
+            ):
+                val.ident = key.getLast().ident
+                DfItemObject(available).setDfItem(val)
+
         else:
             self.getContext()[self._nextID()] = val
 
@@ -740,14 +749,18 @@ class Interpreter:
         if isinstance(lop, (DfType, DfItem)) and isinstance(
             rop, (NumType, DfType, DfItem)
         ):
-            df = eval(
+            # TODO:The result should be DFItem if its done on DfItem else DfType
+            res = eval(
                 f"a {optoken} b",
                 locals={
                     "a": lop.get(),
                     "b": rop.get(),
                 },
             )
-            return DfType(df)
+            # print("DEBUG:", type(res))
+            if isinstance(res, pd.Series):
+                return DfItem(res)
+            return DfType(res)
 
         raise ValueError(
             f"{lop} and {rop} has been tried to be conneted with {optoken}"
@@ -793,7 +806,10 @@ class Interpreter:
                     ret = self.evalExpr(expr)
                     if not isinstance(ret, ListType):
                         raise ValueError()
-                    MethodSpace().call(obj.parent, obj.ident, ret.get(), {})
+                    # Note: This is not the best way to handle rather the easiest
+                    # This way we wrap all t
+                    args = [AiLangObj("", AiLangType(arg)) for arg in ret.get()]
+                    MethodSpace().call(obj.parent, obj.ident, args, {})
                     return
 
             expr = child.getTypedRuleContext(AiLangParser.ExprContext, 0)
