@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# THIS FILE IS DEPRICATED 
+
 run_test() {
     local test_name="$1"
     local result_file="${test_name}.result"

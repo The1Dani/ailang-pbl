@@ -5,11 +5,13 @@ import copy
 from antlr4 import TerminalNode
 import pandas as pd
 
-from grammar.AiLangLexer import AiLangLexer
-from grammar.AiLangParser import AiLangParser
+from ailang.grammar.AiLangLexer import AiLangLexer
+from ailang.grammar.AiLangParser import AiLangParser
 
-import AiLangLib as _  # Init Import
-from AiLangType import (
+from ailang.shared import utils
+
+# import AiLangLib as _  # Init Import
+from .AiLangType import (
     BasicValType,
     NumType,
     DfType,
@@ -20,9 +22,8 @@ from AiLangType import (
     AiLangType,
     BoolType,
 )
-from AiLangObj import AiLangObj, DfItemObject, NoneObj, fromDFtoObj
-from AiLangFunc import AiLangCallable, AiLangFunc, FunctionSpace, MethodSpace
-import utils
+from .AiLangObj import AiLangObj, DfItemObject, NoneObj, fromDFtoObj
+from .AiLangFunc import AiLangCallable, AiLangFunc, FunctionSpace, MethodSpace
 
 
 class BlockTree:

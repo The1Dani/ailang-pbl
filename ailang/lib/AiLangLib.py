@@ -8,15 +8,17 @@ from sklearn.model_selection import train_test_split as sk_split
 
 import joblib
 
-from AiLangFunc import makeFunc, makeMethod
-from AiLangObj import AiLangObj, NoneObj
-from AiLangType import NumType, NumTypes, NoneType, BasicListType, PyType
-import AiLangBuiltinDfLib as _
-from FuncUtils import getVars
-import AiLangSimpleAlgLib as _
+from ailang.engine.AiLangFunc import makeFunc, makeMethod
+from ailang.engine.AiLangObj import AiLangObj, NoneObj
+from ailang.engine.AiLangType import NumType, NumTypes, NoneType, BasicListType, PyType
 
-from Registry import MODEL_REGISTRY
-from protocols import NumpyArrayLike
+from ailang.shared.protocols import NumpyArrayLike
+
+
+from . import AiLangBuiltinDfLib as _
+from . import AiLangSimpleAlgLib as _
+from .Registry import MODEL_REGISTRY
+from .FuncUtils import getVars
 
 
 def toStringDecoded(obj: AiLangObj) -> str:

@@ -10,11 +10,13 @@ resolution-markers = [
 [[package]]
 name = "ailang"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "antlr4-grun" },
     { name = "antlr4-python3-runtime" },
     { name = "catboost" },
+    { name = "joblib" },
+    { name = "numpy" },
     { name = "pandas" },
     { name = "scikit-learn" },
 ]
@@ -31,6 +33,8 @@ requires-dist = [
     { name = "antlr4-grun", specifier = ">=0.1.0" },
     { name = "antlr4-python3-runtime", specifier = "==4.13.2" },
     { name = "catboost" },
+    { name = "joblib", specifier = ">=1.5.3" },
+    { name = "numpy", specifier = ">=2.4.4" },
     { name = "pandas", specifier = ">=3.0.2" },
     { name = "scikit-learn", specifier = ">=1.8.0" },
 ]

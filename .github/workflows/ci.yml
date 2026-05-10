@@ -27,10 +27,10 @@ jobs:
         run: uv sync -p 3.14
 
       - name: PyRight
-        run: uv run pyright --warnings "*.py"
+        run: uv run pyright --warnings -p pyproject.toml
 
       - name: Pylint
-        run: uv run pylint -- *py
+        run: uv run pylint .
 
       - name: Check Formatting
-        run: uv run black --check -- *.py
+        run: uv run black --check .

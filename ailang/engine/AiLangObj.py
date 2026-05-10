@@ -1,17 +1,17 @@
 import pandas as pd
 
-import AiLangType
-from grammar.AiLangParser import AiLangParser as ap
-from protocols import NumpyArrayLike
-from utils import getTerminalSymbol, Singleton
+from ailang.grammar.AiLangParser import AiLangParser as ap
+from ailang.shared.protocols import NumpyArrayLike
+from ailang.shared.utils import getTerminalSymbol, Singleton
+from .AiLangType import NoneType, DfItem, DfType, AiLangType
 
 
 class AiLangObj:
     """AiLang Object Implementation, This class wraps AiLang, This is used to assosiate objects"""
 
-    def __init__(self, ident, val: AiLangType.AiLangType | None = None, parent=None):
+    def __init__(self, ident, val: AiLangType | None = None, parent=None):
         self.ident: str = ident
-        self.val: AiLangType.AiLangType | None = val
+        self.val: AiLangType | None = val
         self.parent: AiLangObj | None = parent
         self.members: dict[str, AiLangObj] = {}
         self.original_reference: AiLangObj | None = None
@@ -19,9 +19,9 @@ class AiLangObj:
     def killMembers(self) -> None:
         self.members = {}
 
-    def get(self) -> AiLangType.AiLangType:
+    def get(self) -> AiLangType:
         if self.val is None:
-            return AiLangType.NoneType()
+            return NoneType()
         return self.val
 
     def getParent(self) -> AiLangObj:
@@ -34,7 +34,7 @@ class AiLangObj:
             return self.parent.getRoot()
         return self
 
-    def set(self, val: AiLangType.AiLangType | None) -> None:
+    def set(self, val: AiLangType | None) -> None:
         self.val = val
 
     def setMember(self, member: AiLangObj):
@@ -54,9 +54,7 @@ class AiLangObj:
         return memb[0].getLast()
 
     def getDFItemByID(self, ident) -> AiLangObj | None:
-        items = filter(
-            lambda v: isinstance(v.val, AiLangType.DfItem), list(self.members.values())
-        )
+        items = filter(lambda v: isinstance(v.val, DfItem), list(self.members.values()))
         for item in items:
             if item.ident == ident:
                 return item
@@ -91,7 +89,7 @@ class NoneObj(AiLangObj, metaclass=Singleton):
     """Object that is None in AiLang"""
 
     def __init__(self):
-        super().__init__("None", AiLangType.NoneType(), None)
+        super().__init__("None", NoneType(), None)
 
 
 class DfItemObject:
@@ -111,7 +109,7 @@ class DfItemObject:
 
         df_item.get().val = other
 
-        if not isinstance(parent.get(), AiLangType.DfType):
+        if not isinstance(parent.get(), DfType):
             raise ValueError("Parent is not DfType")
 
         parent_df = parent.get().get()
@@ -122,7 +120,7 @@ class DfItemObject:
         parent_df[name] = other
 
     def setDfItem(self, item: AiLangObj) -> None:
-        if isinstance(item.get(), AiLangType.DfItem):
+        if isinstance(item.get(), DfItem):
             self.setDfAttr(item.ident, item.get().get())
         else:
             raise ValueError("The Item is not DfItem")
@@ -137,8 +135,8 @@ def evalMember(node, parent):
 
 
 def fromDFtoObj(ident: str, df: pd.DataFrame) -> AiLangObj:
-    obj = AiLangObj(ident, AiLangType.DfType(df))
+    obj = AiLangObj(ident, DfType(df))
     for col, ser in df.items():
-        column_obj = AiLangObj(col, AiLangType.DfItem(ser))
+        column_obj = AiLangObj(col, DfItem(ser))
         obj.setMember(column_obj)
     return obj

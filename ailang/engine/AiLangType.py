@@ -6,8 +6,8 @@ from enum import StrEnum, auto
 from antlr4 import ParserRuleContext
 import pandas as pd
 
-from grammar.AiLangParser import AiLangParser as ap
-import utils
+from ailang.grammar.AiLangParser import AiLangParser as ap
+from ailang.shared import utils
 
 
 class NumTypes(StrEnum):
