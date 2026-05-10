@@ -10,6 +10,7 @@ from ailang.engine.Interpreter import Interpreter
 
 # TODO: add argparser library to make everything simpler
 
+
 def main():
     if len(sys.argv) > 1:
         input_stream = FileStream(sys.argv[1])
