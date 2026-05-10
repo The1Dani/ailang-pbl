@@ -12,7 +12,7 @@ from AiLangFunc import makeFunc, makeMethod
 from AiLangObj import AiLangObj, NoneObj
 from AiLangType import NumType, NumTypes, NoneType, BasicListType, PyType
 import AiLangBuiltinDfLib as _
-from FuncUtils import getVars, unwrapValue
+from FuncUtils import getVars
 import AiLangSimpleAlgLib as _
 
 from Registry import MODEL_REGISTRY
@@ -75,85 +75,74 @@ def aiLangInternalBreakPoint() -> AiLangObj:
     return NoneObj()
 
 
-@makeFunc("fit", ["model_name", "x", "y", "params"])
-def aiLangFit(*args, **kwargs):
-    vs = getVars(args, kwargs)
+def getModelInit(args: tuple[AiLangObj]):
+    vs = getVars(args)
+    parent: AiLangObj = args[0]
+    # print(parent)
+    if parent.val is NoneType():
+        if parent.original_reference is None:
+            raise ValueError()
+        model_name = parent.original_reference.ident
+        if model_name not in MODEL_REGISTRY:
+            raise ValueError(f"Unknown model: {model_name}")
+        model = MODEL_REGISTRY[model_name]()
+    else:
+        model = vs["_parent_"]
 
-    # model_name = vs["model_name"]
+    return model
+
+
+@makeMethod("fit", Union[PyType | None], ["x", "y"])
+def aiLangFit(*args):
+    vs = getVars(args)
+
     x = vs["x"]
     y = vs["y"]
-    params = vs.get("params", {})
 
-    if model_name not in MODEL_REGISTRY:
-        raise ValueError(f"Unknown model: {model_name}")
+    model = getModelInit(args)
 
-    model_class = MODEL_REGISTRY[model_name]
-
-    # ---- create model dynamically ----
-    model = model_class(**params)
-
-    # ---- train ----
     model.fit(x, y)
 
     # ---- wrap ----
     wrapped = PyType(model)
-
-    result = AiLangObj("model", wrapped)
-
-    return result
+    # print(type(model))
+    return AiLangObj("model", wrapped)
 
 
-@makeFunc("predict", ["model_obj", "x"])
+@makeMethod("predict", PyType, ["x"])
 def aiLangPredict(*args, **kwargs):
     vs = getVars(args, kwargs)
 
-    model_obj = vs["model_obj"]
+    model = vs["_parent_"]
     x = vs["x"]
-
-    if isinstance(model_obj, AiLangObj):
-        model = model_obj.getMember("model").get()
-    else:
-        model = model_obj
 
     y_pred = model.predict(x)
 
     return AiLangObj("y_pred", BasicListType(y_pred.tolist()))
 
 
-@makeFunc("score", ["model", "x_test", "y_test"])
+@makeMethod("score", PyType, ["x_test", "y_test"])
 def aiLangScore(*args, **kwargs):
     vs = getVars(args, kwargs)
 
-    model_obj = vs["model"]
+    model = vs["_parent_"]
     x_test = vs["x_test"]
     y_test = vs["y_test"]
-
-    if isinstance(model_obj, AiLangObj):
-        model = model_obj.getMember("model").get()
-    else:
-        model = model_obj
 
     score_value = model.score(x_test, y_test)
 
     return AiLangObj("score", NumType(float(score_value), NumTypes.FLOAT))
 
 
-@makeFunc("cross_validate", ["model_name", "x", "y", "cv", "metric"])
+@makeFunc("cross_validate", ["x", "y", "cv", "metric"])
 def aiLangCrossValidate(*args, **kwargs):
     vs = getVars(args, kwargs)
 
-    model_name = vs["model_name"]
+    model = getModelInit(args)
     x = vs["x"]
     y = vs["y"]
     cv = int(vs["cv"])
     metric = vs.get("metric", "accuracy")
-
-    if model_name not in MODEL_REGISTRY:
-        raise ValueError("Unknown model")
-
-    model_class = MODEL_REGISTRY[model_name]
-
-    model = model_class()
 
     scores = cross_val_score(model, x, y, cv=cv, scoring=metric)
 
@@ -167,14 +156,13 @@ def aiLangCrossValidate(*args, **kwargs):
     return result
 
 
-@makeFunc("save_model", ["model_obj", "path"])
+@makeMethod("save_model", PyType, ["path"])
 def aiLangSaveModel(*args, **kwargs):
     vs = getVars(args, kwargs)
 
-    model_obj = vs["model_obj"]
     path = vs["path"]
 
-    model = model_obj.getMember("model").get()
+    model = vs["_parent_"]
 
     joblib.dump(model, path)
 

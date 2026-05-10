@@ -5,10 +5,9 @@
 } -> @Train {
     y := train_labels.Survived
 
-    model <- .fit <- ("logistic_regression", train_features, y)
+    model <- logistic_regression.fit <- (train_features, y)
 
-    predictions := .predict <- (model, test_features)
-
-    score := .score <- (model, train_features, y)
+    predictions <- model.predict <- (test_features)
+    score <- model.score <- (train_features, y)
     .print <- (score)
 }

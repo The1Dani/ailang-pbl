@@ -70,7 +70,7 @@ class VariableStack:
     def __init__(self, interp: Interpreter | None = None):
         self.stack: list[dict[int, AiLangObj]] = []
         self.pushContext()
-        self.next_id: int = 0
+        self.next_id: int = 1
         self.interp: Interpreter | None = interp
 
     def _nextID(self) -> int:
@@ -80,7 +80,7 @@ class VariableStack:
 
     def pushContext(self) -> None:
         if len(self.stack) == 0:
-            self.stack.append({})
+            self.stack.append({0: NoneObj()})
         else:
             self.stack.append(self.deepcopy())
 

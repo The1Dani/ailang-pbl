@@ -5,10 +5,10 @@
 } -> @Train {
     y := train_labels.Survived
 
-    model <- .fit <- ("svc", train_features, y)
+    model <- svc.fit <- (train_features, y)
 
-    predictions := .predict <- (model, test_features)
+    predictions := model.predict <- (test_features)
 
-    score := .score <- (model, train_features, y)
+    score := model.score <- (train_features, y)
     .print <- (score)
 }

@@ -5,6 +5,7 @@ import copy
 
 from AiLangObj import AiLangObj, NoneObj
 from utils import Singleton
+from AiLangType import NoneType
 
 
 # Python typing black magic for function types
@@ -183,9 +184,16 @@ class MethodSpace(Space):
         if str(ttype) in self.functions:
             if ident in self.functions[str(ttype)]:
                 func = self.functions[str(ttype)][ident]
-                parent.old_ident = parent.ident
+
+                former_parent = parent
+                parent = copy.copy(parent)
+                parent.original_reference = former_parent
+
                 parent.ident = "_parent_"
                 args.insert(0, parent)
+
+                if parent.val is None:
+                    parent.val = NoneType()
                 return func.call(args, kwargs)
             raise ValueError(f"type {str(ttype)} does not have method {ident}")
         raise ValueError(f"Type {ttype} does not have methods")
