@@ -75,14 +75,13 @@ def aiLangInternalBreakPoint() -> AiLangObj:
     return NoneObj()
 
 
-@makeFunc("fit", ["model_name", "x", "y", "params"])
-def aiLangFit(*args, **kwargs):
-    vs = getVars(args, kwargs)
+@makeFunc("fit", ["model_name", "x", "y"])
+def aiLangFit(*args):
+    vs = getVars(args)
 
     model_name = vs["model_name"]
     x = vs["x"]
     y = vs["y"]
-    params = vs.get("params", {})
 
     if model_name not in MODEL_REGISTRY:
         raise ValueError(f"Unknown model: {model_name}")
@@ -90,7 +89,7 @@ def aiLangFit(*args, **kwargs):
     model_class = MODEL_REGISTRY[model_name]
 
     # ---- create model dynamically ----
-    model = model_class(**params)
+    model = model_class()
 
     # ---- train ----
     model.fit(x, y)
