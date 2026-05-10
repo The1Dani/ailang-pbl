@@ -2,12 +2,12 @@
 
 check() {
     uv sync && \
-    uv run pyright --warnings "*.py" && \
-    uv run pylint -- *py && \
-    uv run black --check -- *.py
+    uv run pyright --warnings -p pyproject.toml && \
+    uv run pylint . && \
+    uv run black --check .
 }
 
-uv run black -- *.py
+uv run black .
 
 if check; then
     echo Pass!

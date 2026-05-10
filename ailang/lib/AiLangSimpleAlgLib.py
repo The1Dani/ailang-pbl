@@ -8,11 +8,10 @@ from catboost import Pool
 
 import numpy as np
 
-from AiLangFunc import makeFunc
-from AiLangObj import AiLangObj
-from AiLangType import NumType, NumTypes, ListType, NoneType
-from FuncUtils import getVars
-from protocols import (
+from ailang.engine.AiLangFunc import makeFunc
+from ailang.engine.AiLangObj import AiLangObj
+from ailang.engine.AiLangType import NumType, NumTypes, ListType, NoneType
+from ailang.shared.protocols import (
     SklearnClassifier,
     SklearnLinearRegressor,
     SklearnSVC,
@@ -22,6 +21,8 @@ from protocols import (
     CatBoostModel,
     NumpyArrayLike,
 )
+
+from .FuncUtils import getVars
 
 # TODO: Decide What to do with this file
 

@@ -1,6 +1,6 @@
 from typing import Any, Optional, Union, overload
-from AiLangObj import AiLangObj, NoneObj
-import AiLangType
+from ailang.engine.AiLangObj import AiLangObj, NoneObj
+from ailang.engine.AiLangType import AiLangType
 
 
 @overload
@@ -29,7 +29,7 @@ def unwrap(args: list[AiLangObj]) -> dict[str, Any]:
     return variables
 
 
-def unwrapValue(value: AiLangObj | AiLangType.AiLangType | Any) -> Any:
+def unwrapValue(value: AiLangObj | AiLangType | Any) -> Any:
     """Unwrap AiLang objects to underlying Python values.
 
     Handles AiLangObj, AiLangType, and returns the raw Python value.

@@ -3,9 +3,10 @@ from types import UnionType
 from typing import Callable, NoReturn, Protocol, Union
 import copy
 
-from AiLangObj import AiLangObj, NoneObj
-from utils import Singleton
-from AiLangType import NoneType
+from ailang.shared.utils import Singleton
+
+from .AiLangObj import AiLangObj, NoneObj
+from .AiLangType import NoneType
 
 
 # Python typing black magic for function types

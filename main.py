@@ -1,16 +1,22 @@
 # pylint: disable=invalid-name
 import sys
 from antlr4 import FileStream, CommonTokenStream
-from antlr4.InputStream import InputStream
-from grammar.AiLangLexer import AiLangLexer
-from grammar.AiLangParser import AiLangParser
-from Interpreter import Interpreter
+from ailang.grammar.AiLangLexer import AiLangLexer
+from ailang.grammar.AiLangParser import AiLangParser
 
-if __name__ == "__main__":
+import ailang.lib.AiLangLib as _
+
+from ailang.engine.Interpreter import Interpreter
+
+# TODO: add argparser library to make everything simpler
+
+
+def main():
     if len(sys.argv) > 1:
         input_stream = FileStream(sys.argv[1])
     else:
-        input_stream = InputStream(sys.stdin.readline())
+        print("provide file")
+        sys.exit(1)
 
     lexer = AiLangLexer(input_stream)
     token_stream = CommonTokenStream(lexer)
@@ -22,3 +28,8 @@ if __name__ == "__main__":
     Interpreter(tree).interp()
     # lisp_tree_str = tree.toStringTree(recog=parser)
     # print(lisp_tree_str)
+
+
+if __name__ == "__main__":
+
+    main()

@@ -1,5 +1,6 @@
 function hello <- (hi, hello_person="hello") {
-    .print <- ("Hello ", hello_person, "hi=", hi, sep="")
+    .print <- ("Hello", hello_person)
+    .print <- ("hi=", hi, sep="")
     .exit <- (2)
 }
 
@@ -8,7 +9,7 @@ function hello <- (hi, hello_person="hello") {
     .print <- (None)
 
     do {
-        .hello <- ("hello")
+        .hello <- ("hello", hello_person="World")
     }
     if {
         someVal

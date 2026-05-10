@@ -1,8 +1,8 @@
 import pandas as pd
 
-from AiLangFunc import makeMethod
-from AiLangObj import AiLangObj, fromDFtoObj
-from AiLangType import DfType
+from ailang.engine.AiLangFunc import makeMethod
+from ailang.engine.AiLangObj import AiLangObj, fromDFtoObj
+from ailang.engine.AiLangType import DfType
 
 
 @makeMethod("dropna_ip", DfType, [])
