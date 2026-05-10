@@ -14,6 +14,7 @@ class AiLangObj:
         self.val: AiLangType.AiLangType | None = val
         self.parent: AiLangObj | None = parent
         self.members: dict[str, AiLangObj] = {}
+        self.old_ident: str | None = None
 
     def killMembers(self) -> None:
         self.members = {}

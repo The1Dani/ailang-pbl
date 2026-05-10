@@ -6,6 +6,8 @@ function hello <- (hi, hello_person="hello") {
 -> {
     someVal := True
 
+    svc.fit <- ("", "")
+
     do {
         .hello <- ("hello")
     }

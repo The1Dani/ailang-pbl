@@ -1,7 +1,7 @@
 import sys
 import codecs
 
-from typing import Any, cast
+from typing import Any, Union, cast
 
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split as sk_split
@@ -10,7 +10,7 @@ import joblib
 
 from AiLangFunc import makeFunc, makeMethod
 from AiLangObj import AiLangObj, NoneObj
-from AiLangType import NumType, NumTypes, NoneType, BasicListType, ModelType
+from AiLangType import NumType, NumTypes, NoneType, BasicListType, PyType
 import AiLangBuiltinDfLib as _
 from FuncUtils import getVars
 import AiLangSimpleAlgLib as _
@@ -75,27 +75,29 @@ def aiLangInternalBreakPoint() -> AiLangObj:
     return NoneObj()
 
 
-@makeFunc("fit", ["model_name", "x", "y"])
+@makeMethod("fit", Union[PyType | None], ["x", "y"])
 def aiLangFit(*args):
     vs = getVars(args)
+    parent = args[0]
 
-    model_name = vs["model_name"]
+    if parent.val is None:
+        model_name = parent.old_ident
+        if model_name not in MODEL_REGISTRY:
+            raise ValueError(f"Unknown model: {model_name}")
+        model = MODEL_REGISTRY[model_name]()
+
+    # model_name = vs["model_name"]
     x = vs["x"]
     y = vs["y"]
 
-    if model_name not in MODEL_REGISTRY:
-        raise ValueError(f"Unknown model: {model_name}")
-
-    model_class = MODEL_REGISTRY[model_name]
-
     # ---- create model dynamically ----
-    model = model_class()
+    model = vs["_parent_"]
 
     # ---- train ----
     model.fit(x, y)
 
     # ---- wrap ----
-    wrapped = ModelType(model)
+    wrapped = PyType(model)
 
     result = AiLangObj("model", wrapped)
 
@@ -194,7 +196,7 @@ def aiLangLoadModel(*args, **kwargs):
 
     model = joblib.load(path)
 
-    wrapped = ModelType(model)
+    wrapped = PyType(model)
 
     result = AiLangObj("model", wrapped)
 

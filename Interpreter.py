@@ -806,7 +806,10 @@ class Interpreter:
                     ret = self.evalExpr(expr)
                     if not isinstance(ret, ListType):
                         raise ValueError()
-                    MethodSpace().call(obj.parent, obj.ident, ret.get(), {})
+                    # Note: This is not the best way to handle rather the easiest
+                    # This way we wrap all t
+                    args = [AiLangObj("", AiLangType(arg)) for arg in ret.get()]
+                    MethodSpace().call(obj.parent, obj.ident, args, {})
                     return
 
             expr = child.getTypedRuleContext(AiLangParser.ExprContext, 0)

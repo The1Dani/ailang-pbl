@@ -12,7 +12,7 @@
             "request": "launch",
             "program": "${cwd}/main.py",
             "justMyCode": false,
-            "args": ["test_1.ail", "-parse"]
+            "args": ["helloWorld.ail", "-parse"]
         }
     ]
 }

@@ -18,7 +18,11 @@ def getVars(args: tuple[AiLangObj]) -> dict[str, Any]:
     """Get the named arguments as unwrapped in a dict"""
 
 
-def unwrap(args: list) -> dict[str, Any]:
+def unwrap(args: list[AiLangObj]) -> dict[str, Any]:
+    """
+    For every element in list maps the object ident to its python value
+    unwrap([AiLangObj("some_ident", StrType(""))]) -> {"some_ident": ""}
+    """
     variables = {}
     for arg in args:
         variables[arg.ident] = arg.get().get() if arg is not NoneObj() else None

@@ -170,8 +170,8 @@ class NoneType(AiLangType, metaclass=utils.Singleton):
         super().__init__(None)
 
 
-class ModelType(AiLangType):
+class PyType(AiLangType):
     """
-    Wrapper type for ML models in AiLang DSL.
-    Stores and manages trained machine learning model objects.
+    Wrapper type for any Python objects that 
+    doesnt have an immidiate repr like ML model type
     """
