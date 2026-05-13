@@ -1,200 +1,109 @@
 # AiLang Library Guide
 
-This guide explains how to write library functions and methods using the exposed AiLang runtime files.
+This guide shows how to add built-in functions and methods to AiLang.
 
-## What the files provide
+Primary reference: `ailang/lib/AiLangLib.py`.
 
-- `AiLangType.py` defines value wrappers such as `NumType`, `StrType`, `DfType`, `BasicListType`, and `NoneType`.
-- `AiLangObj.py` defines runtime objects, object members, and helpers for converting DataFrames.
-- `AiLangFunc.py` provides decorators `@makeFunc` and `@makeMethod` for registering functions and methods.
-- `FuncUtils.py` provides `getVars()` for extracting and unwrapping function arguments.
-- `AiLangLib.py` shows how to register built-in functions and methods.
-- `AiLangBuiltinDfLib.py` shows how to write DataFrame-specific methods.
+## What You’re Editing
 
-## Main building blocks
+- You add library functions/methods by writing Python and registering them at import-time with decorators.
+- `main.py` imports `ailang.lib.AiLangLib`, so anything registered from there is available in the interpreter.
+- `PyType` is an `AiLangType` wrapper around an arbitrary Python object (commonly a trained ML model instance).
 
-### `AiLangType`
+## Function Example (`makeFunc`) With Inline Concepts
 
-`AiLangType` is the base wrapper around raw Python values.
+This registers a global function named `cross_validate`.
 
-Common subclasses:
+- `@makeFunc("cross_validate", ["x", "y", "cv", "metric"])`:
+  - first argument is the function name visible in the DSL
+  - second argument is the *positional* argument names, used by `getVars(...)`
+- Inside the body, `vs = getVars(args, kwargs)` returns plain Python values keyed by those names.
+- Return value must be an `AiLangObj` (often a structured object with members).
 
-- `NumType(value, NumTypes.INT)` for integers
-- `NumType(value, NumTypes.FLOAT)` for floats
-- `StrType(value)` for strings
-- `BasicListType(list_value)` for lists of basic values
-- `DfType(dataframe)` for pandas DataFrames
-- `NoneType()` for AiLang none
-
-Use `.get()` to access the Python value inside a type wrapper.
-
-### `AiLangObj`
-
-`AiLangObj` wraps an identifier and a value.
-
-Important methods:
-
-- `get()` returns the wrapped value
-- `set(val)` replaces the wrapped value
-- `update(other)` replaces the full object state
-- `setMember(member)` adds a child member
-- `getMember(ident)` retrieves a child member
-- `getRoot()` returns the root object
-
-### `FuncUtils.getVars()`
-
-Use `getVars(args, kwargs)` to extract and unwrap function arguments:
-
-```python
-from FuncUtils import getVars
-
-def my_func(*args, **kwargs) -> AiLangObj:
+```py
+@makeFunc("cross_validate", ["x", "y", "cv", "metric"])
+def aiLangCrossValidate(*args, **kwargs):
     vs = getVars(args, kwargs)
-    # vs is a dict with unwrapped values
-    # e.g., {"name": value, "count": 5}
-    name = vs.get("name")
-    count = vs.get("count", 10)  # with default
-    return AiLangObj("result", SomeType(...))
+
+    model = getModelInit(args)
+    scores = cross_val_score(
+        model,
+        vs["x"],
+        vs["y"],
+        cv=int(vs["cv"]),
+        scoring=vs.get("metric", "accuracy"),
+    )
+
+    result = AiLangObj("result", NoneType())
+    result.setMember(AiLangObj("scores", BasicListType(scores.tolist())))
+    result.setMember(
+        AiLangObj("mean_score", NumType(float(scores.mean()), NumTypes.FLOAT))
+    )
+    return result
 ```
 
-## Writing a built-in function
+If a function is truly variadic (like `print`), set `ignore_arg_count=True`.
 
-Use `@makeFunc("name", arg_names, kwargs, ignore_arg_count)` from `AiLangFunc`:
+- `func_id` is `"print"`
+- `ignore_arg_count=True` disables strict arity checking
+- `kwargs` are still passed as `AiLangObj` values
 
-```python
-from AiLangFunc import makeFunc
-from AiLangObj import AiLangObj, NoneObj
-from AiLangType import NumType, NumTypes
-from FuncUtils import getVars
-
-@makeFunc("add_one", arg_names=["value"])
-def add_one(*args, **kwargs) -> AiLangObj:
-    vs = getVars(args, kwargs)
-    result = vs["value"] + 1
-    return AiLangObj("result", NumType(result, NumTypes.INT))
-```
-
-### Decorator Parameters
-
-- `arg_names`: List of argument names for positional parameters (e.g., `["x", "y"]`)
-- `kwargs`: Dict of default keyword arguments (e.g., `{"ret_code": NoneObj()}`)
-- `ignore_arg_count`: Set to `True` for variadic functions (accept any number of args)
-
-### Return values
-
-- Return an `AiLangObj` when the result should be stored as a named runtime object.
-- Return `NoneObj()` when the function has no meaningful return value.
-
-### Example with defaults
-
-```python
-@makeFunc("exit", arg_names=[], kwargs={"ret_code": NoneObj()})
-def aiLangBuiltinExit(*args, **kwargs):
-    vs = getVars(args, kwargs)
-    ret_code = vs.get("ret_code", 0)
-    sys.exit(ret_code if isinstance(ret_code, int) else 0)
-```
-
-### Example with ignore_arg_count
-
-```python
+```py
 @makeFunc("print", ignore_arg_count=True)
 def aiLangBuiltinPrint(*args, **kwargs) -> AiLangObj:
-    vs = getVars(args, kwargs)
-    # Handle sep, end kwargs
-    print(*args, sep=vs.get("sep"), end=vs.get("end"))
+    ...
     return NoneObj()
 ```
 
-## Writing a built-in method
+Defaults for kwargs are declared on the decorator. Example from `AiLangLib.py`:
 
-Use `@makeMethod("name", ParentType, arg_names, kwargs)` decorator:
-
-```python
-from AiLangFunc import makeMethod
-from AiLangObj import AiLangObj, fromDFtoObj
-from AiLangType import DfType
-from FuncUtils import getVars
-
-@makeMethod("head", DfType, arg_names=[])
-def df_head(parent, *args, **kwargs) -> AiLangObj:
-    df = parent.get().get()
-    new_df = df.head()
-    return fromDFtoObj(parent.ident, new_df)
+```py
+@makeFunc("exit", [], kwargs={"ret_code": NoneObj()})
+def aiLangBuiltinExit(*args, **kwargs):
+    ...
 ```
 
-### Method patterns
+Here `kwargs={"ret_code": NoneObj()}` means `ret_code` is optional in the DSL; if omitted, it defaults to `None`.
 
-- The parent object is passed as the first argument automatically.
-- Validate the wrapped value type before using it.
-- Return a new object for non-mutating methods.
-- Use `parent.update(...)` and return `parent` for in-place methods.
+Arity rule to keep in mind:
 
-## DataFrame helpers
+- positional arg count must match `len(arg_names)` exactly (unless `ignore_arg_count=True`)
+- kwargs are part of the signature, but defaulted kwargs may be omitted
 
-`AiLangBuiltinDfLib.py` shows the standard DataFrame pattern.
+## Method Example (`makeMethod`) With Inline Concepts
 
-### Convert a DataFrame to an `AiLangObj`
+Methods dispatch on the parent value type.
 
-Use `fromDFtoObj(ident, df)`.
+- `@makeMethod("fit", Union[PyType | None], ["x", "y"])` registers a `fit` method for both `PyType` and `None` parents.
+- On method calls, the runtime injects the parent as a special first argument named `_parent_`.
+- `getVars(args, ...)` will include `vs["_parent_"]` as the unwrapped parent value.
 
-This creates:
-
-- one root object holding the DataFrame
-- one member per column
-- each column stored as an `AiLangType.DfItem`
-
-### In-place DataFrame method
-
-```python
-@makeMethod("dropna_ip", DfType, arg_names=[])
-def dfBuiltinDropnaInplace(parent, *args, **kwargs):
-    df = parent.get()
-    if not isinstance(df, pd.DataFrame):
-        raise ValueError()
-    df.dropna()
-    parent.update(fromDFtoObj(parent.ident, df))
-    return parent
+```py
+@makeMethod("fit", Union[PyType | None], ["x", "y"])
+def aiLangFit(*args):
+    vs = getVars(args)
+    model = getModelInit(args)
+    model.fit(vs["x"], vs["y"])
+    return AiLangObj("model", PyType(model))
 ```
 
-### Non-in-place DataFrame method
+If your method is registered on `PyType`, the parent is usually the underlying Python object wrapped by `PyType`.
+In `AiLangLib.py`, `score` reads that parent via `vs["_parent_"]` and returns a typed number:
 
-```python
-@makeMethod("dropna", DfType, arg_names=[])
-def dfBuiltinDropna(parent, *args, **kwargs):
-    df = parent.get()
-    if not isinstance(df, pd.DataFrame):
-        raise ValueError()
-    new_df = df.dropna()
-    return fromDFtoObj(parent.ident, new_df)
+```py
+@makeMethod("score", PyType, ["x_test", "y_test"])
+def aiLangScore(*args, **kwargs):
+    vs = getVars(args, kwargs)
+    score_value = vs["_parent_"].score(vs["x_test"], vs["y_test"])
+    return AiLangObj("score", NumType(float(score_value), NumTypes.FLOAT))
 ```
 
-## Validation rules
+## Return Rules
 
-Use strict checks before operating on values:
+- Always return an `AiLangObj` (or `NoneObj()`), not a raw Python value.
+- Wrap Python values in the right `AiLangType` (`NumType`, `BasicListType`, `PyType`, etc.).
 
-- `isinstance(item, AiLangObj)`
-- `isinstance(item.get(), NumType)`
-- `isinstance(item.get(), DfType)`
-- `isinstance(df, pd.DataFrame)`
+## Not To Do
 
-Raise `ValueError()` for invalid input.
-
-## Recommended workflow
-
-1. Decide whether you need a function or a method.
-2. Pick the correct decorator with appropriate parameters.
-3. Use `getVars(args, kwargs)` to extract and unwrap arguments.
-4. Validate the type.
-5. Perform the Python operation.
-6. Wrap the result back into an AiLang value or return `NoneObj()`.
-
-## Quick reference
-
-- `AiLangType`: typed value wrapper
-- `AiLangObj`: named runtime object
-- `NoneObj()`: AiLang none return object
-- `fromDFtoObj()`: convert pandas DataFrame to AiLang object
-- `getVars(args, kwargs)`: extract and unwrap function arguments
-- `@makeFunc(...)`: register a built-in function
-- `@makeMethod(...)`: register a built-in method
+- Do not return raw Python values.
+- Do not edit generated files under `ailang/grammar/`.
