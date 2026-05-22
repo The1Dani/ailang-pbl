@@ -54,15 +54,47 @@ class BlockTree:
                 return child_return
         return None
 
-    def printTree(self, level=0) -> None:
-        # Print current node with indentation based on its level
-        if level == 0:
+    def display(self):
+        print("Pipeline Tree:")
+        self._display()
+        print()
+
+    def _display(
+        self, prefix: str = "", is_last: bool = True, is_root: bool = True
+    ) -> None:
+        if is_root:
+            # Print the root node without any branch symbols
             print(self.label)
         else:
-            print("├─" + "─" * level + str(self.label))
-        # Recursively print children
-        for child in self.children:
-            child.printTree(level + 1)
+            # Use branch symbols for all children
+            connector = "└── " if is_last else "├── "
+            print(f"{prefix}{connector}{self.label}")
+
+        # Adjust prefix for children
+        # If we were the root, we don't add extra indentation yet
+        if is_root:
+            new_prefix = ""
+        else:
+            new_prefix = prefix + ("    " if is_last else "│   ")
+
+        num_elements = len(self.children)
+        for i, child in enumerate(self.children):
+
+            last_child = i == num_elements - 1
+            # All subsequent calls are not the root
+            child._display(  # pylint: disable= protected-access
+                new_prefix, last_child, is_root=False
+            )
+
+    # def printTree(self, level=0) -> None:
+    #     # Print current node with indentation based on its level
+    #     if level == 0:
+    #         print(self.label)
+    #     else:
+    #         print("├─" + "─" * level + str(self.label))
+    #     # Recursively print children
+    #     for child in self.children:
+    #         child.printTree(level + 1)
 
 
 class VariableStack:
@@ -227,7 +259,7 @@ class Interpreter:
         self.functions = FunctionSpace()
         self.methods = MethodSpace()
 
-    def interp(self) -> None:
+    def interp(self, print_tree=False) -> None:
         if self.ast.children is None:
             raise ValueError()
         blocks = self.ast.getTypedRuleContexts(AiLangParser.Block_statContext)
@@ -238,8 +270,9 @@ class Interpreter:
             self.evalFunctionDecl(fd)
         if self.block_tree is None:
             raise ValueError("Block Tree is Empty")
+        if print_tree:
+            self.block_tree.display()
         self.evaluateBlocks()
-        # self.blockTree.printTree()
 
     def evalFunctionDecl(self, func_decl: AiLangParser.FunctionDefContext):
         fd = func_decl.getTypedRuleContext(AiLangParser.Func_defContext, 0)

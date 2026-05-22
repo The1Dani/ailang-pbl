@@ -12,7 +12,7 @@
             "request": "launch",
             "program": "${cwd}/main.py",
             "justMyCode": false,
-            "args": ["Example/logistic_regression.ail", "-parse"]
+            "args": ["test-examples/helloWorld.ail", "--parse", "--proc-tree"]
         }
     ]
 }
