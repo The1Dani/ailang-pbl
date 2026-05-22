@@ -1,4 +1,4 @@
-# +#+#+#+# pylint: disable=invalid-name
+# pylint: disable=invalid-name
 import argparse
 from antlr4 import FileStream, CommonTokenStream
 from ailang.grammar.AiLangLexer import AiLangLexer
