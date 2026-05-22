@@ -1,89 +1,102 @@
 # AiLang
 
-AiLang is a Domain-Specific Language (DSL) designed to simplify Machine Learning workflows. It provides a clear and structured way to define data processing, model training, and evaluation steps, reducing repetitive code and making ML pipelines easier to understand.
+AiLang is a small domain-specific language (DSL) for machine-learning workflows. It is implemented in Python and uses ANTLR4 for parsing.
 
-## Overview
+The repo currently focuses on running `.ail` programs that load data, train models (via scikit-learn), and evaluate results.
 
-AiLang is intended for:
-- Developers who want to streamline machine learning workflows
-- Beginners who want to understand ML pipelines in a simplified way
+## Quick Start
 
-The language abstracts common stages of a machine learning process, such as:
-- Dataset preparation
-- Model definition
-- Training and optimization
-- Evaluation
+### Requirements
 
-## Technologies Used
+- Python `>= 3.14` (see `pyproject.toml`)
+- [`uv`](https://github.com/astral-sh/uv) for dependency management
 
-- Python
-- ANTLR4 (for lexer and parser generation)
-
-## Installation
+### Install
 
 ```bash
-git clone <repo-link>
-cd ailang-pbl
+git clone <repo-url>
+cd ailang
 
-pip install antlr4-tools
-python -m pip install antlr4-python3-runtime
+uv sync
 ```
-## Project Structure
+
+### Run
+
+The project exposes a console script named `ailang`:
+
+```bash
+uv run ailang examples/svm.ail
 ```
+
+To print the parse tree:
+
+```bash
+uv run ailang examples/svm.ail -parse
+```
+
+Sanity check (known to run in this repo):
+
+```bash
+uv run ailang test-examples/helloWorld.ail
+```
+
+Note: `examples/svm.ail` and `examples/logistic_regression.ail` currently reference `Example/*.csv` (capital `E`). In this repo the CSVs live under `examples/*.csv`, so those paths likely need updating before the examples will execute end-to-end.
+
+## Project Layout
+
+```text
 .
-├── AiLang.g4          # ANTLR4 grammar definition
-├── main.py            # Entry point (parser + interpreter)
-├── build.sh           # Build script (regenerates parser + runs tests)
-├── run-test.sh        # Script for running test files
-├── grammar/           # Generated ANTLR4 files (DO NOT EDIT)
-│   ├── AiLangLexer.py
-│   ├── AiLangParser.py
-│   ├── AiLangVisitor.py
-│   └── AiLangListener.py
-├── test.ail           # Example input file
-└── test2.ail
+├── ailang/
+│   ├── engine/              # Interpreter/execution engine
+│   ├── grammar/             # Generated ANTLR lexer/parser (Python)
+│   ├── lib/                 # Built-in functions / libraries exposed to the DSL
+│   ├── scripts/             # Helper scripts (build/test)
+│   └── shared/              # Shared utilities and protocols
+├── examples/                # Example AiLang programs + sample datasets
+├── test-examples/           # Additional small/test programs
+├── AiLang.g4                # ANTLR grammar
+├── main.py                  # CLI entrypoint (wired via [project.scripts])
+├── pyproject.toml           # Project config + dependencies
+├── uv.lock                  # Locked dependency set for uv
+└── README.md
 ```
 
-## Usage
-### Install dependencies (alternative using uv)
-```uv sync```
-### Generate parser from grammar
-```uv run -- antlr4 -Dlanguage=Python3 AiLang.g4 -visitor -o grammar/```
-### Run all tests and build antlr
-```bash build.sh```
-### Run a specific file
-```
-uv run main.py <file.ail>
+## Features (Current)
 
-# Example
-uv run main.py helloWorld.ail
-```
+- DSL syntax for describing ML workflows
+- ANTLR4-based parser with a Python interpreter
+- Built-in library registration (see `ailang/lib/`)
+- Integrations: scikit-learn (e.g. SVM, logistic regression), CatBoost, pandas/numpy for data handling, joblib for persistence
 
-## AST Visualization
-Generate an Abstract Syntax Tree (AST) image:
-```
-# Requires Graphviz installed
-uv run main.py test.ail -g ast.png
-```
-## Features
-- Custom DSL for ML workflows
-- ANTLR4-based lexer and parser
-- Automatic parser generation
-- Test execution support
-- AST generation and visualization
+## Examples
 
-## How It Works
-* AiLang.g4 defines the grammar of the language
-* ANTLR generates the lexer and parser (```grammar/``` folder)
-* main.py:
-  * Reads ```.ail``` files
-  * Builds the parse tree
-  * Interprets the structure
+The `examples/` directory contains runnable programs:
 
-## Example
-```uv run main.py helloWorld.ail```
-Executes an AiLang program and processes it through the parser.
+- `examples/svm.ail`
+- `examples/logistic_regression.ail`
+- `examples/test_new.ail`
+
+The example datasets live alongside the programs:
+
+- `examples/train_features.csv`, `examples/train_labels.csv`
+- `examples/test_features.csv`
 
 ## Notes
-* Do not manually edit files inside ```grammar/```
-* Always regenerate parser after modifying ```AiLang.g4```
+
+- The CLI entrypoint is `main.py` and is exposed as `ailang` via `[project.scripts]` in `pyproject.toml`.
+
+## Development
+
+Regenerate the parser from `AiLang.g4`:
+
+```bash
+./ailang/scripts/build.sh
+```
+
+Run the repo checks locally (typecheck, lint, formatting):
+
+```bash
+./ci-checks.sh
+```
+
+Generated sources live under `ailang/grammar/` and should not be edited by hand.
