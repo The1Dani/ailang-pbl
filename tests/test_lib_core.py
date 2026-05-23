@@ -22,7 +22,7 @@ from tests.conftest import makeList, makeNum, makeStr
 # ---------------------------------------------------------------------------
 
 
-def testFitReturnsAilangobjWithPytype(clfData):  # pylint: disable=invalid-name
+def testFitReturnsAilangobjWithPytype(clfData):
     x, y = clfData
     parent = AiLangObj("logistic_regression")  # val defaults to None
 
@@ -37,9 +37,7 @@ def testFitReturnsAilangobjWithPytype(clfData):  # pylint: disable=invalid-name
     assert isinstance(result.val, PyType)
 
 
-def testFitWithExistingPytypeParent(
-    clfData, trainedClf
-):  # pylint: disable=invalid-name
+def testFitWithExistingPytypeParent(clfData, trainedClf):
     """Passing a PyType parent (already a model) re-fits it."""
     x, y = clfData
     fresh = copy.deepcopy(trainedClf)
@@ -57,7 +55,7 @@ def testFitWithExistingPytypeParent(
 # ---------------------------------------------------------------------------
 
 
-def testPredictLengthMatchesInput(clfData, trainedClf):  # pylint: disable=invalid-name
+def testPredictLengthMatchesInput(clfData, trainedClf):
     x, _ = clfData
     result = MethodSpace().call(
         trainedClf,
@@ -74,9 +72,7 @@ def testPredictLengthMatchesInput(clfData, trainedClf):  # pylint: disable=inval
 # ---------------------------------------------------------------------------
 
 
-def testScoreReturnsFloatInUnitInterval(
-    clfData, trainedClf
-):  # pylint: disable=invalid-name
+def testScoreReturnsFloatInUnitInterval(clfData, trainedClf):
     x, y = clfData
     result = MethodSpace().call(
         trainedClf,
@@ -94,7 +90,7 @@ def testScoreReturnsFloatInUnitInterval(
 # ---------------------------------------------------------------------------
 
 
-def testCrossValidateHasScoresAndMeanScore(clfData):  # pylint: disable=invalid-name
+def testCrossValidateHasScoresAndMeanScore(clfData):
     x, y = clfData
     parent = AiLangObj("logistic_regression")  # val = None
 
@@ -114,7 +110,7 @@ def testCrossValidateHasScoresAndMeanScore(clfData):  # pylint: disable=invalid-
     assert result.getMember("mean_score") is not None
 
 
-def testCrossValidateMeanScoreIsFloat(clfData):  # pylint: disable=invalid-name
+def testCrossValidateMeanScoreIsFloat(clfData):
     x, y = clfData
     parent = AiLangObj("logistic_regression")  # val = None
 
@@ -142,7 +138,7 @@ def testCrossValidateMeanScoreIsFloat(clfData):  # pylint: disable=invalid-name
 # ---------------------------------------------------------------------------
 
 
-def testTrainTestSplitHasFourMembers(clfData):  # pylint: disable=invalid-name
+def testTrainTestSplitHasFourMembers(clfData):
     x, y = clfData
     result = FunctionSpace().call(
         "train_test_split",
@@ -153,15 +149,19 @@ def testTrainTestSplitHasFourMembers(clfData):  # pylint: disable=invalid-name
         assert result.getMember(name) is not None, f"Missing member: {name}"
 
 
-def testTrainTestSplitSizes(clfData):  # pylint: disable=invalid-name
+def testTrainTestSplitSizes(clfData):
     x, y = clfData  # 40 rows
     result = FunctionSpace().call(
         "train_test_split",
         [makeList(x.tolist()), makeList(y.tolist()), makeNum(0.25)],
         {},
     )
-    x_test = result.getMember("X_test").get().get()
-    x_train = result.getMember("X_train").get().get()
+    x_test_obj = result.getMember("X_test")
+    assert x_test_obj is not None
+    x_train_obj = result.getMember("X_train")
+    assert x_train_obj is not None
+    x_test = x_test_obj.get().get()
+    x_train = x_train_obj.get().get()
     assert len(x_test) == 10
     assert len(x_train) == 30
 
@@ -171,9 +171,7 @@ def testTrainTestSplitSizes(clfData):  # pylint: disable=invalid-name
 # ---------------------------------------------------------------------------
 
 
-def testSaveLoadModelRoundtrip(
-    tmp_path, trainedClf, clfData
-):  # pylint: disable=invalid-name
+def testSaveLoadModelRoundtrip(tmp_path, trainedClf, clfData):
     path = str(tmp_path / "model.joblib")
 
     MethodSpace().call(trainedClf, "save_model", [makeStr(path)], {})

@@ -73,7 +73,7 @@ def testMetricScoreUnknownMetricRaises():
 # ---------------------------------------------------------------------------
 
 
-def testGetCoefficientsLength(trainedClf, clfData):  # pylint: disable=invalid-name
+def testGetCoefficientsLength(trainedClf, clfData):
     x, _ = clfData
     n_features = x.shape[1]
     feature_names = makeList([f"f{i}" for i in range(n_features)])
@@ -83,7 +83,7 @@ def testGetCoefficientsLength(trainedClf, clfData):  # pylint: disable=invalid-n
     assert len(coef_list) == n_features
 
 
-def testGetCoefficientsKeys(trainedClf, clfData):  # pylint: disable=invalid-name
+def testGetCoefficientsKeys(trainedClf, clfData):
     x, _ = clfData
     feature_names = makeList([f"f{i}" for i in range(x.shape[1])])
     result = MethodSpace().call(trainedClf, "get_coefficients", [feature_names], {})
@@ -111,7 +111,7 @@ def testResidualsValues():
 # ---------------------------------------------------------------------------
 
 
-def testGetSupportVectorsNonempty(trainedSvc):  # pylint: disable=invalid-name
+def testGetSupportVectorsNonempty(trainedSvc):
     result = MethodSpace().call(trainedSvc, "get_support_vectors", [], {})
     assert isinstance(result.val, ListType)
     assert len(result.get().get()) > 0
@@ -122,7 +122,7 @@ def testGetSupportVectorsNonempty(trainedSvc):  # pylint: disable=invalid-name
 # ---------------------------------------------------------------------------
 
 
-def testGetEpsilonBandPositive(trainedSvr):  # pylint: disable=invalid-name
+def testGetEpsilonBandPositive(trainedSvr):
     result = MethodSpace().call(trainedSvr, "get_epsilon_band", [], {})
     assert isinstance(result.val, NumType)
     assert result.get().get() > 0
@@ -133,9 +133,7 @@ def testGetEpsilonBandPositive(trainedSvr):  # pylint: disable=invalid-name
 # ---------------------------------------------------------------------------
 
 
-def testFeatureImportanceRfHasImportanceDf(
-    trainedRf, clfData
-):  # pylint: disable=invalid-name
+def testFeatureImportanceRfHasImportanceDf(trainedRf, clfData):
     x, _ = clfData
     feature_names = makeList([f"f{i}" for i in range(x.shape[1])])
     result = MethodSpace().call(
@@ -146,9 +144,7 @@ def testFeatureImportanceRfHasImportanceDf(
     assert len(member.get().get()) == x.shape[1]
 
 
-def testFeatureImportanceLinearCoefFallback(
-    trainedClf, clfData
-):  # pylint: disable=invalid-name
+def testFeatureImportanceLinearCoefFallback(trainedClf, clfData):
     """LogisticRegression has coef_ not feature_importances_ — should not raise."""
     x, _ = clfData
     feature_names = makeList([f"f{i}" for i in range(x.shape[1])])
@@ -164,7 +160,7 @@ def testFeatureImportanceLinearCoefFallback(
 # ---------------------------------------------------------------------------
 
 
-def testFindOptimalKReturnsBestK(clfData):  # pylint: disable=invalid-name
+def testFindOptimalKReturnsBestK(clfData):
     x, y = clfData
     k_range = list(range(1, 6))
     result = FunctionSpace().call(
@@ -184,7 +180,7 @@ def testFindOptimalKReturnsBestK(clfData):  # pylint: disable=invalid-name
     assert int(best_k) in k_range
 
 
-def testFindOptimalKCvScoresLength(clfData):  # pylint: disable=invalid-name
+def testFindOptimalKCvScoresLength(clfData):
     x, y = clfData
     k_range = list(range(1, 6))
     result = FunctionSpace().call(
@@ -208,9 +204,7 @@ def testFindOptimalKCvScoresLength(clfData):  # pylint: disable=invalid-name
 # ---------------------------------------------------------------------------
 
 
-def testGetNeighborsReturnsDistancesAndIndices(
-    trainedKnn, clfData
-):  # pylint: disable=invalid-name
+def testGetNeighborsReturnsDistancesAndIndices(trainedKnn, clfData):
     x, _ = clfData
     query = makeList(x[:2].tolist())
     result = MethodSpace().call(trainedKnn, "get_neighbors", [query], {})
@@ -224,7 +218,7 @@ def testGetNeighborsReturnsDistancesAndIndices(
 # ---------------------------------------------------------------------------
 
 
-def testToCatboostPoolType(clfData):  # pylint: disable=invalid-name
+def testToCatboostPoolType(clfData):
     x, y = clfData
     result = FunctionSpace().call(
         "to_catboost_pool",
@@ -239,7 +233,7 @@ def testToCatboostPoolType(clfData):  # pylint: disable=invalid-name
 # ---------------------------------------------------------------------------
 
 
-def testShapValuesShape(trainedCatboost, clfData):  # pylint: disable=invalid-name
+def testShapValuesShape(trainedCatboost, clfData):
     x, y = clfData
     pool = Pool(x, y)
 

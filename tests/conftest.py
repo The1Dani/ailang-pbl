@@ -101,56 +101,56 @@ def regData():
 
 
 @pytest.fixture(scope="session")
-def trainedClf(clf_data):
-    x, y = clf_data
+def trainedClf(clfData):
+    x, y = clfData
     model = LogisticRegression(random_state=42, max_iter=1000)
     model.fit(x, y)
     return AiLangObj("model", PyType(model))
 
 
 @pytest.fixture(scope="session")
-def trainedLr(reg_data):
-    x, y = reg_data
+def trainedLr(regData):
+    x, y = regData
     model = LinearRegression()
     model.fit(x, y)
     return AiLangObj("model", PyType(model))
 
 
 @pytest.fixture(scope="session")
-def trainedSvc(clf_data):
-    x, y = clf_data
+def trainedSvc(clfData):
+    x, y = clfData
     model = SVC(kernel="linear", random_state=42)
     model.fit(x, y)
     return AiLangObj("model", PyType(model))
 
 
 @pytest.fixture(scope="session")
-def trainedSvr(reg_data):
-    x, y = reg_data
+def trainedSvr(regData):
+    x, y = regData
     model = SVR(kernel="linear")
     model.fit(x, y)
     return AiLangObj("model", PyType(model))
 
 
 @pytest.fixture(scope="session")
-def trainedRf(clf_data):
-    x, y = clf_data
+def trainedRf(clfData):
+    x, y = clfData
     model = RandomForestClassifier(n_estimators=10, random_state=42)
     model.fit(x, y)
     return AiLangObj("model", PyType(model))
 
 
 @pytest.fixture(scope="session")
-def trainedKnn(clf_data):
-    x, y = clf_data
+def trainedKnn(clfData):
+    x, y = clfData
     model = KNeighborsClassifier(n_neighbors=3)
     model.fit(x, y)
     return AiLangObj("model", PyType(model))
 
 
 @pytest.fixture(scope="session")
-def trainedCatboost(clf_data):
-    x, y = clf_data
+def trainedCatboost(clfData):
+    x, y = clfData
     model = CatBoostClassifier(iterations=10, random_seed=42, verbose=0)
     model.fit(x, y)
     return AiLangObj("model", PyType(model))
