@@ -151,6 +151,12 @@ class FunctionSpace(Space):
             return func.call(args, kwargs)
         raise ValueError("The function is not available")
 
+    def saveSpace(self) -> dict[str, AiLangFunc]:
+        return copy.deepcopy(self.functions)
+
+    def loadSpace(self, saved: dict[str, AiLangFunc]) -> None:
+        self.functions = copy.copy(saved)
+
 
 class MethodSpace(Space):
     """Method Space that stores the available methods, Its a singleton class"""
@@ -198,6 +204,12 @@ class MethodSpace(Space):
                 return func.call(args, kwargs)
             raise ValueError(f"type {str(ttype)} does not have method {ident}")
         raise ValueError(f"Type {ttype} does not have methods")
+
+    def saveSpace(self) -> dict[str, dict[str, AiLangFunc]]:
+        return copy.deepcopy(self.functions)
+
+    def loadSpace(self, saved: dict[str, dict[str, AiLangFunc]]) -> None:
+        self.functions = copy.copy(saved)
 
 
 def makeFunc(
