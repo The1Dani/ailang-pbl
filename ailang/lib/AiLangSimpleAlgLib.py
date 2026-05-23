@@ -20,17 +20,22 @@ def unwrap(value: Any) -> Any:
         return value.get()
     return value
 
+
 def requireAttr(obj: Any, attr: str) -> None:
     if not hasattr(obj, attr):
         raise ValueError(f"Object does not support '{attr}'")
 
+
 def toListObj(name: str, arr: np.ndarray) -> AiLangObj:
     return AiLangObj(name, ListType(arr.tolist()))
+
 
 def toNumObj(name: str, value: float) -> AiLangObj:
     return AiLangObj(name, NumType(float(value), NumTypes.FLOAT))
 
+
 # TODO: Decide What to do with this file
+
 
 # ─────────────────────────────────────────────
 # Prediction
@@ -44,16 +49,18 @@ def predict(*args, **kwargs):
     pred = model.predict(x)
     return toListObj("predictions", np.asarray(pred))
 
+
 # ─────────────────────────────────────────────
 # Evaluation
 # ─────────────────────────────────────────────
 
 _METRIC_FNS = {
-    "r2":       sklearn_metrics.r2_score,
+    "r2": sklearn_metrics.r2_score,
     "accuracy": sklearn_metrics.accuracy_score,
-    "mse":      sklearn_metrics.mean_squared_error,
-    "mae":      sklearn_metrics.mean_absolute_error,
+    "mse": sklearn_metrics.mean_squared_error,
+    "mae": sklearn_metrics.mean_absolute_error,
 }
+
 
 @makeFunc("metric_score", ["y_true", "y_pred", "metric"])
 def metricScore(*args, **kwargs):
@@ -64,16 +71,16 @@ def metricScore(*args, **kwargs):
 
     fn = _METRIC_FNS.get(str(metric).lower())
     if fn is None:
-        raise ValueError(
-            f"Unknown metric '{metric}'. Supported: {list(_METRIC_FNS)}"
-        )
+        raise ValueError(f"Unknown metric '{metric}'. Supported: {list(_METRIC_FNS)}")
 
     score = fn(y_true, y_pred)
     return toNumObj(f"{metric}_score", float(score))
 
+
 # ─────────────────────────────────────────────
 # Coefficients
 # ─────────────────────────────────────────────
+
 
 @makeMethod("get_coefficients", PyType, ["feature_names"])
 def getCoefficients(*args, **kwargs):
@@ -90,9 +97,11 @@ def getCoefficients(*args, **kwargs):
     ]
     return AiLangObj("coef_table", ListType(table))
 
+
 # ─────────────────────────────────────────────
 # Residuals
 # ─────────────────────────────────────────────
+
 
 @makeMethod("residuals", ListType, ["y_pred"])
 def residuals(*args, **kwargs):
@@ -101,9 +110,11 @@ def residuals(*args, **kwargs):
     y_pred = np.asarray(unwrap(vs["y_pred"]))
     return AiLangObj("residuals", ListType((y_true - y_pred).tolist()))
 
+
 # -----------------------------
 # Support Vector classifier (SVc)
 # -----------------------------
+
 
 @makeMethod("get_support_vectors", PyType, [])
 def getSupportVectors(*args, **kwargs):
@@ -125,6 +136,7 @@ def getEpsilonBand(*args, **kwargs):
     requireAttr(model, "epsilon")
     return toNumObj("epsilon", model.epsilon)
 
+
 # ─────────────────────────────────────────────
 # Feature importance  (generic: RF, linear, CatBoost, …)
 # ─────────────────────────────────────────────
@@ -142,15 +154,17 @@ def _computeImportances(model: Any, feature_names: list, top_n: int | None) -> l
         reverse=True,
     )
     if top_n is not None:
-        paired = paired[:int(top_n)]
+        paired = paired[: int(top_n)]
     return [{"feature": f, "importance": round(v, 6)} for f, v in paired]
+
 
 @makeMethod("feature_importance", PyType, ["feature_names", "top_n"])
 def featureImportance(*args, **kwargs):
     vs = getVars(args, kwargs)
     model = unwrap(vs["_parent_"])
     feature_names = unwrap(vs.get("feature_names")) or [
-        f"feature_{i}" for i in range(
+        f"feature_{i}"
+        for i in range(
             len(model.feature_importances_)
             if hasattr(model, "feature_importances_")
             else len(np.asarray(model.coef_).ravel())
@@ -164,9 +178,11 @@ def featureImportance(*args, **kwargs):
     result.setMember(AiLangObj("importance_df", ListType(importance_list)))
     return result
 
+
 # ─────────────────────────────────────────────
 # SHAP values (CatBoost or any compatible model)
 # ─────────────────────────────────────────────
+
 
 @makeMethod("shap_values", PyType, ["x"])
 def shapValues(*args, **kwargs):
@@ -192,9 +208,11 @@ def toCatboostPool(*args, **kwargs):
     pool = Pool(data=x, label=y, cat_features=cat_features)
     return AiLangObj("catboost_pool", pool)
 
+
 # -----------------------------
 # K-Nearest Neighbors
 # -----------------------------
+
 
 @makeMethod("get_neighbors", PyType, ["x_query"])
 def getNeighbors(*args, **kwargs):
