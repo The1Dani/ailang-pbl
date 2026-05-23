@@ -15,12 +15,6 @@ from ailang.engine.AiLangType import NumType, NumTypes, ListType, NoneType, PyTy
 from .FuncUtils import getVars
 
 
-def unwrap(value: Any) -> Any:
-    if isinstance(value, AiLangObj):
-        return value.get()
-    return value
-
-
 def requireAttr(obj: Any, attr: str) -> None:
     if not hasattr(obj, attr):
         raise ValueError(f"Object does not support '{attr}'")
@@ -34,8 +28,6 @@ def toNumObj(name: str, value: float) -> AiLangObj:
     return AiLangObj(name, NumType(float(value), NumTypes.FLOAT))
 
 
-# TODO: Decide What to do with this file
-
 
 # ─────────────────────────────────────────────
 # Prediction
@@ -43,8 +35,8 @@ def toNumObj(name: str, value: float) -> AiLangObj:
 @makeMethod("predict", PyType, ["x"])
 def predict(*args, **kwargs):
     vs = getVars(args, kwargs)
-    model = unwrap(vs["_parent_"])
-    x = unwrap(vs["x"])
+    model = vs["_parent_"]
+    x = vs["x"]
     requireAttr(model, "predict")
     pred = model.predict(x)
     return toListObj("predictions", np.asarray(pred))
@@ -65,9 +57,9 @@ _METRIC_FNS = {
 @makeFunc("metric_score", ["y_true", "y_pred", "metric"])
 def metricScore(*args, **kwargs):
     vs = getVars(args, kwargs)
-    y_true = unwrap(vs["y_true"])
-    y_pred = unwrap(vs["y_pred"])
-    metric = unwrap(vs["metric"])
+    y_true = vs["y_true"]
+    y_pred = vs["y_pred"]
+    metric = vs["metric"]
 
     fn = _METRIC_FNS.get(str(metric).lower())
     if fn is None:
@@ -85,8 +77,8 @@ def metricScore(*args, **kwargs):
 @makeMethod("get_coefficients", PyType, ["feature_names"])
 def getCoefficients(*args, **kwargs):
     vs = getVars(args, kwargs)
-    model = unwrap(vs["_parent_"])
-    feature_names = unwrap(vs["feature_names"])
+    model = vs["_parent_"]
+    feature_names = vs["feature_names"]
 
     requireAttr(model, "coef_")
     coefs = np.asarray(model.coef_).ravel()
@@ -106,8 +98,8 @@ def getCoefficients(*args, **kwargs):
 @makeMethod("residuals", ListType, ["y_pred"])
 def residuals(*args, **kwargs):
     vs = getVars(args, kwargs)
-    y_true = np.asarray(unwrap(vs["_parent_"]))
-    y_pred = np.asarray(unwrap(vs["y_pred"]))
+    y_true = np.asarray(vs["_parent_"])
+    y_pred = np.asarray(vs["y_pred"])
     return AiLangObj("residuals", ListType((y_true - y_pred).tolist()))
 
 
@@ -119,7 +111,7 @@ def residuals(*args, **kwargs):
 @makeMethod("get_support_vectors", PyType, [])
 def getSupportVectors(*args, **kwargs):
     vs = getVars(args, kwargs)
-    model = unwrap(vs["_parent_"])
+    model = vs["_parent_"]
 
     requireAttr(model, "support_vectors_")
     return toListObj("support_vectors", model.support_vectors_)
@@ -131,7 +123,7 @@ def getSupportVectors(*args, **kwargs):
 @makeMethod("get_epsilon_band", PyType, [])
 def getEpsilonBand(*args, **kwargs):
     vs = getVars(args, kwargs)
-    model = unwrap(vs["_parent_"])
+    model = vs["_parent_"]
 
     requireAttr(model, "epsilon")
     return toNumObj("epsilon", model.epsilon)
@@ -161,8 +153,8 @@ def _computeImportances(model: Any, feature_names: list, top_n: int | None) -> l
 @makeMethod("feature_importance", PyType, ["feature_names", "top_n"])
 def featureImportance(*args, **kwargs):
     vs = getVars(args, kwargs)
-    model = unwrap(vs["_parent_"])
-    feature_names = unwrap(vs.get("feature_names")) or [
+    model = vs["_parent_"]
+    feature_names = vs.get("feature_names") or [
         f"feature_{i}"
         for i in range(
             len(model.feature_importances_)
@@ -187,8 +179,8 @@ def featureImportance(*args, **kwargs):
 @makeMethod("shap_values", PyType, ["x"])
 def shapValues(*args, **kwargs):
     vs = getVars(args, kwargs)
-    model = unwrap(vs["_parent_"])
-    x = unwrap(vs["x"])
+    model = vs["_parent_"]
+    x = vs["x"]
 
     requireAttr(model, "get_feature_importance")
     shap_vals = model.get_feature_importance(data=x, type="ShapValues")
@@ -201,8 +193,8 @@ def shapValues(*args, **kwargs):
 @makeFunc("to_catboost_pool", ["x", "y", "cat_features"])
 def toCatboostPool(*args, **kwargs):
     vs = getVars(args, kwargs)
-    x = unwrap(vs["x"])
-    y = unwrap(vs["y"])
+    x = vs["x"]
+    y = vs["y"]
     cat_features = vs.get("cat_features")
 
     pool = Pool(data=x, label=y, cat_features=cat_features)
@@ -217,8 +209,8 @@ def toCatboostPool(*args, **kwargs):
 @makeMethod("get_neighbors", PyType, ["x_query"])
 def getNeighbors(*args, **kwargs):
     vs = getVars(args, kwargs)
-    model = unwrap(vs["_parent_"])
-    x_query = unwrap(vs["x_query"])
+    model = vs["_parent_"]
+    x_query = vs["x_query"]
 
     requireAttr(model, "kneighbors")
     distances, indices = model.kneighbors(x_query)
