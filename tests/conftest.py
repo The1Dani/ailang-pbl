@@ -19,7 +19,7 @@ from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC, SVR
 
-import ailang.lib.AiLangLib as _  # noqa: F401
+import ailang.lib.AiLangLib as _
 
 from ailang.engine.AiLangFunc import FunctionSpace, MethodSpace
 from ailang.engine.AiLangObj import AiLangObj

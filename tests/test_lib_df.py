@@ -6,7 +6,7 @@ Covers: dropna, dropna_ip
 
 import pandas as pd
 
-import ailang.lib.AiLangLib as _  # noqa: F401
+import ailang.lib.AiLangLib as _
 
 from ailang.engine.AiLangFunc import MethodSpace
 from ailang.engine.AiLangObj import AiLangObj, fromDFtoObj

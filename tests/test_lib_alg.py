@@ -9,7 +9,7 @@ Covers: metric_score, get_coefficients, residuals, get_support_vectors,
 import pytest
 from catboost import Pool
 
-import ailang.lib.AiLangLib as _  # noqa: F401
+import ailang.lib.AiLangLib as _
 
 from ailang.engine.AiLangFunc import FunctionSpace, MethodSpace
 from ailang.engine.AiLangObj import AiLangObj
