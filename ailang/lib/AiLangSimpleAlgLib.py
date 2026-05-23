@@ -28,20 +28,6 @@ def toNumObj(name: str, value: float) -> AiLangObj:
     return AiLangObj(name, NumType(float(value), NumTypes.FLOAT))
 
 
-
-# ─────────────────────────────────────────────
-# Prediction
-# ─────────────────────────────────────────────
-@makeMethod("predict", PyType, ["x"])
-def predict(*args, **kwargs):
-    vs = getVars(args, kwargs)
-    model = vs["_parent_"]
-    x = vs["x"]
-    requireAttr(model, "predict")
-    pred = model.predict(x)
-    return toListObj("predictions", np.asarray(pred))
-
-
 # ─────────────────────────────────────────────
 # Evaluation
 # ─────────────────────────────────────────────
