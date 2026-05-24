@@ -24,6 +24,16 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by AiLangParser#Block2Validate.
+    def visitBlock2Validate(self, ctx:AiLangParser.Block2ValidateContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#validate.
+    def visitValidate(self, ctx:AiLangParser.ValidateContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by AiLangParser#label.
     def visitLabel(self, ctx:AiLangParser.LabelContext):
         return self.visitChildren(ctx)

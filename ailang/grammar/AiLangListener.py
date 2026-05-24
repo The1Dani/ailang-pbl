@@ -35,6 +35,24 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by AiLangParser#Block2Validate.
+    def enterBlock2Validate(self, ctx:AiLangParser.Block2ValidateContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#Block2Validate.
+    def exitBlock2Validate(self, ctx:AiLangParser.Block2ValidateContext):
+        pass
+
+
+    # Enter a parse tree produced by AiLangParser#validate.
+    def enterValidate(self, ctx:AiLangParser.ValidateContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#validate.
+    def exitValidate(self, ctx:AiLangParser.ValidateContext):
+        pass
+
+
     # Enter a parse tree produced by AiLangParser#label.
     def enterLabel(self, ctx:AiLangParser.LabelContext):
         pass

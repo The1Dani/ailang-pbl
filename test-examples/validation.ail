@@ -1,0 +1,30 @@
+
+function validate <- (model) {
+    return model
+}
+
+function validate_select <- (scores) {
+    //...
+}
+
+-> {
+
+} -> @Hello {
+
+}
+
+
+
+@Hello -> {
+
+} -> @Validate(validate, model)
+
+
+@Hello -> {
+
+} -> @Validate(validate, model)
+
+@Hello -> {
+
+} -> @Validate(validate, model)
+
