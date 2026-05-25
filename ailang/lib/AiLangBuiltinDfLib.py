@@ -9,11 +9,11 @@ from ailang.engine.AiLangType import DfType
 def dfBuiltinDropnaInplace(parent, *items):
     if not isinstance(parent, AiLangObj):
         raise ValueError()
-    df = parent.get()
+    df = parent.get().get()
     if not isinstance(df, pd.DataFrame):
         raise ValueError()
 
-    df.dropna(*items)
+    df = df.dropna(*items)
     parent.update(fromDFtoObj(parent.ident, df))
 
     return parent
@@ -23,10 +23,10 @@ def dfBuiltinDropnaInplace(parent, *items):
 def dfBuiltinDropna(parent, *items):
     if not isinstance(parent, AiLangObj):
         raise ValueError()
-    df = parent.get()
+    df = parent.get().get()
     if not isinstance(df, pd.DataFrame):
         raise ValueError()
 
-    df.dropna(*items)
+    df = df.dropna(*items)
 
     return fromDFtoObj(parent.ident, df)

@@ -1,221 +1,176 @@
-from typing import Any, cast
+from typing import Any
 
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import cross_val_score
-from sklearn.metrics import r2_score
+from sklearn import metrics as sklearn_metrics
 
 from catboost import Pool
 
 import numpy as np
 
-from ailang.engine.AiLangFunc import makeFunc
+from ailang.engine.AiLangFunc import makeFunc, makeMethod
 from ailang.engine.AiLangObj import AiLangObj
-from ailang.engine.AiLangType import NumType, NumTypes, ListType, NoneType
-from ailang.shared.protocols import (
-    SklearnClassifier,
-    SklearnLinearRegressor,
-    SklearnSVC,
-    SklearnSVR,
-    SklearnRandomForest,
-    SklearnKNN,
-    CatBoostModel,
-    NumpyArrayLike,
-)
+from ailang.engine.AiLangType import NumType, NumTypes, ListType, NoneType, PyType
 
 from .FuncUtils import getVars
 
-# TODO: Decide What to do with this file
+
+def requireAttr(obj: Any, attr: str) -> None:
+    if not hasattr(obj, attr):
+        raise ValueError(f"Object does not support '{attr}'")
 
 
-# -----------------------------
-# Logistic Regression
-# -----------------------------
-@makeFunc("predict_proba_logistic", ["model", "x"])
-def predictProbaLogistic(*args, **kwargs):
+def toListObj(name: str, arr: np.ndarray) -> AiLangObj:
+    return AiLangObj(name, ListType(arr.tolist()))
+
+
+def toNumObj(name: str, value: float) -> AiLangObj:
+    return AiLangObj(name, NumType(float(value), NumTypes.FLOAT))
+
+
+# ─────────────────────────────────────────────
+# Evaluation
+# ─────────────────────────────────────────────
+
+_METRIC_FNS = {
+    "r2": sklearn_metrics.r2_score,
+    "accuracy": sklearn_metrics.accuracy_score,
+    "mse": sklearn_metrics.mean_squared_error,
+    "mae": sklearn_metrics.mean_absolute_error,
+}
+
+
+@makeFunc("metric_score", ["y_true", "y_pred", "metric"])
+def metricScore(*args, **kwargs):
     vs = getVars(args, kwargs)
+    y_true = vs["y_true"]
+    y_pred = vs["y_pred"]
+    metric = vs["metric"]
 
-    model: Any = vs["model"]
-    x: Any = vs["x"]
+    fn = _METRIC_FNS.get(str(metric).lower())
+    if fn is None:
+        raise ValueError(f"Unknown metric '{metric}'. Supported: {list(_METRIC_FNS)}")
 
-    if isinstance(model, AiLangObj):
-        model = model.get()
-
-    if isinstance(x, AiLangObj):
-        x = x.get()
-
-    clf = cast(SklearnClassifier, model)
-    proba: NumpyArrayLike = clf.predict_proba(cast(Any, x))
-
-    return AiLangObj("proba", ListType(proba.tolist()))
+    score = fn(y_true, y_pred)
+    return toNumObj(f"{metric}_score", float(score))
 
 
-@makeFunc("get_coef_table", ["model", "feature_names"])
-def getCoefTable(*args, **kwargs):
+# ─────────────────────────────────────────────
+# Coefficients
+# ─────────────────────────────────────────────
+
+
+@makeMethod("get_coefficients", PyType, ["feature_names"])
+def getCoefficients(*args, **kwargs):
     vs = getVars(args, kwargs)
+    model = vs["_parent_"]
+    feature_names = vs["feature_names"]
 
-    model: Any = vs["model"]
-    feature_names: Any = vs["feature_names"]
+    requireAttr(model, "coef_")
+    coefs = np.asarray(model.coef_).ravel()
 
-    if isinstance(model, AiLangObj):
-        model = model.get()
-
-    if isinstance(feature_names, AiLangObj):
-        feature_names = feature_names.get()
-
-    regressor = cast(SklearnLinearRegressor, model)
-    coefs: NumpyArrayLike = regressor.coef_
-
-    table: list[list[Any]] = []
-    for name, coef in zip(cast(Any, feature_names), cast(Any, coefs)):
-        table.append([name, float(cast(Any, coef))])
-
+    table = [
+        {"feature": name, "coefficient": float(coef)}
+        for name, coef in zip(feature_names, coefs)
+    ]
     return AiLangObj("coef_table", ListType(table))
 
 
-# -----------------------------
-# Linear Regression
-# -----------------------------
+# ─────────────────────────────────────────────
+# Residuals
+# ─────────────────────────────────────────────
 
 
-@makeFunc("residuals", ["y_true", "y_pred"])
+@makeMethod("residuals", ListType, ["y_pred"])
 def residuals(*args, **kwargs):
     vs = getVars(args, kwargs)
-
-    y_true: Any = vs["y_true"]
-    y_pred: Any = vs["y_pred"]
-
-    if isinstance(y_true, AiLangObj):
-        y_true = y_true.get()
-
-    if isinstance(y_pred, AiLangObj):
-        y_pred = y_pred.get()
-
-    y_true_arr = cast(NumpyArrayLike, y_true)
-    y_pred_arr = cast(NumpyArrayLike, y_pred)
-    res: list[Any] = (y_true_arr - y_pred_arr).tolist()
-
-    return AiLangObj("residuals", ListType(res))
-
-
-@makeFunc("score_r2", ["model", "x_test", "y_test"])
-def scoreR2(*args, **kwargs):
-    vs = getVars(args, kwargs)
-
-    model: Any = vs["model"]
-    x_test: Any = vs["x_test"]
-    y_test: Any = vs["y_test"]
-
-    if isinstance(model, AiLangObj):
-        model = model.get()
-
-    if isinstance(x_test, AiLangObj):
-        x_test = x_test.get()
-
-    if isinstance(y_test, AiLangObj):
-        y_test = y_test.get()
-
-    predictor = cast(SklearnLinearRegressor, model)
-    pred: NumpyArrayLike = predictor.predict(cast(Any, x_test))
-    score = r2_score(cast(Any, y_test), cast(Any, pred))
-
-    return AiLangObj("r2", NumType(score, NumTypes.FLOAT))
+    y_true = np.asarray(vs["_parent_"])
+    y_pred = np.asarray(vs["y_pred"])
+    return AiLangObj("residuals", ListType((y_true - y_pred).tolist()))
 
 
 # -----------------------------
 # Support Vector classifier (SVc)
 # -----------------------------
-@makeFunc("get_support_vectors", ["model"])
+
+
+@makeMethod("get_support_vectors", PyType, [])
 def getSupportVectors(*args, **kwargs):
     vs = getVars(args, kwargs)
+    model = vs["_parent_"]
 
-    model: Any = vs["model"]
-
-    if isinstance(model, AiLangObj):
-        model = model.get()
-
-    svc = cast(SklearnSVC, model)
-    sv: NumpyArrayLike = svc.support_vectors_
-
-    return AiLangObj("support_vectors", ListType(sv.tolist()))
-
-
-@makeFunc("predict_proba_svc", ["model", "x"])
-def predictProbaSVC(*args, **kwargs):
-    vs = getVars(args, kwargs)
-
-    model: Any = vs["model"]
-    x: Any = vs["x"]
-
-    if isinstance(model, AiLangObj):
-        model = model.get()
-
-    if isinstance(x, AiLangObj):
-        x = x.get()
-
-    if not hasattr(model, "predict_proba"):
-        raise ValueError("SVC model not calibrated for probabilities")
-
-    svc = cast(SklearnSVC, model)
-    proba: NumpyArrayLike = svc.predict_proba(cast(Any, x))
-
-    return AiLangObj("svc_proba", ListType(proba.tolist()))
+    requireAttr(model, "support_vectors_")
+    return toListObj("support_vectors", model.support_vectors_)
 
 
 # -----------------------------
 # Support Vector Regressor (SVR)
 # -----------------------------
-@makeFunc("get_epsilon_band", ["model"])
+@makeMethod("get_epsilon_band", PyType, [])
 def getEpsilonBand(*args, **kwargs):
     vs = getVars(args, kwargs)
+    model = vs["_parent_"]
 
-    model: Any = vs["model"]
-
-    if isinstance(model, AiLangObj):
-        model = model.get()
-
-    svr = cast(SklearnSVR, model)
-    eps: float = svr.epsilon
-
-    return AiLangObj("epsilon", NumType(eps, NumTypes.FLOAT))
+    requireAttr(model, "epsilon")
+    return toNumObj("epsilon", model.epsilon)
 
 
-# -----------------------------
-# Random Forest
-# -----------------------------
-
-
-@makeFunc("get_feature_importance", ["model", "feature_names", "top_n"])
-def aiLangGetFeatureImportanceRF(*args, **kwargs) -> AiLangObj:
-    vs = getVars(args, kwargs)
-
-    model_obj = vs["model"]
-    feature_names = vs.get("feature_names")
-    top_n = vs.get("top_n")
-
-    model = model_obj.getMember("model").get()
-    rf_model = cast(SklearnRandomForest, model)
-    importances: NumpyArrayLike = rf_model.feature_importances_
-
-    if feature_names is None:
-        feature_names = [f"feature_{i}" for i in range(len(importances))]
+# ─────────────────────────────────────────────
+# Feature importance  (generic: RF, linear, CatBoost, …)
+# ─────────────────────────────────────────────
+def _computeImportances(model: Any, feature_names: list, top_n: int | None) -> list:
+    if hasattr(model, "feature_importances_"):
+        importances = np.asarray(model.feature_importances_)
+    elif hasattr(model, "coef_"):
+        importances = np.abs(np.asarray(model.coef_).ravel())
+    else:
+        raise ValueError("Model exposes neither 'feature_importances_' nor 'coef_'")
 
     paired = sorted(
-        zip(cast(Any, feature_names), importances.tolist()),
-        key=lambda x: x[1],
+        zip(feature_names, importances.tolist()),
+        key=lambda item: item[1],
         reverse=True,
     )
-
     if top_n is not None:
         paired = paired[: int(top_n)]
+    return [{"feature": f, "importance": round(v, 6)} for f, v in paired]
 
-    result_list = ListType(
-        [{"feature": f, "importance": round(v, 6)} for f, v in paired]
-    )
+
+@makeMethod("feature_importance", PyType, ["feature_names", "top_n"])
+def featureImportance(*args, **kwargs):
+    vs = getVars(args, kwargs)
+    model = vs["_parent_"]
+    feature_names = vs.get("feature_names") or [
+        f"feature_{i}"
+        for i in range(
+            len(model.feature_importances_)
+            if hasattr(model, "feature_importances_")
+            else len(np.asarray(model.coef_).ravel())
+        )
+    ]
+    top_n = vs.get("top_n")
+
+    importance_list = _computeImportances(model, feature_names, top_n)
 
     result = AiLangObj("result", NoneType())
-    result.setMember(AiLangObj("importance_df", result_list))
-
+    result.setMember(AiLangObj("importance_df", ListType(importance_list)))
     return result
+
+
+# ─────────────────────────────────────────────
+# SHAP values (CatBoost or any compatible model)
+# ─────────────────────────────────────────────
+
+
+@makeMethod("shap_values", PyType, ["x"])
+def shapValues(*args, **kwargs):
+    vs = getVars(args, kwargs)
+    model = vs["_parent_"]
+    x = vs["x"]
+
+    requireAttr(model, "get_feature_importance")
+    shap_vals = model.get_feature_importance(data=x, type="ShapValues")
+    return toListObj("shap_values", shap_vals)
 
 
 # -----------------------------
@@ -224,101 +179,33 @@ def aiLangGetFeatureImportanceRF(*args, **kwargs) -> AiLangObj:
 @makeFunc("to_catboost_pool", ["x", "y", "cat_features"])
 def toCatboostPool(*args, **kwargs):
     vs = getVars(args, kwargs)
-
     x = vs["x"]
     y = vs["y"]
     cat_features = vs.get("cat_features")
 
-    if isinstance(x, AiLangObj):
-        x = x.get()
-    if isinstance(y, AiLangObj):
-        y = y.get()
-
     pool = Pool(data=x, label=y, cat_features=cat_features)
-
     return AiLangObj("catboost_pool", pool)
-
-
-@makeFunc("get_feature_importance_catboost", ["model", "importance_type", "x"])
-def aiLangGetFeatureImportancecatBoost(*args, **kwargs) -> AiLangObj:
-    vs = getVars(args, kwargs)
-
-    model_obj = vs["model"]
-    importance_type = vs.get("importance_type", "PredictionValuesChange")
-    x = vs.get("x")
-
-    # ---- get model safely ----
-    model = model_obj.getMember("model").get()
-    cb_model = cast(CatBoostModel, model)
-
-    # ---- compute importances ----
-    shap_values: list[Any] = []
-    importances: list[Any] = []
-
-    if importance_type == "ShapValues" and x is not None:
-
-        raw_shap = cb_model.get_feature_importance(data=x, type="ShapValues")
-        shap_values = raw_shap.tolist()
-
-        # exclude last column (expected value)
-        importances = np.abs(raw_shap[:, :-1]).mean(axis=0).tolist()
-
-    else:
-        importances = cb_model.get_feature_importance(type=importance_type).tolist()
-
-    # ---- feature names ----
-    feature_names: list[str] | None = cb_model.feature_names_
-
-    paired = sorted(
-        zip(cast(Any, feature_names), importances),
-        key=lambda v: v[1],
-        reverse=True,
-    )
-
-    # ---- wrap importance list ----
-    importance_list = ListType(
-        [{"feature": f, "importance": round(v, 6)} for f, v in paired]
-    )
-
-    result = AiLangObj("result", NoneType())
-
-    result.setMember(AiLangObj("importance_df", importance_list))
-
-    # ---- wrap shap values only if present ----
-    if shap_values:
-        result.setMember(AiLangObj("shap_values", ListType(shap_values)))
-
-    return result
-
-
-@makeFunc("get_shap_values", ["model", "x"])
-def getShapValues(*args, **kwargs):
-    vs = getVars(args, kwargs)
-
-    model: Any = vs["model"]
-    x: Any = vs["x"]
-
-    if isinstance(model, AiLangObj):
-        model = model.get()
-
-    if isinstance(x, AiLangObj):
-        x = x.get()
-
-    cb_model = cast(CatBoostModel, model)
-    shap_vals: NumpyArrayLike = cb_model.get_feature_importance(
-        data=x, type="ShapValues"
-    )
-
-    return AiLangObj("shap_values", ListType(shap_vals.tolist()))
 
 
 # -----------------------------
 # K-Nearest Neighbors
 # -----------------------------
-@makeFunc("find_optimal_k", ["x", "y", "k_range", "cv", "metric"])
-def aiLangFindOptimalK(*args, **kwargs) -> AiLangObj:  # pylint: disable=too-many-locals
-    vs = getVars(args, kwargs)
 
+
+@makeMethod("get_neighbors", PyType, ["x_query"])
+def getNeighbors(*args, **kwargs):
+    vs = getVars(args, kwargs)
+    model = vs["_parent_"]
+    x_query = vs["x_query"]
+
+    requireAttr(model, "kneighbors")
+    distances, indices = model.kneighbors(x_query)
+    return AiLangObj("neighbors", ListType([distances.tolist(), indices.tolist()]))
+
+
+@makeFunc("find_optimal_k", ["x", "y", "k_range", "cv", "metric"])
+def aiLangFindOptimalK(*args, **kwargs):  # pylint: disable=too-many-locals
+    vs = getVars(args, kwargs)
     x = vs["x"]
     y = vs["y"]
     k_range = vs.get("k_range", list(range(1, 21)))
@@ -327,15 +214,12 @@ def aiLangFindOptimalK(*args, **kwargs) -> AiLangObj:  # pylint: disable=too-man
 
     best_k = k_range[0]
     best_score = -np.inf
-
     scores_list = []
 
     for k in k_range:
         knn = KNeighborsClassifier(n_neighbors=int(k))
-        scores = cross_val_score(knn, x, y, cv=int(cv), scoring=metric)
-
-        mean_s = float(scores.mean())
-
+        fold_scores = cross_val_score(knn, x, y, cv=int(cv), scoring=metric)
+        mean_s = float(fold_scores.mean())
         scores_list.append({"k": k, "score": round(mean_s, 6)})
 
         if mean_s > best_score:
@@ -343,28 +227,6 @@ def aiLangFindOptimalK(*args, **kwargs) -> AiLangObj:  # pylint: disable=too-man
             best_k = k
 
     result = AiLangObj("result", NoneType())
-
     result.setMember(AiLangObj("best_k", NumType(int(best_k), NumTypes.INT)))
     result.setMember(AiLangObj("cv_scores", ListType(scores_list)))
     return result
-
-
-@makeFunc("get_neighbors", ["model", "x_query"])
-def getNeighbors(*args, **kwargs):
-    vs = getVars(args, kwargs)
-
-    model: Any = vs["model"]
-    x_query: Any = vs["x_query"]
-
-    if isinstance(model, AiLangObj):
-        model = model.get()
-
-    if isinstance(x_query, AiLangObj):
-        x_query = x_query.get()
-
-    knn = cast(SklearnKNN, model)
-    distances: NumpyArrayLike
-    indices: NumpyArrayLike
-    distances, indices = knn.kneighbors(cast(Any, x_query))
-
-    return AiLangObj("neighbors", ListType([distances.tolist(), indices.tolist()]))

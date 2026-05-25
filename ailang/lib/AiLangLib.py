@@ -3,6 +3,8 @@ import codecs
 
 from typing import Any, Union, cast
 
+import numpy as np
+from numpy.typing import NDArray
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split as sk_split
 
@@ -11,9 +13,6 @@ import joblib
 from ailang.engine.AiLangFunc import makeFunc, makeMethod
 from ailang.engine.AiLangObj import AiLangObj, NoneObj
 from ailang.engine.AiLangType import NumType, NumTypes, NoneType, BasicListType, PyType
-
-from ailang.shared.protocols import NumpyArrayLike
-
 
 from . import AiLangBuiltinDfLib as _
 from . import AiLangSimpleAlgLib as _
@@ -136,7 +135,7 @@ def aiLangScore(*args, **kwargs):
     return AiLangObj("score", NumType(float(score_value), NumTypes.FLOAT))
 
 
-@makeFunc("cross_validate", ["x", "y", "cv", "metric"])
+@makeMethod("cross_validate", Union[PyType | None], ["x", "y", "cv", "metric"])
 def aiLangCrossValidate(*args, **kwargs):
     vs = getVars(args, kwargs)
 
@@ -194,21 +193,35 @@ def aiLangTrainTestSplit(*args, **kwargs):
     y: Any = vs["y"]
     test_size = float(vs["test_size"])
 
-    x_train, x_test, y_train, y_test = sk_split(x, y, test_size=test_size)
+    x_arr = np.asarray(x)
+    y_arr = np.asarray(y)
+    split_result = cast(
+        tuple[
+            NDArray[np.float64],
+            NDArray[np.float64],
+            NDArray[np.float64],
+            NDArray[np.float64],
+        ],
+        sk_split(x_arr, y_arr, test_size=test_size),
+    )
+    x_train, x_test, y_train, y_test = split_result
+
+    if x_train is None or x_test is None or y_train is None or y_test is None:
+        raise ValueError("train_test_split returned None values")
 
     result = AiLangObj("split", NoneType())
 
     result.setMember(
-        AiLangObj("X_train", BasicListType(cast(NumpyArrayLike, x_train).tolist()))
+        AiLangObj("X_train", BasicListType(cast(list[float], x_train.tolist())))
     )
     result.setMember(
-        AiLangObj("X_test", BasicListType(cast(NumpyArrayLike, x_test).tolist()))
+        AiLangObj("X_test", BasicListType(cast(list[float], x_test.tolist())))
     )
     result.setMember(
-        AiLangObj("y_train", BasicListType(cast(NumpyArrayLike, y_train).tolist()))
+        AiLangObj("y_train", BasicListType(cast(list[float], y_train.tolist())))
     )
     result.setMember(
-        AiLangObj("y_test", BasicListType(cast(NumpyArrayLike, y_test).tolist()))
+        AiLangObj("y_test", BasicListType(cast(list[float], y_test.tolist())))
     )
 
     return result

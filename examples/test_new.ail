@@ -1,9 +1,0 @@
-->@Load{
-    from "train.csv" -> train_data
-    from "test.csv"  -> test_data
-}
-
-@Load -> @Feature{
-    train_data.feat <- train_data.feat + 1
-    train_data.fit 
-}
