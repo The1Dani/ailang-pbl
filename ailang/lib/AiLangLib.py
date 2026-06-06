@@ -1,8 +1,10 @@
 import sys
 import codecs
+from pathlib import Path
 
 from typing import Any, Union, cast
 
+import pandas as pd
 import numpy as np
 from numpy.typing import NDArray
 from sklearn.model_selection import cross_val_score
@@ -76,6 +78,33 @@ def aiLangInternalBreakPoint() -> AiLangObj:
     return NoneObj()
 
 
+@makeFunc("save_csv", ["data", "path"], kwargs={"ids": NoneObj()})
+def aiLangSaveCsv(*args, **kwargs):
+    vs = getVars(args, kwargs)
+
+    data = vs["data"]
+    path = Path(vs["path"]).resolve()
+    ids = vs.get("ids", None)
+
+    # normalize data
+    if not isinstance(data, list):
+        data = [data]
+
+    # unwrap pandas Series-like ids
+    if ids is not None and hasattr(ids, "tolist") and not isinstance(ids, list):
+        ids = ids.tolist()
+
+    if ids is None:
+        raise ValueError("save_csv requires 'ids' named argument with ID values")
+
+    if len(ids) != len(data):
+        raise ValueError("Length of ids and data must match")
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    pd.DataFrame({"Id": ids, "prediction": data}).to_csv(path, index=False)
+
+    return NoneObj()
 def getModelInit(args: tuple[AiLangObj]):
     vs = getVars(args)
     parent: AiLangObj = args[0]

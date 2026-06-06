@@ -19,5 +19,5 @@
 
     model <- random_forest_classifier.fit <- (X, y)
     predictions <- model.predict <- (X_test)
-    .print <- (predictions)
+    .save_csv <- (predictions, "test/data/predictions.csv", ids=test_raw.PassengerId)
 }

@@ -5,12 +5,12 @@ Covers: dropna, dropna_ip
 """
 
 import pandas as pd
-
 import ailang.lib.AiLangLib as _
 
 from ailang.engine.AiLangFunc import MethodSpace
 from ailang.engine.AiLangObj import AiLangObj, fromDFtoObj
-from ailang.engine.AiLangType import BasicListType
+from ailang.engine.AiLangType import BasicListType, StrType
+from ailang.engine.AiLangFunc import FunctionSpace
 
 
 def dfWithNa() -> pd.DataFrame:
@@ -88,3 +88,14 @@ def testMapBoolColsKeepsColumnMembersAccessible():
     flag_member = result.getMember("flag")
     assert flag_member is not None
     assert flag_member.get().get().tolist() == [1, 0, 1]
+
+
+def testSaveCsvWritesPredictions(tmp_path):
+    out_file = tmp_path / "predictions.csv"
+    FunctionSpace().call(
+        "save_csv",
+        [AiLangObj("data", BasicListType([1, 0, 1])), AiLangObj("path", StrType(str(out_file)))],
+        {"ids": AiLangObj("ids", BasicListType([101, 102, 103]))},
+    )
+    saved = pd.read_csv(out_file)
+    assert saved["prediction"].tolist() == [1, 0, 1]
