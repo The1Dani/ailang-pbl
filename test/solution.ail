@@ -1,6 +1,8 @@
 -> @Load {
-    from "test/data/train.csv" -> train_raw
-    from "test/data/test.csv" -> test_raw
+    get "https://www.kaggle.com/datasets/defcodeking/spaceship-titanic-prepared-datasets" "test_prepared.csv"
+    get "https://www.kaggle.com/datasets/defcodeking/spaceship-titanic-prepared-datasets" "train_prepared.csv"
+    from "train_prepared.csv" -> train_raw
+    from "test_prepared.csv" -> test_raw
 } -> @Prepare {
     train_proc <- train_raw.map_bool_cols <- (("Transported", "CryoSleep", "VIP"))
     test_proc <- test_raw.map_bool_cols <- (("CryoSleep", "VIP"))

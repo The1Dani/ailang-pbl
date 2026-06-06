@@ -835,11 +835,7 @@ class Interpreter:
 
         val = self.evalExpr(child.getChild(0, AiLangParser.ExprContext))
         val = copy.deepcopy(val)
-        if isinstance(val, DfType):
-            # Recalculate the df object in the reference of the variable stack
-            obj = fromDFtoObj(obj.ident, val.get())
-        else:
-            obj.set(val)
+        obj.set(val)
 
         self.variable_context_stack.put(obj)
 
@@ -869,9 +865,4 @@ class Interpreter:
             if not expr:
                 raise ValueError()
             val = self.evalExpr(expr)
-            target = obj.getRoot()
-            if isinstance(val, DfType):
-                target.update(fromDFtoObj(target.ident, val.get()))
-                return
-
-            self.variable_context_stack.put(AiLangObj("", val), target)
+            self.variable_context_stack.put(AiLangObj("", val), obj.getRoot())
