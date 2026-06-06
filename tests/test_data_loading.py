@@ -14,9 +14,7 @@ _HAS_KAGGLE_AUTH = (Path.home() / ".kaggle" / "kaggle.json").exists() or bool(
 
 DATA_DIR = Path(os.environ.get("AILANG_DATA_DIR", ".ailang/data"))
 
-RAW_CSV_URL = (
-    "https://cdn.wsform.com/wp-content/uploads/2020/06/industry.csv"
-)
+RAW_CSV_URL = "https://cdn.wsform.com/wp-content/uploads/2020/06/industry.csv"
 
 KAGGLE_URL = (
     "https://www.kaggle.com/datasets/defcodeking/spaceship-titanic-prepared-datasets"
