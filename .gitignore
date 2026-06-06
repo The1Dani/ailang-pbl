@@ -15,3 +15,5 @@ wheels/
 TOASK.md
 AGENTS.md
 catboost_info/
+.ailang
+.kaggle*
