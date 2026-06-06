@@ -9,6 +9,7 @@ from ailang.grammar.AiLangLexer import AiLangLexer
 from ailang.grammar.AiLangParser import AiLangParser
 
 from ailang.shared import utils
+from ailang.shared import download
 
 # import AiLangLib as _  # Init Import
 from .AiLangType import (
@@ -398,6 +399,7 @@ class Interpreter:
         """
         Returns True on normal evaluation adn returns False if there was a return stat
         """
+
         if child.children is None:
             raise ValueError()
         for ch in child.children:
@@ -417,6 +419,8 @@ class Interpreter:
             elif isinstance(ch, AiLangParser.RetContext):
                 self.evalRet(ch)
                 return False
+            elif isinstance(child, AiLangParser.Get_operationContext):
+                self.evalGetOperation(child)
             else:
                 raise ValueError(f"Type {type(ch)} is tried to be evaluated")
         return True
@@ -447,6 +451,17 @@ class Interpreter:
     def transformFile2Data(self, file_name):
         data = utils.tf2d(file_name)
         return DfType(data)
+
+    def evalGetOperation(self, child: AiLangParser.Get_operationContext) -> None:
+        get_stat = child.getTypedRuleContext(AiLangParser.Get_statContext, 0)
+        if get_stat is None:
+            raise ValueError()
+        str_ctxes = get_stat.getTypedRuleContexts(AiLangParser.StrContext)
+
+        raw = StrType.make(str_ctxes[0]).get()
+        specific_file = StrType.make(str_ctxes[1]).get() if len(str_ctxes) > 1 else None
+
+        download.getFile(raw, specific_file)
 
     def evalDoIfElse(self, child: AiLangParser.DoIfElseContext) -> bool:
         # Do Block mandatory
