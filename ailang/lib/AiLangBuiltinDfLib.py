@@ -7,10 +7,9 @@ from ailang.engine.AiLangType import DfType
 from .FuncUtils import getVars
 
 
-def updateDfObj(parent_obj: AiLangObj, df: pd.DataFrame) -> AiLangObj:
+def updateDfObj(parent_obj: AiLangObj, df: pd.DataFrame) -> None:
     target = parent_obj.original_reference or parent_obj
     target.update(fromDFtoObj(target.ident, df))
-    return target
 
 
 @makeMethod("dropna_ip", DfType, [])
@@ -18,8 +17,9 @@ def dfBuiltinDropnaInplace(parent: AiLangObj, *items):
     df = parent.get().get()
 
     df = df.dropna(*items)
-    parent.update(fromDFtoObj(parent.ident, df))
+    updateDfObj(parent, df)
     return NoneObj()
+
 
 @makeMethod("dropna", DfType, [])
 def dfBuiltinDropna(parent, *items):
@@ -36,7 +36,9 @@ def dfMapBoolCols(*args, **kwargs):
     vs = getVars(args, kwargs)
     df = vs["_parent_"]
 
-    cols = vs.get("cols", []) # having cols in vs is guaranteed by the function signature
+    cols = vs.get(
+        "cols", []
+    )  # having cols in vs is guaranteed by the function signature
     cols = [str(col) for col in cols]
 
     mapping = {

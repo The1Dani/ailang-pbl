@@ -52,8 +52,8 @@ def testDropnaDoesNotModifyParent():
 def testDropnaIpRemovesNaRows():
     df = dfWithNa()
     parent = makeDfObj(df)
-    result = MethodSpace().call(parent, "dropna_ip", [], {})
-    result_df = result.get().get()
+    MethodSpace().call(parent, "dropna_ip", [], {})
+    result_df = parent.get().get()
     assert len(result_df) == 2
 
 
@@ -61,8 +61,8 @@ def testDropnaIpResultContainsNoNa():
     """dropna_ip result must have zero NA cells."""
     df = dfWithNa()
     parent = makeDfObj(df)
-    result = MethodSpace().call(parent, "dropna_ip", [], {})
-    result_df = result.get().get()
+    MethodSpace().call(parent, "dropna_ip", [], {})
+    result_df = parent.get().get()
     assert result_df.isna().sum().sum() == 0
 
 
