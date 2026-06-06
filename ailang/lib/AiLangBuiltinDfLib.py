@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 from ailang.engine.AiLangFunc import makeMethod
-from ailang.engine.AiLangObj import AiLangObj, fromDFtoObj
+from ailang.engine.AiLangObj import AiLangObj, fromDFtoObj, NoneObj
 from ailang.engine.AiLangType import DfType
 from .FuncUtils import getVars
 
@@ -14,13 +14,12 @@ def updateDfObj(parent_obj: AiLangObj, df: pd.DataFrame) -> AiLangObj:
 
 
 @makeMethod("dropna_ip", DfType, [])
-def dfBuiltinDropnaInplace(parent, *items):
-    # Assume correct types per project convention: parent wraps a DataFrame.
+def dfBuiltinDropnaInplace(parent: AiLangObj, *items):
     df = parent.get().get()
 
     df = df.dropna(*items)
-    return updateDfObj(parent, df)
-
+    parent.update(fromDFtoObj(parent.ident, df))
+    return NoneObj()
 
 @makeMethod("dropna", DfType, [])
 def dfBuiltinDropna(parent, *items):
@@ -35,13 +34,10 @@ def dfBuiltinDropna(parent, *items):
 @makeMethod("map_bool_cols", DfType, ["cols"])
 def dfMapBoolCols(*args, **kwargs):
     vs = getVars(args, kwargs)
-    parent_obj = args[0]
-    df = parent_obj.get().get()
+    df = vs["_parent_"]
 
-    cols = vs.get("cols", [])
-    if not isinstance(cols, list):
-        cols = [cols]
-    cols = [str(col.get() if hasattr(col, "get") else col) for col in cols]
+    cols = vs.get("cols", []) # having cols in vs is guaranteed by the function signature
+    cols = [str(col) for col in cols]
 
     mapping = {
         True: 1,
@@ -64,30 +60,29 @@ def dfMapBoolCols(*args, **kwargs):
             except Exception:  # fallback if dtype conversion not applicable
                 df[col] = ser
 
-    return fromDFtoObj(parent_obj.ident, df)
+    return fromDFtoObj("", df)
 
 
 @makeMethod("select_numeric", DfType, [])
-def dfSelectNumeric(parent, *args, **kwargs):  # pylint: disable=unused-argument
-    df = parent.get().get()
+def dfSelectNumeric(*args):
+    df = getVars(args)["_parent_"]
     df = df.select_dtypes(include=[np.number])
-    return fromDFtoObj(parent.ident, df)
+    return fromDFtoObj("", df)
 
 
 @makeMethod("fillna_median", DfType, [])
-def dfFillnaMedian(parent, *args, **kwargs):  # pylint: disable=unused-argument
-    df = parent.get().get()
+def dfFillnaMedian(*args):
+    df = getVars(args)["_parent_"]
     df = df.copy()
     numeric_cols = df.select_dtypes(include=[np.number]).columns
     df[numeric_cols] = df[numeric_cols].apply(lambda s: s.fillna(s.median()))
-    return fromDFtoObj(parent.ident, df)
+    return fromDFtoObj("", df)
 
 
 @makeMethod("select_cols", DfType, ["cols"])
 def dfSelectCols(*args, **kwargs):
     vs = getVars(args, kwargs)
-    parent_obj = args[0]
-    df = parent_obj.get().get()
+    df = vs["_parent_"]
 
     cols = vs.get("cols", [])
     if not isinstance(cols, list):
@@ -99,4 +94,4 @@ def dfSelectCols(*args, **kwargs):
         raise ValueError("select_cols: no matching columns")
 
     df = df[selected]
-    return fromDFtoObj(parent_obj.ident, df)
+    return fromDFtoObj("", df)

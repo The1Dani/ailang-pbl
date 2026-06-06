@@ -856,7 +856,6 @@ class Interpreter:
             target = obj.getRoot()
             if isinstance(val, DfType):
                 target.update(fromDFtoObj(target.ident, val.get()))
-                self.variable_context_stack.put(target)
                 return
 
             self.variable_context_stack.put(AiLangObj("", val), target)
