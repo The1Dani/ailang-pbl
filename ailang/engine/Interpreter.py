@@ -820,7 +820,8 @@ class Interpreter:
 
         val = self.evalExpr(child.getChild(0, AiLangParser.ExprContext))
         val = copy.deepcopy(val)
-        if isinstance(val, DfType) and len(obj.members) == 0:
+        if isinstance(val, DfType):
+            # Recalculate the df object in the reference of the variable stack
             obj = fromDFtoObj(obj.ident, val.get())
         else:
             obj.set(val)
