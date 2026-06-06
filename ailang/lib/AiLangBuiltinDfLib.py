@@ -1,21 +1,10 @@
 import pandas as pd
 import numpy as np
 
-from ailang.engine.AiLangFunc import makeMethod, makeFunc
+from ailang.engine.AiLangFunc import makeMethod
 from ailang.engine.AiLangObj import AiLangObj, fromDFtoObj
-from ailang.engine.AiLangType import DfType, ListType
+from ailang.engine.AiLangType import DfType
 from .FuncUtils import getVars
-
-
-def getDf(parent: AiLangObj | pd.DataFrame) -> pd.DataFrame:
-    if isinstance(parent, pd.DataFrame):
-        return parent
-    if not isinstance(parent, AiLangObj):
-        raise ValueError()
-    df = parent.get().get()
-    if not isinstance(df, pd.DataFrame):
-        raise ValueError()
-    return df
 
 
 def updateDfObj(parent_obj: AiLangObj, df: pd.DataFrame) -> AiLangObj:
@@ -24,22 +13,10 @@ def updateDfObj(parent_obj: AiLangObj, df: pd.DataFrame) -> AiLangObj:
     return target
 
 
-@makeFunc("df_col", ["df", "col"])
-def dfCol(*args, **kwargs):
-    vs = getVars(args, kwargs)
-    df = getDf(vs["df"])
-    col = vs["col"]
-    if hasattr(col, "get"):
-        col = col.get()
-    col = str(col)
-    if col not in df.columns:
-        raise ValueError(f"Column not found: {col}")
-    return AiLangObj("col", ListType(df[col].tolist()))
-
-
 @makeMethod("dropna_ip", DfType, [])
 def dfBuiltinDropnaInplace(parent, *items):
-    df = getDf(parent)
+    # Assume correct types per project convention: parent wraps a DataFrame.
+    df = parent.get().get()
 
     df = df.dropna(*items)
     return updateDfObj(parent, df)
@@ -47,7 +24,7 @@ def dfBuiltinDropnaInplace(parent, *items):
 
 @makeMethod("dropna", DfType, [])
 def dfBuiltinDropna(parent, *items):
-    df = getDf(parent)
+    df = parent.get().get()
 
     df = df.dropna(*items)
 
@@ -59,7 +36,7 @@ def dfBuiltinDropna(parent, *items):
 def dfMapBoolCols(*args, **kwargs):
     vs = getVars(args, kwargs)
     parent_obj = args[0]
-    df = getDf(parent_obj)
+    df = parent_obj.get().get()
 
     cols = vs.get("cols", [])
     if not isinstance(cols, list):
@@ -92,14 +69,14 @@ def dfMapBoolCols(*args, **kwargs):
 
 @makeMethod("select_numeric", DfType, [])
 def dfSelectNumeric(parent, *args, **kwargs):  # pylint: disable=unused-argument
-    df = getDf(parent)
+    df = parent.get().get()
     df = df.select_dtypes(include=[np.number])
     return fromDFtoObj(parent.ident, df)
 
 
 @makeMethod("fillna_median", DfType, [])
 def dfFillnaMedian(parent, *args, **kwargs):  # pylint: disable=unused-argument
-    df = getDf(parent)
+    df = parent.get().get()
     df = df.copy()
     numeric_cols = df.select_dtypes(include=[np.number]).columns
     df[numeric_cols] = df[numeric_cols].apply(lambda s: s.fillna(s.median()))
@@ -110,7 +87,7 @@ def dfFillnaMedian(parent, *args, **kwargs):  # pylint: disable=unused-argument
 def dfSelectCols(*args, **kwargs):
     vs = getVars(args, kwargs)
     parent_obj = args[0]
-    df = getDf(parent_obj)
+    df = parent_obj.get().get()
 
     cols = vs.get("cols", [])
     if not isinstance(cols, list):
