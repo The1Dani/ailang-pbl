@@ -40,7 +40,8 @@ stat:
 	| block			# block_stat //ok
 	| doIfElse		# do_if_else //ok
 	| fromToData	# load_op //dummy implemented
-	| ret			# return;
+	| ret			# return
+	| get_stat		# get_operation;
 
 // Fixed: Corrected the parameter list and ID references
 func_def:
@@ -49,6 +50,8 @@ func_def:
 def_arg: id | named_arg;
 
 fromToData: FROM str ARR id;
+
+get_stat: GET str (str)?;
 
 doIfElse: DO context IF bool_context (ELSE context)?;
 func: '.' id (REF arg_list)?;
@@ -114,6 +117,7 @@ IF: 'if';
 ELSE: 'else';
 FROM: 'from';
 FUNCTION: 'function';
+GET: 'get';
 
 TRUE: [tT]'rue';
 FALSE: [fF]'alse';

@@ -1,6 +1,5 @@
 # Generated from /home/dani/faf/PBL/ailang/AiLang.g4 by ANTLR 4.13.2
 from antlr4 import *
-
 if "." in __name__:
     from .AiLangParser import AiLangParser
 else:
@@ -8,240 +7,307 @@ else:
 
 # This class defines a complete generic visitor for a parse tree produced by AiLangParser.
 
-
 class AiLangVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by AiLangParser#prog.
-    def visitProg(self, ctx: AiLangParser.ProgContext):
+    def visitProg(self, ctx:AiLangParser.ProgContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#Block2Block.
-    def visitBlock2Block(self, ctx: AiLangParser.Block2BlockContext):
+    def visitBlock2Block(self, ctx:AiLangParser.Block2BlockContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#Label2Block.
-    def visitLabel2Block(self, ctx: AiLangParser.Label2BlockContext):
+    def visitLabel2Block(self, ctx:AiLangParser.Label2BlockContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#label.
-    def visitLabel(self, ctx: AiLangParser.LabelContext):
+    def visitLabel(self, ctx:AiLangParser.LabelContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#context.
-    def visitContext(self, ctx: AiLangParser.ContextContext):
+    def visitContext(self, ctx:AiLangParser.ContextContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#bool_context.
-    def visitBool_context(self, ctx: AiLangParser.Bool_contextContext):
+    def visitBool_context(self, ctx:AiLangParser.Bool_contextContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#bool_group.
-    def visitBool_group(self, ctx: AiLangParser.Bool_groupContext):
+    def visitBool_group(self, ctx:AiLangParser.Bool_groupContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#bool_stat.
-    def visitBool_stat(self, ctx: AiLangParser.Bool_statContext):
+    def visitBool_stat(self, ctx:AiLangParser.Bool_statContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#assignment.
-    def visitAssignment(self, ctx: AiLangParser.AssignmentContext):
+    def visitAssignment(self, ctx:AiLangParser.AssignmentContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#id.
-    def visitId(self, ctx: AiLangParser.IdContext):
+    def visitId(self, ctx:AiLangParser.IdContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#ref_op.
-    def visitRef_op(self, ctx: AiLangParser.Ref_opContext):
+    def visitRef_op(self, ctx:AiLangParser.Ref_opContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#NoneReturn.
-    def visitNoneReturn(self, ctx: AiLangParser.NoneReturnContext):
+    def visitNoneReturn(self, ctx:AiLangParser.NoneReturnContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#ExprReturn.
-    def visitExprReturn(self, ctx: AiLangParser.ExprReturnContext):
+    def visitExprReturn(self, ctx:AiLangParser.ExprReturnContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#functionDef.
-    def visitFunctionDef(self, ctx: AiLangParser.FunctionDefContext):
+    def visitFunctionDef(self, ctx:AiLangParser.FunctionDefContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#assign.
-    def visitAssign(self, ctx: AiLangParser.AssignContext):
+    def visitAssign(self, ctx:AiLangParser.AssignContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#reference.
-    def visitReference(self, ctx: AiLangParser.ReferenceContext):
+    def visitReference(self, ctx:AiLangParser.ReferenceContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#printExpr.
-    def visitPrintExpr(self, ctx: AiLangParser.PrintExprContext):
+    def visitPrintExpr(self, ctx:AiLangParser.PrintExprContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#block_stat.
-    def visitBlock_stat(self, ctx: AiLangParser.Block_statContext):
+    def visitBlock_stat(self, ctx:AiLangParser.Block_statContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#do_if_else.
-    def visitDo_if_else(self, ctx: AiLangParser.Do_if_elseContext):
+    def visitDo_if_else(self, ctx:AiLangParser.Do_if_elseContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#load_op.
-    def visitLoad_op(self, ctx: AiLangParser.Load_opContext):
+    def visitLoad_op(self, ctx:AiLangParser.Load_opContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#return.
-    def visitReturn(self, ctx: AiLangParser.ReturnContext):
+    def visitReturn(self, ctx:AiLangParser.ReturnContext):
         return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#get_operation.
+    def visitGet_operation(self, ctx:AiLangParser.Get_operationContext):
+        return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#func_def.
-    def visitFunc_def(self, ctx: AiLangParser.Func_defContext):
+    def visitFunc_def(self, ctx:AiLangParser.Func_defContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#def_arg.
-    def visitDef_arg(self, ctx: AiLangParser.Def_argContext):
+    def visitDef_arg(self, ctx:AiLangParser.Def_argContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#fromToData.
-    def visitFromToData(self, ctx: AiLangParser.FromToDataContext):
+    def visitFromToData(self, ctx:AiLangParser.FromToDataContext):
         return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#get_stat.
+    def visitGet_stat(self, ctx:AiLangParser.Get_statContext):
+        return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#doIfElse.
-    def visitDoIfElse(self, ctx: AiLangParser.DoIfElseContext):
+    def visitDoIfElse(self, ctx:AiLangParser.DoIfElseContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#func.
-    def visitFunc(self, ctx: AiLangParser.FuncContext):
+    def visitFunc(self, ctx:AiLangParser.FuncContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#mathOp.
-    def visitMathOp(self, ctx: AiLangParser.MathOpContext):
+    def visitMathOp(self, ctx:AiLangParser.MathOpContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#basicValExpr.
-    def visitBasicValExpr(self, ctx: AiLangParser.BasicValExprContext):
+    def visitBasicValExpr(self, ctx:AiLangParser.BasicValExprContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#pathExpr.
-    def visitPathExpr(self, ctx: AiLangParser.PathExprContext):
+    def visitPathExpr(self, ctx:AiLangParser.PathExprContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#function.
-    def visitFunction(self, ctx: AiLangParser.FunctionContext):
+    def visitFunction(self, ctx:AiLangParser.FunctionContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#listValExpr.
-    def visitListValExpr(self, ctx: AiLangParser.ListValExprContext):
+    def visitListValExpr(self, ctx:AiLangParser.ListValExprContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#dataframe.
-    def visitDataframe(self, ctx: AiLangParser.DataframeContext):
+    def visitDataframe(self, ctx:AiLangParser.DataframeContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#group.
-    def visitGroup(self, ctx: AiLangParser.GroupContext):
+    def visitGroup(self, ctx:AiLangParser.GroupContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#methodCall.
-    def visitMethodCall(self, ctx: AiLangParser.MethodCallContext):
+    def visitMethodCall(self, ctx:AiLangParser.MethodCallContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#simpleTarget.
-    def visitSimpleTarget(self, ctx: AiLangParser.SimpleTargetContext):
+    def visitSimpleTarget(self, ctx:AiLangParser.SimpleTargetContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#memberTarget.
-    def visitMemberTarget(self, ctx: AiLangParser.MemberTargetContext):
+    def visitMemberTarget(self, ctx:AiLangParser.MemberTargetContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#named_arg.
-    def visitNamed_arg(self, ctx: AiLangParser.Named_argContext):
+    def visitNamed_arg(self, ctx:AiLangParser.Named_argContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#NamedArg.
-    def visitNamedArg(self, ctx: AiLangParser.NamedArgContext):
+    def visitNamedArg(self, ctx:AiLangParser.NamedArgContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#ExprArg.
-    def visitExprArg(self, ctx: AiLangParser.ExprArgContext):
+    def visitExprArg(self, ctx:AiLangParser.ExprArgContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#arg_list.
-    def visitArg_list(self, ctx: AiLangParser.Arg_listContext):
+    def visitArg_list(self, ctx:AiLangParser.Arg_listContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#generic_list.
-    def visitGeneric_list(self, ctx: AiLangParser.Generic_listContext):
+    def visitGeneric_list(self, ctx:AiLangParser.Generic_listContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#list.
-    def visitList(self, ctx: AiLangParser.ListContext):
+    def visitList(self, ctx:AiLangParser.ListContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#NonEmptyDf.
-    def visitNonEmptyDf(self, ctx: AiLangParser.NonEmptyDfContext):
+    def visitNonEmptyDf(self, ctx:AiLangParser.NonEmptyDfContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#EmptyDf.
-    def visitEmptyDf(self, ctx: AiLangParser.EmptyDfContext):
+    def visitEmptyDf(self, ctx:AiLangParser.EmptyDfContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#df_val.
-    def visitDf_val(self, ctx: AiLangParser.Df_valContext):
+    def visitDf_val(self, ctx:AiLangParser.Df_valContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#basicIDMember.
-    def visitBasicIDMember(self, ctx: AiLangParser.BasicIDMemberContext):
+    def visitBasicIDMember(self, ctx:AiLangParser.BasicIDMemberContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#intIDMember.
-    def visitIntIDMember(self, ctx: AiLangParser.IntIDMemberContext):
+    def visitIntIDMember(self, ctx:AiLangParser.IntIDMemberContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#listIDMember.
-    def visitListIDMember(self, ctx: AiLangParser.ListIDMemberContext):
+    def visitListIDMember(self, ctx:AiLangParser.ListIDMemberContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#numList.
-    def visitNumList(self, ctx: AiLangParser.NumListContext):
+    def visitNumList(self, ctx:AiLangParser.NumListContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#strList.
-    def visitStrList(self, ctx: AiLangParser.StrListContext):
+    def visitStrList(self, ctx:AiLangParser.StrListContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#number.
-    def visitNumber(self, ctx: AiLangParser.NumberContext):
+    def visitNumber(self, ctx:AiLangParser.NumberContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#boolean.
-    def visitBoolean(self, ctx: AiLangParser.BooleanContext):
+    def visitBoolean(self, ctx:AiLangParser.BooleanContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#string.
-    def visitString(self, ctx: AiLangParser.StringContext):
+    def visitString(self, ctx:AiLangParser.StringContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#group_basic_val.
-    def visitGroup_basic_val(self, ctx: AiLangParser.Group_basic_valContext):
+    def visitGroup_basic_val(self, ctx:AiLangParser.Group_basic_valContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#intigerLiteral.
-    def visitIntigerLiteral(self, ctx: AiLangParser.IntigerLiteralContext):
+    def visitIntigerLiteral(self, ctx:AiLangParser.IntigerLiteralContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#floatLiteral.
-    def visitFloatLiteral(self, ctx: AiLangParser.FloatLiteralContext):
+    def visitFloatLiteral(self, ctx:AiLangParser.FloatLiteralContext):
         return self.visitChildren(ctx)
+
 
     # Visit a parse tree produced by AiLangParser#bool.
-    def visitBool(self, ctx: AiLangParser.BoolContext):
+    def visitBool(self, ctx:AiLangParser.BoolContext):
         return self.visitChildren(ctx)
 
+
     # Visit a parse tree produced by AiLangParser#str.
-    def visitStr(self, ctx: AiLangParser.StrContext):
+    def visitStr(self, ctx:AiLangParser.StrContext):
         return self.visitChildren(ctx)
+
 
 
 del AiLangParser
