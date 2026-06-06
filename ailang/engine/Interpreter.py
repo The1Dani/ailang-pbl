@@ -820,7 +820,10 @@ class Interpreter:
 
         val = self.evalExpr(child.getChild(0, AiLangParser.ExprContext))
         val = copy.deepcopy(val)
-        obj.set(val)
+        if isinstance(val, DfType) and len(obj.members) == 0:
+            obj = fromDFtoObj(obj.ident, val.get())
+        else:
+            obj.set(val)
 
         self.variable_context_stack.put(obj)
 
@@ -850,4 +853,10 @@ class Interpreter:
             if not expr:
                 raise ValueError()
             val = self.evalExpr(expr)
-            self.variable_context_stack.put(AiLangObj("", val), obj.getRoot())
+            target = obj.getRoot()
+            if isinstance(val, DfType):
+                target.update(fromDFtoObj(target.ident, val.get()))
+                self.variable_context_stack.put(target)
+                return
+
+            self.variable_context_stack.put(AiLangObj("", val), target)

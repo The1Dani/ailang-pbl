@@ -10,6 +10,7 @@ import ailang.lib.AiLangLib as _
 
 from ailang.engine.AiLangFunc import MethodSpace
 from ailang.engine.AiLangObj import AiLangObj, fromDFtoObj
+from ailang.engine.AiLangType import BasicListType
 
 
 def dfWithNa() -> pd.DataFrame:
@@ -63,3 +64,27 @@ def testDropnaIpResultContainsNoNa():
     result = MethodSpace().call(parent, "dropna_ip", [], {})
     result_df = result.get().get()
     assert result_df.isna().sum().sum() == 0
+
+
+# ---------------------------------------------------------------------------
+# map_bool_cols
+# ---------------------------------------------------------------------------
+
+
+def testMapBoolColsKeepsColumnMembersAccessible():
+    df = pd.DataFrame({"flag": [True, False, True], "value": [1, 2, 3]})
+    parent = makeDfObj(df)
+
+    result = MethodSpace().call(
+        parent,
+        "map_bool_cols",
+        [AiLangObj("cols", BasicListType(["flag"]))],
+        {},
+    )
+
+    updated_df = result.get().get()
+    assert updated_df["flag"].tolist() == [1, 0, 1]
+
+    flag_member = result.getMember("flag")
+    assert flag_member is not None
+    assert flag_member.get().get().tolist() == [1, 0, 1]
