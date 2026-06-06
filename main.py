@@ -1,12 +1,22 @@
 # +#+#+#+# pylint: disable=invalid-name
 import argparse
-from antlr4 import FileStream, CommonTokenStream
+from antlr4 import FileStream, CommonTokenStream, InputStream
 from ailang.grammar.AiLangLexer import AiLangLexer
 from ailang.grammar.AiLangParser import AiLangParser
 
 import ailang.lib.AiLangLib as _
 
 from ailang.engine.Interpreter import Interpreter
+
+
+def runAilang(code: str) -> None:
+    """Parse and run a snippet of AiLang source code."""
+    input_stream = InputStream(code)
+    lexer = AiLangLexer(input_stream)
+    token_stream = CommonTokenStream(lexer)
+    parser = AiLangParser(token_stream)
+    tree = parser.prog()
+    Interpreter(tree).interp()
 
 
 def main():
