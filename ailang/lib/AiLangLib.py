@@ -105,6 +105,8 @@ def aiLangSaveCsv(*args, **kwargs):
     pd.DataFrame({"Id": ids, "prediction": data}).to_csv(path, index=False)
 
     return NoneObj()
+
+
 def getModelInit(args: tuple[AiLangObj]):
     vs = getVars(args)
     parent: AiLangObj = args[0]

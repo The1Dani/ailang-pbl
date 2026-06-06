@@ -7,7 +7,7 @@ from ailang.engine.AiLangType import DfType, ListType
 from .FuncUtils import getVars
 
 
-def _get_df(parent: AiLangObj | pd.DataFrame) -> pd.DataFrame:
+def getDf(parent: AiLangObj | pd.DataFrame) -> pd.DataFrame:
     if isinstance(parent, pd.DataFrame):
         return parent
     if not isinstance(parent, AiLangObj):
@@ -18,7 +18,7 @@ def _get_df(parent: AiLangObj | pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def _update_df_obj(parent_obj: AiLangObj, df: pd.DataFrame) -> AiLangObj:
+def updateDfObj(parent_obj: AiLangObj, df: pd.DataFrame) -> AiLangObj:
     target = parent_obj.original_reference or parent_obj
     target.update(fromDFtoObj(target.ident, df))
     return target
@@ -27,7 +27,7 @@ def _update_df_obj(parent_obj: AiLangObj, df: pd.DataFrame) -> AiLangObj:
 @makeFunc("df_col", ["df", "col"])
 def dfCol(*args, **kwargs):
     vs = getVars(args, kwargs)
-    df = _get_df(vs["df"])
+    df = getDf(vs["df"])
     col = vs["col"]
     if hasattr(col, "get"):
         col = col.get()
@@ -39,26 +39,27 @@ def dfCol(*args, **kwargs):
 
 @makeMethod("dropna_ip", DfType, [])
 def dfBuiltinDropnaInplace(parent, *items):
-    df = _get_df(parent)
+    df = getDf(parent)
 
     df = df.dropna(*items)
-    return _update_df_obj(parent, df)
+    return updateDfObj(parent, df)
 
 
 @makeMethod("dropna", DfType, [])
 def dfBuiltinDropna(parent, *items):
-    df = _get_df(parent)
+    df = getDf(parent)
 
     df = df.dropna(*items)
 
     return fromDFtoObj(parent.ident, df)
+
 
 # vs["_parent_"]
 @makeMethod("map_bool_cols", DfType, ["cols"])
 def dfMapBoolCols(*args, **kwargs):
     vs = getVars(args, kwargs)
     parent_obj = args[0]
-    df = _get_df(parent_obj)
+    df = getDf(parent_obj)
 
     cols = vs.get("cols", [])
     if not isinstance(cols, list):
@@ -77,21 +78,28 @@ def dfMapBoolCols(*args, **kwargs):
     df = df.copy()
     for col in cols:
         if col in df.columns:
-            df[col] = df[col].map(mapping)
+            # Use replace instead of map to satisfy static typing (Pyright)
+            # and to support dict-based value mapping across dtypes.
+            ser = df[col].replace(mapping)
+            # Ensure a consistent integer-like dtype when possible (handles bool/str cases).
+            try:
+                df[col] = ser.astype("Int64")
+            except Exception:  # fallback if dtype conversion not applicable
+                df[col] = ser
 
     return fromDFtoObj(parent_obj.ident, df)
 
 
 @makeMethod("select_numeric", DfType, [])
 def dfSelectNumeric(parent, *args, **kwargs):  # pylint: disable=unused-argument
-    df = _get_df(parent)
+    df = getDf(parent)
     df = df.select_dtypes(include=[np.number])
     return fromDFtoObj(parent.ident, df)
 
 
 @makeMethod("fillna_median", DfType, [])
 def dfFillnaMedian(parent, *args, **kwargs):  # pylint: disable=unused-argument
-    df = _get_df(parent)
+    df = getDf(parent)
     df = df.copy()
     numeric_cols = df.select_dtypes(include=[np.number]).columns
     df[numeric_cols] = df[numeric_cols].apply(lambda s: s.fillna(s.median()))
@@ -102,7 +110,7 @@ def dfFillnaMedian(parent, *args, **kwargs):  # pylint: disable=unused-argument
 def dfSelectCols(*args, **kwargs):
     vs = getVars(args, kwargs)
     parent_obj = args[0]
-    df = _get_df(parent_obj)
+    df = getDf(parent_obj)
 
     cols = vs.get("cols", [])
     if not isinstance(cols, list):

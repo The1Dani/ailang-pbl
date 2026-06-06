@@ -94,7 +94,10 @@ def testSaveCsvWritesPredictions(tmp_path):
     out_file = tmp_path / "predictions.csv"
     FunctionSpace().call(
         "save_csv",
-        [AiLangObj("data", BasicListType([1, 0, 1])), AiLangObj("path", StrType(str(out_file)))],
+        [
+            AiLangObj("data", BasicListType([1, 0, 1])),
+            AiLangObj("path", StrType(str(out_file))),
+        ],
         {"ids": AiLangObj("ids", BasicListType([101, 102, 103]))},
     )
     saved = pd.read_csv(out_file)
