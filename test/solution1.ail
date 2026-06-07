@@ -1,0 +1,40 @@
+// solution1.ail  -  Titanic survival (classification)
+
+-> @Load {
+    get "https://www.kaggle.com/datasets/heptapod/titanic" "train.csv"
+    get "https://www.kaggle.com/datasets/heptapod/titanic" "test.csv"
+    from "train.csv" -> train_raw
+    from "test.csv"  -> test_raw
+} -> @Prepare {
+    train_num <- train_raw.select_numeric <- ()
+    train_num <- train_num.fillna_median  <- ()
+    test_num  <- test_raw.select_numeric  <- ()
+    test_num  <- test_num.fillna_median   <- ()
+
+    y        := train_raw.Survived
+    test_ids := test_raw.PassengerId
+
+} -> @BranchA {
+    cols_a  := ("Pclass", "Fare")
+    Xa      <- train_num.select_cols <- (cols_a)
+    model_a <- logistic_regression.fit <- (Xa, y)
+
+} -> @BranchB {
+    cols_b  := ("Pclass", "Age", "SibSp", "Parch", "Fare")
+    Xb      <- train_num.select_cols <- (cols_b)
+    model_b <- random_forest_classifier.fit <- (Xb, y)
+
+} -> @BranchC {
+    cols_c  := ("Age", "Fare", "Pclass")
+    Xc      <- train_num.select_cols <- (cols_c)
+    model_c <- knn_classifier.fit <- (Xc, y)
+
+} -> @Validate {
+    scores := (
+        .validate <- (model_a),
+        .validate <- (model_b),
+        .validate <- (model_c)
+    )
+    best <- .validate_select <- (scores)
+    .after_validate <- (best)
+}

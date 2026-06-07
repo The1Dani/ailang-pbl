@@ -1,0 +1,40 @@
+// solution2.ail  -  House Prices (regression)
+
+-> @Load {
+    get "https://www.kaggle.com/datasets/lespin/house-prices-dataset" "train.csv"
+    get "https://www.kaggle.com/datasets/lespin/house-prices-dataset" "test.csv"
+    from "train.csv" -> train_raw
+    from "test.csv"  -> test_raw
+} -> @Prepare {
+    train_num <- train_raw.select_numeric <- ()
+    train_num <- train_num.fillna_median  <- ()
+    test_num  <- test_raw.select_numeric  <- ()
+    test_num  <- test_num.fillna_median   <- ()
+
+    y        := train_raw.SalePrice
+    test_ids := test_raw.Id
+
+} -> @BranchA {
+    cols_a  := ("OverallQual", "GrLivArea")
+    Xa      <- train_num.select_cols <- (cols_a)
+    model_a <- linear_regression.fit <- (Xa, y)
+
+} -> @BranchB {
+    cols_b  := ("OverallQual", "GrLivArea", "GarageCars", "TotalBsmtSF", "YearBuilt")
+    Xb      <- train_num.select_cols <- (cols_b)
+    model_b <- ridge.fit <- (Xb, y)
+
+} -> @BranchC {
+    cols_c  := ("GrLivArea", "TotalBsmtSF", "GarageCars", "OverallQual", "YearBuilt", "FullBath")
+    Xc      <- train_num.select_cols <- (cols_c)
+    model_c <- random_forest_regressor.fit <- (Xc, y)
+
+} -> @Validate {
+    scores := (
+        .validate <- (model_a),
+        .validate <- (model_b),
+        .validate <- (model_c)
+    )
+    best <- .validate_select <- (scores)
+    .after_validate <- (best)
+}

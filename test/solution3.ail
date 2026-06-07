@@ -1,0 +1,43 @@
+// solution3.ail  -  Spaceship Titanic (classification)
+
+-> @Load {
+    get "https://www.kaggle.com/datasets/defcodeking/spaceship-titanic-prepared-datasets" "train_prepared.csv"
+    get "https://www.kaggle.com/datasets/defcodeking/spaceship-titanic-prepared-datasets" "test_prepared.csv"
+    from "train_prepared.csv" -> train_raw
+    from "test_prepared.csv"  -> test_raw
+} -> @Prepare {
+    train_proc <- train_raw.map_bool_cols   <- (("Transported", "CryoSleep", "VIP"))
+    train_num  <- train_proc.select_numeric <- ()
+    train_num  <- train_num.fillna_median   <- ()
+
+    test_proc <- test_raw.map_bool_cols   <- (("CryoSleep", "VIP"))
+    test_num  <- test_proc.select_numeric <- ()
+    test_num  <- test_num.fillna_median   <- ()
+
+    y        := train_proc.Transported
+    test_ids := test_raw.PassengerId
+
+} -> @BranchA {
+    cols_a  := ("CryoSleep", "Age", "Spa", "VRDeck")
+    Xa      <- train_num.select_cols <- (cols_a)
+    model_a <- random_forest_classifier.fit <- (Xa, y)
+
+} -> @BranchB {
+    cols_b  := ("CryoSleep", "VIP", "RoomService", "FoodCourt", "ShoppingMall")
+    Xb      <- train_num.select_cols <- (cols_b)
+    model_b <- svc.fit <- (Xb, y)
+
+} -> @BranchC {
+    cols_c  := ("CryoSleep", "VIP", "Age", "RoomService", "FoodCourt", "ShoppingMall", "Spa", "VRDeck")
+    Xc      <- train_num.select_cols <- (cols_c)
+    model_c <- catboost_classifier.fit <- (Xc, y)
+
+} -> @Validate {
+    scores := (
+        .validate <- (model_a),
+        .validate <- (model_b),
+        .validate <- (model_c)
+    )
+    best <- .validate_select <- (scores)
+    .after_validate <- (best)
+}
