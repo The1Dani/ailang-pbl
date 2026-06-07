@@ -185,6 +185,15 @@ def aiLangLoadModel(*args, **kwargs):
     return result
 
 
+@makeFunc("select_best", ["scores", "models"])
+def aiLangSelectBest(*args, **kwargs):
+    vs = getVars(args, kwargs)
+    scores = vs["scores"]
+    models = vs["models"]
+    best_idx = max(range(len(scores)), key=lambda i: scores[i])
+    return AiLangObj("best_model", PyType(models[best_idx]))
+
+
 @makeFunc("train_test_split", ["x", "y", "test_size"])
 def aiLangTrainTestSplit(*args, **kwargs):
     vs = getVars(args, kwargs)

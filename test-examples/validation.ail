@@ -1,30 +1,16 @@
-
 function validate <- (model) {
+    .print <- ("validate called with:", model, a)
     return model
 }
 
-function validate_select <- (scores) {
-    //...
+function validate_select <- (scores_map) {
+    best <- .select_best <- (scores_map.scores, scores_map.models)
+    .print <- ("best model:", best)
 }
 
--> {
-
-} -> @Hello {
-
+-> @Start {
+    a <- 12
 }
 
-
-
-@Hello -> {
-
-} -> @Validate(validate, model)
-
-
-@Hello -> {
-
-} -> @Validate(validate, model)
-
-@Hello -> {
-
-} -> @Validate(validate, model)
-
+@Start -> { model := 42 } -> @Validate(model)
+@Start -> { model := 99 } -> @Validate(model)

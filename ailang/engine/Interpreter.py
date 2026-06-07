@@ -13,11 +13,13 @@ from ailang.shared import download
 
 # import AiLangLib as _  # Init Import
 from .AiLangType import (
+    BasicListType,
     BasicValType,
     NumType,
     DfType,
     DfItem,
     ListType,
+    MapType,
     NumTypes,
     StrType,
     AiLangType,
@@ -30,17 +32,22 @@ from .AiLangFunc import AiLangCallable, AiLangFunc, FunctionSpace, MethodSpace
 class BlockTree:
     """A tree class for the block structure"""
 
-    def __init__(self, ctx, label=None, parent=None, is_start=True):
+    def __init__(
+        self, ctx, label=None, parent=None, is_start=True, validate_ctx=None
+    ):  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self.children: list[BlockTree] = []
         self.parent = parent
         self.label = label
         self.ctx = ctx
         self.is_start = is_start
         self.level = 0 if parent is None else parent.level + 1
+        self.validate_ctx = validate_ctx
 
-    def addChild(self, ctx, label) -> BlockTree:
+    def addChild(self, ctx, label, validate_ctx=None) -> BlockTree:
 
-        block = BlockTree(ctx, label, parent=self, is_start=False)
+        block = BlockTree(
+            ctx, label, parent=self, is_start=False, validate_ctx=validate_ctx
+        )
         self.children.append(block)
         return block
 
@@ -86,16 +93,6 @@ class BlockTree:
             child._display(  # pylint: disable= protected-access
                 new_prefix, last_child, is_root=False
             )
-
-    # def printTree(self, level=0) -> None:
-    #     # Print current node with indentation based on its level
-    #     if level == 0:
-    #         print(self.label)
-    #     else:
-    #         print("├─" + "─" * level + str(self.label))
-    #     # Recursively print children
-    #     for child in self.children:
-    #         child.printTree(level + 1)
 
 
 class VariableStack:
@@ -205,8 +202,10 @@ class VariableStack:
                 if len(cur.members) == 0:
                     result.append(cur)
                     cur = last_cur
+                    del last_cur.members[key_cur.ident]
                     getResult()
-                del last_cur.members[key_cur.ident]
+                else:
+                    del last_cur.members[key_cur.ident]
             else:
                 return
 
@@ -259,6 +258,7 @@ class Interpreter:
         self.last_label = None
         self.functions = FunctionSpace()
         self.methods = MethodSpace()
+        self.validate_results: list[tuple] = []
 
     def interp(self, print_tree=False) -> None:
         if self.ast.children is None:
@@ -271,9 +271,11 @@ class Interpreter:
             self.evalFunctionDecl(fd)
         if self.block_tree is None:
             raise ValueError("Block Tree is Empty")
+        self.checkValidationFunctions()
         if print_tree:
             self.block_tree.display()
         self.evaluateBlocks()
+        self.finalizeValidation()
 
     def evalFunctionDecl(self, func_decl: AiLangParser.FunctionDefContext):
         fd = func_decl.getTypedRuleContext(AiLangParser.Func_defContext, 0)
@@ -286,6 +288,11 @@ class Interpreter:
         blocks = blocks if blocks is not None else self.block_tree
         if blocks is None:
             raise ValueError("The block tree is not set cannot evaluate")
+
+        if blocks.validate_ctx is not None:
+            self.evalValidateBlock(blocks)
+            return
+
         # Evaluate all statemnts inside the ctx
         for ch in blocks.ctx.children:
             if isinstance(ch, TerminalNode):
@@ -312,6 +319,100 @@ class Interpreter:
                 if not self.evaluate(ch):
                     return False
         return True
+
+    def evalValidateBlock(self, block: BlockTree) -> None:
+        if block.validate_ctx is None:
+            raise ValueError("Validate block without context")
+        func_name = self.getFirstID(
+            block.validate_ctx.getTypedRuleContext(AiLangParser.LabelContext, 0)
+        ).lower()
+
+        arg_list = block.validate_ctx.getTypedRuleContext(
+            AiLangParser.Arg_listContext, 0
+        )
+
+        func = self.functions.functions.get(func_name)
+        if func is None:
+            raise ValueError(f"Validation function '{func_name}' not defined")
+        body_func_ctx: AiLangParser.ContextContext | None = func.body_ctx
+        if body_func_ctx is None:
+            raise ValueError(f"Cannot resolve body for function '{func_name}'")
+
+        self.variable_context_stack.pushContext()
+
+        for stat in body_func_ctx.getTypedRuleContexts(AiLangParser.StatContext):
+            if not self.evaluate(stat):
+                break
+
+        context = self.variable_context_stack.popContext()
+        ret = context.get(-1)
+        score_val = (ret if ret is not None else NoneObj()).get().get()
+
+        model_arg = NoneObj()
+        if arg_list is not None:
+            args = arg_list.getTypedRuleContexts(AiLangParser.ArgContext)
+            if args:
+                assignable = (
+                    args[0]
+                    .getTypedRuleContext(AiLangParser.ExprContext, 0)
+                    .getTypedRuleContext(AiLangParser.AssignableContext, 0)
+                )
+                if assignable:
+                    model_arg = self.evalAssignable(assignable)
+
+        self.validate_results.append((score_val, model_arg))
+
+    def checkValidationFunctions(self) -> None:
+        if self._hasValidationBlocks(self.block_tree):
+            func_names = self._collectValidateFuncNames(self.block_tree)
+            missing = [n for n in func_names if not self.functions.hasFunc(n)]
+            if missing:
+                raise ValueError(
+                    f"Validation function(s) not defined: {', '.join(missing)}"
+                )
+            if not self.functions.hasFunc("validate_select"):
+                raise ValueError(
+                    "Pipeline uses @Validate blocks but function "
+                    "'validate_select' is not defined"
+                )
+
+    def _hasValidationBlocks(self, block: BlockTree | None) -> bool:
+        if block is None:
+            return False
+        if block.validate_ctx is not None:
+            return True
+        for child in block.children:
+            if self._hasValidationBlocks(child):
+                return True
+        return False
+
+    def _collectValidateFuncNames(self, block: BlockTree | None) -> set[str]:
+        names: set[str] = set()
+        if block is None:
+            return names
+        if block.validate_ctx is not None:
+            label_ctx = block.validate_ctx.getTypedRuleContext(
+                AiLangParser.LabelContext, 0
+            )
+            if label_ctx is not None:
+                raw_name = self.getFirstID(label_ctx)
+                names.add(raw_name.lower())
+        for child in block.children:
+            names |= self._collectValidateFuncNames(child)
+        return names
+
+    def finalizeValidation(self) -> None:
+        if not self.validate_results:
+            return
+
+        scores = [r[0] for r in self.validate_results]
+        models = [r[1].get().get() for r in self.validate_results]
+
+        map_obj = AiLangObj("scores_map", MapType(self.validate_results))
+        map_obj.setMember(AiLangObj("scores", BasicListType(scores)))
+        map_obj.setMember(AiLangObj("models", BasicListType(models)))
+
+        FunctionSpace().call("validate_select", [map_obj], {})
 
     def ctxRunnerConstructer(
         self,
@@ -343,35 +444,52 @@ class Interpreter:
 
         return constructor
 
-    def constructBlockTree(self, child: AiLangParser.Block_statContext) -> None:
-        if isinstance(child, AiLangParser.Block_statContext):
-            if child.children is None:
+    def _addValidateBlock(self, ch: AiLangParser.Block2ValidateContext) -> None:
+        validate_ctx = ch.getTypedRuleContext(AiLangParser.ValidateContext, 0)
+        if validate_ctx is None:
+            raise ValueError()
+        label = self.getFirstID(
+            validate_ctx.getTypedRuleContext(AiLangParser.LabelContext, 0)
+        )
+        if self.block_tree is None or self.last_label is None:
+            raise ValueError("Validate block must follow a regular block")
+        self.last_label = self.last_label.addChild(
+            None, label, validate_ctx=validate_ctx
+        )
+
+    def _addRegularBlock(
+        self,
+        ch: AiLangParser.Block2BlockContext | AiLangParser.Label2BlockContext,
+    ) -> None:
+        from_label, label, ctx = self.getBlockCtx(ch)
+        if self.block_tree is None:
+            if from_label:
+                raise ValueError("Start must be the first block")
+            self.block_tree = BlockTree(ctx, label)
+            self.last_label = self.block_tree
+        elif from_label:
+            from_block = self.block_tree.findLabel(from_label)
+            if from_block is None:
                 raise ValueError()
-            for ch in child.children:
-                if not isinstance(
-                    ch,
-                    (AiLangParser.Block2BlockContext, AiLangParser.Label2BlockContext),
-                ):
-                    raise ValueError()
-                from_label, label, ctx = self.getBlockCtx(ch)
-                # print(f"FromLabel: {fromLabel} Label: {label}")
+            self.last_label = from_block.addChild(ctx, label)
+        else:
+            if self.last_label is None:
+                raise ValueError()
+            self.last_label = self.last_label.addChild(ctx, label)
 
-                if self.block_tree is None:
-                    if from_label:
-                        raise ValueError("Start must be the first block")
-
-                    self.block_tree = BlockTree(ctx, label)
-                    self.last_label = self.block_tree
-                else:
-                    if from_label:
-                        from_block = self.block_tree.findLabel(from_label)
-                        if from_block is None:
-                            raise ValueError()
-                        self.last_label = from_block.addChild(ctx, label)
-                    else:
-                        if self.last_label is None:
-                            raise ValueError()
-                        self.last_label = self.last_label.addChild(ctx, label)
+    def constructBlockTree(self, child: AiLangParser.Block_statContext) -> None:
+        if child.children is None:
+            raise ValueError()
+        for ch in child.children:
+            if isinstance(ch, AiLangParser.Block2ValidateContext):
+                self._addValidateBlock(ch)
+                continue
+            if not isinstance(
+                ch,
+                (AiLangParser.Block2BlockContext, AiLangParser.Label2BlockContext),
+            ):
+                raise ValueError()
+            self._addRegularBlock(ch)
 
     def getBlockCtx(
         self, child: AiLangParser.Block2BlockContext | AiLangParser.Label2BlockContext
@@ -416,8 +534,9 @@ class Interpreter:
                 self.evalAssignment(ch)
             elif isinstance(ch, (AiLangParser.Ref_opContext)):
                 self.evalReference(ch)
-            elif isinstance(ch, AiLangParser.RetContext):
-                self.evalRet(ch)
+            elif isinstance(ch, (AiLangParser.RetContext, AiLangParser.ReturnContext)):
+                if ch is not None:
+                    self.evalRet(ch)
                 return False
             elif isinstance(child, AiLangParser.Get_operationContext):
                 self.evalGetOperation(child)
@@ -425,7 +544,14 @@ class Interpreter:
                 raise ValueError(f"Type {type(ch)} is tried to be evaluated")
         return True
 
-    def evalRet(self, child: AiLangParser.RetContext) -> None:
+    def evalRet(
+        self, child: AiLangParser.RetContext | AiLangParser.ReturnContext
+    ) -> None:
+        if isinstance(child, AiLangParser.ReturnContext):
+            ret_ch = child.getTypedRuleContext(AiLangParser.RetContext, 0)
+            if ret_ch is None:
+                raise ValueError()
+            child = ret_ch
         if isinstance(child, AiLangParser.NoneReturnContext):
             return
         if isinstance(child, AiLangParser.ExprReturnContext):
@@ -576,12 +702,9 @@ class Interpreter:
             )  # Gets the first Terminals Text
         )
 
-        if not (
-            isinstance(val1, BoolType)
-            and isinstance(val2, BoolType)
-            and op in ["and", "or"]
+        if op in ["and", "or"] and not (
+            isinstance(val1, BoolType) and isinstance(val2, BoolType)
         ):
-
             raise ValueError(
                 "Operators '&' and '|' can only be used for other booleans"
             )
@@ -763,7 +886,9 @@ class Interpreter:
         if ctx is None:
             raise ValueError()
         func = AiLangFunc.constructCallableFromCtx(ctx_runner_constructor(ctx))
-        return AiLangFunc(func_id, func, ids, kwargs)
+        ai_func = AiLangFunc(func_id, func, ids, kwargs)
+        ai_func.setBodyCtx(ctx)
+        return ai_func
 
     def evalMathOp(self, child: AiLangParser.MathOpContext):
         """
