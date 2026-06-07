@@ -70,6 +70,21 @@ def aiLangBuiltinDFRest(
     return AiLangObj("")
 
 
+@makeMethod("at", BasicListType, ["index"])
+def aiLangListAt(*args, **kwargs):
+    vs = getVars(args, kwargs)
+    parent = vs["_parent_"]
+    index = int(vs["index"])
+    return AiLangObj("element", PyType(parent[index]))
+
+
+@makeMethod("len", BasicListType, [])
+def aiLangListLen(*args, **kwargs):
+    vs = getVars(args, kwargs)
+    parent = vs["_parent_"]
+    return AiLangObj("length", NumType(len(parent), NumTypes.INT))
+
+
 @makeFunc("breakpoint")
 def aiLangInternalBreakPoint() -> AiLangObj:
     breakpoint()  # pylint: disable=forgotten-debug-statement

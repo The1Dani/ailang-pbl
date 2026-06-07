@@ -4,8 +4,24 @@ function validate <- (model) {
 }
 
 function validate_select <- (scores_map) {
-    best <- .select_best <- (scores_map.scores, scores_map.models)
-    .print <- ("best model:", best)
+    scores <- scores_map.scores
+    models <- scores_map.models
+    n <- scores.len <- ()
+    i <- 1
+    best_score <- scores.at <- (0)
+    best_model <- models.at <- (0)
+    while { i < n } do {
+        current_score <- scores.at <- (i)
+        current_model <- models.at <- (i)
+        do {
+            best_score <- current_score
+            best_model <- current_model
+        } if {
+            current_score > best_score
+        }
+        i <- i + 1
+    }
+    .print <- ("best model:", best_model)
 }
 
 -> @Start {

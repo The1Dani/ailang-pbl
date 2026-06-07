@@ -136,3 +136,126 @@ def test_select_best_ties_returns_first():
     result = FunctionSpace().call("select_best", [scores, models], {})
     assert result is not None
     assert result.get().get() == 10
+
+
+# --- While loop tests ---
+
+
+def _run_prog_with_validate(prog: str) -> Interpreter:
+    """Parse and run a program with @Validate blocks, return the Interpreter."""
+    from antlr4 import InputStream, CommonTokenStream
+    from ailang.grammar.AiLangLexer import AiLangLexer
+    from ailang.grammar.AiLangParser import AiLangParser
+    from ailang.engine.Interpreter import Interpreter
+
+    input_stream = InputStream(prog)
+    lexer = AiLangLexer(input_stream)
+    token_stream = CommonTokenStream(lexer)
+    parser = AiLangParser(token_stream)
+    tree = parser.prog()
+    interp = Interpreter(tree)
+    interp.interp()
+    return interp
+
+
+def test_while_loop_basic():
+    """While loop with simple counter terminates."""
+    code = """
+    function validate <- (model) { return model }
+    function validate_select <- (scores_map) {
+        _print <- ("done")
+    }
+    function count_down <- (_) {
+        i <- 3
+        while { i > 0 } do {
+            i <- i - 1
+        }
+        return i
+    }
+    -> @Start {}
+    @Start -> { model := 42 } -> @Validate(model)
+    """
+    _run_prog_with_validate(code)
+    result = FunctionSpace().call(
+        "count_down", [AiLangObj("_", NumType(0, NumTypes.INT))], {}
+    )
+    assert result.get().get() == 0
+
+
+def test_while_loop_never_enters():
+    """While body skipped when condition is false initially."""
+    code = """
+    function validate <- (model) { return model }
+    function validate_select <- (scores_map) {
+        _print <- ("done")
+    }
+    function test_skip <- (_) {
+        result <- 99
+        while { False } do {
+            result <- 42
+        }
+        return result
+    }
+    -> @Start {}
+    @Start -> { model := 42 } -> @Validate(model)
+    """
+    _run_prog_with_validate(code)
+    result = FunctionSpace().call(
+        "test_skip", [AiLangObj("_", NumType(0, NumTypes.INT))], {}
+    )
+    assert result.get().get() == 99
+
+
+def test_while_loop_multi_condition():
+    """While with complex & condition works."""
+    code = """
+    function validate <- (model) { return model }
+    function validate_select <- (scores_map) {
+        _print <- ("done")
+    }
+    function test_multi <- (_) {
+        i <- 0
+        n <- 5
+        while { i < n & i >= 0 } do {
+            i <- i + 1
+        }
+        return i
+    }
+    -> @Start {}
+    @Start -> { model := 42 } -> @Validate(model)
+    """
+    _run_prog_with_validate(code)
+    result = FunctionSpace().call(
+        "test_multi", [AiLangObj("_", NumType(0, NumTypes.INT))], {}
+    )
+    assert result.get().get() == 5
+
+
+def test_while_loop_nested_do_if():
+    """While with do...if...else inside the body works."""
+    code = """
+    function validate <- (model) { return model }
+    function validate_select <- (scores_map) {
+        _print <- ("done")
+    }
+    function test_nested <- (_) {
+        i <- 0
+        best <- 0
+        while { i < 5 } do {
+            do {
+                best <- i
+            } if {
+                i > best
+            }
+            i <- i + 1
+        }
+        return best
+    }
+    -> @Start {}
+    @Start -> { model := 42 } -> @Validate(model)
+    """
+    _run_prog_with_validate(code)
+    result = FunctionSpace().call(
+        "test_nested", [AiLangObj("_", NumType(0, NumTypes.INT))], {}
+    )
+    assert result.get().get() == 4

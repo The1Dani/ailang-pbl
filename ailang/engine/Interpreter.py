@@ -147,9 +147,14 @@ class VariableStack:
             ):
                 val.ident = key.getLast().ident
                 DfItemObject(available).setDfItem(val)
-
+            else:
+                available.set(val.val)
         else:
-            self.getContext()[self._nextID()] = val
+            existing = self._findObjInCtx(self.getContext(), val.ident)
+            if existing:
+                existing.set(val.val)
+            else:
+                self.getContext()[self._nextID()] = val
 
     def putReturn(self, val: AiLangObj) -> None:
         self.getContext()[-1] = val
@@ -309,7 +314,9 @@ class Interpreter:
                 self.evaluateBlocks(block)
                 self.variable_context_stack.popContext()
 
-    def evalNonBlockContext(self, child: AiLangParser.BlockContext) -> bool:
+    def evalNonBlockContext(
+        self, child: AiLangParser.BlockContext | AiLangParser.ContextContext
+    ) -> bool:
         #!This evaluation uses the same VariableContext
         if child.children is None:
             raise ValueError()
@@ -530,6 +537,8 @@ class Interpreter:
                 self.evalFrom2Data(ch)
             elif isinstance(ch, AiLangParser.DoIfElseContext):
                 self.evalDoIfElse(ch)
+            elif isinstance(ch, AiLangParser.WhileLoopContext):
+                self.evalWhile(ch)
             elif isinstance(ch, AiLangParser.AssignmentContext):
                 self.evalAssignment(ch)
             elif isinstance(ch, (AiLangParser.Ref_opContext)):
@@ -636,6 +645,32 @@ class Interpreter:
 
         return DoIfElse(do_ctx, ifb_ctx, else_ctx).eval()
 
+    def evalWhile(self, child: AiLangParser.WhileLoopContext) -> bool:
+        condition_ctx = child.getTypedRuleContext(AiLangParser.Bool_contextContext, 0)
+        body_ctx = child.getTypedRuleContext(AiLangParser.ContextContext, 0)
+        if condition_ctx is None or body_ctx is None:
+            raise ValueError()
+
+        groups = list(
+            condition_ctx.getChildren(
+                lambda x: isinstance(x, AiLangParser.Bool_groupContext)
+            )
+        )
+
+        while True:
+            results = []
+            for group in groups:
+                if isinstance(group, AiLangParser.Bool_groupContext):
+                    results.append(self.evalBoolGroup(group))
+            acc = False
+            for result in results:
+                acc = acc or result
+            if not acc:
+                break
+            if not self.evalNonBlockContext(body_ctx):
+                return False
+        return True
+
     def evalBoolGroup(self, child: AiLangParser.Bool_groupContext) -> bool:
 
         statements = list(
@@ -645,12 +680,9 @@ class Interpreter:
 
         if len(statements) > 1 and len(ops) > 0:
             results = [
-                (
-                    self.evalBoolStat(stat)
-                    if isinstance(stat, AiLangParser.Bool_statContext)
-                    else None
-                )
+                self.evalBoolStat(stat)
                 for stat in statements
+                if isinstance(stat, AiLangParser.Bool_statContext)
             ]
             ops = [utils.getTerminalSymbol(op) for op in ops]
             ops = [self.getPythonBoolOp(op) for op in ops]
@@ -660,11 +692,12 @@ class Interpreter:
             return self.evalBoolStat(statements[0]).get()
 
         with StringIO() as builder:
-            for result in results:
-                builder.write(str(result))
-                builder.write(" ")
+            for i, result in enumerate(results):
+                if i > 0:
+                    builder.write(" ")
+                builder.write(str(result.get()))
                 if len(ops) > 0:
-                    builder.write(str(ops.pop(0)))
+                    builder.write(f" {ops.pop(0)}")
             bool_str = builder.getvalue()
 
         return bool(eval(bool_str))
