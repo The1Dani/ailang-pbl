@@ -11,7 +11,7 @@
       "request": "launch",
       "program": "${cwd}/main.py",
       "justMyCode": false,
-      "args": ["test-examples/helloWorld.ail", "--parse", "--proc-tree"]
+      "args": ["test-examples/validation.ail", "--parse", "--proc-tree"]
     }
   ]
 }

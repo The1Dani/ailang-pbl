@@ -2,6 +2,7 @@ from __future__ import annotations
 from types import UnionType
 from typing import Callable, NoReturn, Protocol, Union
 import copy
+from ailang.grammar.AiLangParser import AiLangParser
 
 from ailang.shared.utils import Singleton
 
@@ -45,6 +46,10 @@ class AiLangFunc:
         self.args: list[str] = args
         self.kwargs: dict[str, AiLangObj] = kwargs
         self.ignore_arg_count: bool = ignore_arg_count
+        self.body_ctx: AiLangParser.ContextContext | None = None
+
+    def setBodyCtx(self, ctx: AiLangParser.ContextContext | None) -> None:
+        self.body_ctx = ctx
 
     def call(self, args: list[AiLangObj], kwargs: dict[str, AiLangObj]) -> AiLangObj:
         local_kwargs = copy.deepcopy(self.kwargs)
