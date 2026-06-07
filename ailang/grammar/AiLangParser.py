@@ -10,122 +10,128 @@ else:
 
 def serializedATN():
     return [
-        4,1,33,330,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
+        4,1,34,345,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
         6,2,7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,
         2,14,7,14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,
         7,20,2,21,7,21,2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,
-        2,27,7,27,2,28,7,28,2,29,7,29,2,30,7,30,2,31,7,31,2,32,7,32,1,0,
-        4,0,68,8,0,11,0,12,0,69,1,1,1,1,3,1,74,8,1,1,1,1,1,1,1,1,1,3,1,80,
-        8,1,1,1,1,1,3,1,84,8,1,1,2,1,2,1,2,1,3,1,3,5,3,91,8,3,10,3,12,3,
-        94,9,3,1,3,1,3,1,4,1,4,5,4,100,8,4,10,4,12,4,103,9,4,1,4,1,4,1,5,
-        1,5,1,5,5,5,110,8,5,10,5,12,5,113,9,5,1,6,1,6,1,6,1,6,1,6,3,6,120,
-        8,6,1,7,1,7,1,7,1,7,1,8,1,8,1,9,1,9,1,9,1,9,1,10,1,10,1,10,3,10,
-        135,8,10,1,11,1,11,1,11,1,11,1,11,1,11,1,11,1,11,1,11,3,11,146,8,
-        11,1,12,1,12,1,12,1,12,1,12,1,12,1,12,5,12,155,8,12,10,12,12,12,
-        158,9,12,1,12,1,12,1,12,1,13,1,13,3,13,165,8,13,1,14,1,14,1,14,1,
-        14,1,14,1,15,1,15,1,15,3,15,175,8,15,1,16,1,16,1,16,1,16,1,16,1,
-        16,3,16,183,8,16,1,17,1,17,1,17,1,17,3,17,189,8,17,1,18,1,18,1,18,
-        1,18,1,18,1,18,1,18,1,18,1,18,1,18,3,18,201,8,18,1,18,1,18,1,18,
-        1,18,1,18,1,18,5,18,209,8,18,10,18,12,18,212,9,18,1,19,1,19,1,19,
-        1,19,1,19,1,19,5,19,220,8,19,10,19,12,19,223,9,19,1,20,1,20,1,20,
-        1,20,1,21,1,21,3,21,231,8,21,1,22,1,22,1,22,1,22,5,22,237,8,22,10,
-        22,12,22,240,9,22,3,22,242,8,22,1,22,1,22,1,23,1,23,1,23,1,23,5,
-        23,250,8,23,10,23,12,23,253,9,23,1,23,1,23,1,24,1,24,3,24,259,8,
-        24,1,25,1,25,1,25,1,25,5,25,265,8,25,10,25,12,25,268,9,25,1,25,1,
-        25,1,25,1,25,3,25,274,8,25,1,26,1,26,1,26,3,26,279,8,26,1,26,1,26,
-        1,27,1,27,1,27,1,27,3,27,287,8,27,1,28,1,28,1,28,1,28,5,28,293,8,
-        28,10,28,12,28,296,9,28,1,28,1,28,1,28,1,28,1,28,1,28,5,28,304,8,
-        28,10,28,12,28,307,9,28,1,28,1,28,3,28,311,8,28,1,29,1,29,1,29,1,
-        29,1,29,1,29,1,29,3,29,320,8,29,1,30,1,30,3,30,324,8,30,1,31,1,31,
-        1,32,1,32,1,32,0,2,36,38,33,0,2,4,6,8,10,12,14,16,18,20,22,24,26,
-        28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,0,1,1,0,
-        20,21,343,0,67,1,0,0,0,2,83,1,0,0,0,4,85,1,0,0,0,6,88,1,0,0,0,8,
-        97,1,0,0,0,10,106,1,0,0,0,12,119,1,0,0,0,14,121,1,0,0,0,16,125,1,
-        0,0,0,18,127,1,0,0,0,20,134,1,0,0,0,22,145,1,0,0,0,24,147,1,0,0,
-        0,26,164,1,0,0,0,28,166,1,0,0,0,30,171,1,0,0,0,32,176,1,0,0,0,34,
-        184,1,0,0,0,36,200,1,0,0,0,38,213,1,0,0,0,40,224,1,0,0,0,42,230,
-        1,0,0,0,44,232,1,0,0,0,46,245,1,0,0,0,48,258,1,0,0,0,50,273,1,0,
-        0,0,52,278,1,0,0,0,54,286,1,0,0,0,56,310,1,0,0,0,58,319,1,0,0,0,
-        60,323,1,0,0,0,62,325,1,0,0,0,64,327,1,0,0,0,66,68,3,22,11,0,67,
-        66,1,0,0,0,68,69,1,0,0,0,69,67,1,0,0,0,69,70,1,0,0,0,70,1,1,0,0,
-        0,71,73,5,22,0,0,72,74,3,4,2,0,73,72,1,0,0,0,73,74,1,0,0,0,74,75,
-        1,0,0,0,75,84,3,6,3,0,76,77,3,4,2,0,77,79,5,22,0,0,78,80,3,4,2,0,
-        79,78,1,0,0,0,79,80,1,0,0,0,80,81,1,0,0,0,81,82,3,6,3,0,82,84,1,
-        0,0,0,83,71,1,0,0,0,83,76,1,0,0,0,84,3,1,0,0,0,85,86,5,1,0,0,86,
-        87,3,16,8,0,87,5,1,0,0,0,88,92,5,2,0,0,89,91,3,22,11,0,90,89,1,0,
-        0,0,91,94,1,0,0,0,92,90,1,0,0,0,92,93,1,0,0,0,93,95,1,0,0,0,94,92,
-        1,0,0,0,95,96,5,3,0,0,96,7,1,0,0,0,97,101,5,2,0,0,98,100,3,10,5,
-        0,99,98,1,0,0,0,100,103,1,0,0,0,101,99,1,0,0,0,101,102,1,0,0,0,102,
-        104,1,0,0,0,103,101,1,0,0,0,104,105,5,3,0,0,105,9,1,0,0,0,106,111,
-        3,12,6,0,107,108,5,25,0,0,108,110,3,12,6,0,109,107,1,0,0,0,110,113,
-        1,0,0,0,111,109,1,0,0,0,111,112,1,0,0,0,112,11,1,0,0,0,113,111,1,
-        0,0,0,114,115,3,36,18,0,115,116,5,25,0,0,116,117,3,36,18,0,117,120,
-        1,0,0,0,118,120,3,36,18,0,119,114,1,0,0,0,119,118,1,0,0,0,120,13,
-        1,0,0,0,121,122,3,38,19,0,122,123,5,4,0,0,123,124,3,36,18,0,124,
-        15,1,0,0,0,125,126,5,29,0,0,126,17,1,0,0,0,127,128,3,38,19,0,128,
-        129,5,23,0,0,129,130,3,36,18,0,130,19,1,0,0,0,131,135,5,13,0,0,132,
-        133,5,13,0,0,133,135,3,36,18,0,134,131,1,0,0,0,134,132,1,0,0,0,135,
-        21,1,0,0,0,136,146,3,24,12,0,137,146,3,14,7,0,138,146,3,18,9,0,139,
-        146,3,36,18,0,140,146,3,2,1,0,141,146,3,32,16,0,142,146,3,28,14,
-        0,143,146,3,20,10,0,144,146,3,30,15,0,145,136,1,0,0,0,145,137,1,
-        0,0,0,145,138,1,0,0,0,145,139,1,0,0,0,145,140,1,0,0,0,145,141,1,
-        0,0,0,145,142,1,0,0,0,145,143,1,0,0,0,145,144,1,0,0,0,146,23,1,0,
-        0,0,147,148,5,18,0,0,148,149,3,16,8,0,149,150,5,23,0,0,150,151,5,
-        5,0,0,151,156,3,26,13,0,152,153,5,6,0,0,153,155,3,26,13,0,154,152,
-        1,0,0,0,155,158,1,0,0,0,156,154,1,0,0,0,156,157,1,0,0,0,157,159,
-        1,0,0,0,158,156,1,0,0,0,159,160,5,7,0,0,160,161,3,6,3,0,161,25,1,
-        0,0,0,162,165,3,16,8,0,163,165,3,40,20,0,164,162,1,0,0,0,164,163,
-        1,0,0,0,165,27,1,0,0,0,166,167,5,17,0,0,167,168,3,64,32,0,168,169,
-        5,22,0,0,169,170,3,16,8,0,170,29,1,0,0,0,171,172,5,19,0,0,172,174,
-        3,64,32,0,173,175,3,64,32,0,174,173,1,0,0,0,174,175,1,0,0,0,175,
-        31,1,0,0,0,176,177,5,14,0,0,177,178,3,6,3,0,178,179,5,15,0,0,179,
-        182,3,8,4,0,180,181,5,16,0,0,181,183,3,6,3,0,182,180,1,0,0,0,182,
-        183,1,0,0,0,183,33,1,0,0,0,184,185,5,8,0,0,185,188,3,16,8,0,186,
-        187,5,23,0,0,187,189,3,44,22,0,188,186,1,0,0,0,188,189,1,0,0,0,189,
-        35,1,0,0,0,190,191,6,18,-1,0,191,201,3,58,29,0,192,201,3,38,19,0,
-        193,201,3,34,17,0,194,201,3,48,24,0,195,201,3,50,25,0,196,197,5,
-        5,0,0,197,198,3,36,18,0,198,199,5,7,0,0,199,201,1,0,0,0,200,190,
-        1,0,0,0,200,192,1,0,0,0,200,193,1,0,0,0,200,194,1,0,0,0,200,195,
-        1,0,0,0,200,196,1,0,0,0,201,210,1,0,0,0,202,203,10,1,0,0,203,204,
-        5,24,0,0,204,209,3,36,18,2,205,206,10,2,0,0,206,207,5,23,0,0,207,
-        209,3,44,22,0,208,202,1,0,0,0,208,205,1,0,0,0,209,212,1,0,0,0,210,
-        208,1,0,0,0,210,211,1,0,0,0,211,37,1,0,0,0,212,210,1,0,0,0,213,214,
-        6,19,-1,0,214,215,3,16,8,0,215,221,1,0,0,0,216,217,10,1,0,0,217,
-        218,5,8,0,0,218,220,3,54,27,0,219,216,1,0,0,0,220,223,1,0,0,0,221,
-        219,1,0,0,0,221,222,1,0,0,0,222,39,1,0,0,0,223,221,1,0,0,0,224,225,
-        3,16,8,0,225,226,5,9,0,0,226,227,3,36,18,0,227,41,1,0,0,0,228,231,
-        3,40,20,0,229,231,3,36,18,0,230,228,1,0,0,0,230,229,1,0,0,0,231,
-        43,1,0,0,0,232,241,5,5,0,0,233,238,3,42,21,0,234,235,5,6,0,0,235,
-        237,3,42,21,0,236,234,1,0,0,0,237,240,1,0,0,0,238,236,1,0,0,0,238,
-        239,1,0,0,0,239,242,1,0,0,0,240,238,1,0,0,0,241,233,1,0,0,0,241,
-        242,1,0,0,0,242,243,1,0,0,0,243,244,5,7,0,0,244,45,1,0,0,0,245,246,
-        5,5,0,0,246,251,3,36,18,0,247,248,5,6,0,0,248,250,3,36,18,0,249,
-        247,1,0,0,0,250,253,1,0,0,0,251,249,1,0,0,0,251,252,1,0,0,0,252,
-        254,1,0,0,0,253,251,1,0,0,0,254,255,5,7,0,0,255,47,1,0,0,0,256,259,
-        3,56,28,0,257,259,3,46,23,0,258,256,1,0,0,0,258,257,1,0,0,0,259,
-        49,1,0,0,0,260,261,5,10,0,0,261,266,3,52,26,0,262,263,5,6,0,0,263,
-        265,3,52,26,0,264,262,1,0,0,0,265,268,1,0,0,0,266,264,1,0,0,0,266,
-        267,1,0,0,0,267,269,1,0,0,0,268,266,1,0,0,0,269,270,5,11,0,0,270,
-        274,1,0,0,0,271,272,5,10,0,0,272,274,5,11,0,0,273,260,1,0,0,0,273,
-        271,1,0,0,0,274,51,1,0,0,0,275,276,3,16,8,0,276,277,5,12,0,0,277,
-        279,1,0,0,0,278,275,1,0,0,0,278,279,1,0,0,0,279,280,1,0,0,0,280,
-        281,3,56,28,0,281,53,1,0,0,0,282,287,3,16,8,0,283,287,5,28,0,0,284,
-        285,5,1,0,0,285,287,3,16,8,0,286,282,1,0,0,0,286,283,1,0,0,0,286,
-        284,1,0,0,0,287,55,1,0,0,0,288,289,5,5,0,0,289,294,3,60,30,0,290,
-        291,5,6,0,0,291,293,3,60,30,0,292,290,1,0,0,0,293,296,1,0,0,0,294,
-        292,1,0,0,0,294,295,1,0,0,0,295,297,1,0,0,0,296,294,1,0,0,0,297,
-        298,5,7,0,0,298,311,1,0,0,0,299,300,5,5,0,0,300,305,3,64,32,0,301,
-        302,5,6,0,0,302,304,3,64,32,0,303,301,1,0,0,0,304,307,1,0,0,0,305,
-        303,1,0,0,0,305,306,1,0,0,0,306,308,1,0,0,0,307,305,1,0,0,0,308,
-        309,5,7,0,0,309,311,1,0,0,0,310,288,1,0,0,0,310,299,1,0,0,0,311,
-        57,1,0,0,0,312,320,3,60,30,0,313,320,3,62,31,0,314,320,3,64,32,0,
-        315,316,5,5,0,0,316,317,3,58,29,0,317,318,5,7,0,0,318,320,1,0,0,
-        0,319,312,1,0,0,0,319,313,1,0,0,0,319,314,1,0,0,0,319,315,1,0,0,
-        0,320,59,1,0,0,0,321,324,5,28,0,0,322,324,5,27,0,0,323,321,1,0,0,
-        0,323,322,1,0,0,0,324,61,1,0,0,0,325,326,7,0,0,0,326,63,1,0,0,0,
-        327,328,5,26,0,0,328,65,1,0,0,0,33,69,73,79,83,92,101,111,119,134,
-        145,156,164,174,182,188,200,208,210,221,230,238,241,251,258,266,
-        273,278,286,294,305,310,319,323
+        2,27,7,27,2,28,7,28,2,29,7,29,2,30,7,30,2,31,7,31,2,32,7,32,2,33,
+        7,33,2,34,7,34,1,0,4,0,72,8,0,11,0,12,0,73,1,1,1,1,3,1,78,8,1,1,
+        1,1,1,1,1,1,1,3,1,84,8,1,1,1,1,1,1,1,1,1,3,1,90,8,1,1,2,1,2,1,2,
+        1,3,1,3,1,3,1,4,1,4,5,4,100,8,4,10,4,12,4,103,9,4,1,4,1,4,1,5,1,
+        5,5,5,109,8,5,10,5,12,5,112,9,5,1,5,1,5,1,6,1,6,1,6,5,6,119,8,6,
+        10,6,12,6,122,9,6,1,7,1,7,1,7,1,7,1,7,3,7,129,8,7,1,8,1,8,1,8,1,
+        8,1,9,1,9,1,10,1,10,1,10,1,10,1,11,1,11,1,11,3,11,144,8,11,1,12,
+        1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,3,12,156,8,12,1,13,
+        1,13,1,13,1,13,1,13,1,13,1,13,5,13,165,8,13,10,13,12,13,168,9,13,
+        1,13,1,13,1,13,1,14,1,14,3,14,175,8,14,1,15,1,15,1,15,1,15,1,15,
+        1,16,1,16,1,16,3,16,185,8,16,1,17,1,17,1,17,1,17,1,17,1,17,3,17,
+        193,8,17,1,18,1,18,1,18,1,18,1,18,1,19,1,19,1,19,1,19,3,19,204,8,
+        19,1,20,1,20,1,20,1,20,1,20,1,20,1,20,1,20,1,20,1,20,3,20,216,8,
+        20,1,20,1,20,1,20,1,20,1,20,1,20,5,20,224,8,20,10,20,12,20,227,9,
+        20,1,21,1,21,1,21,1,21,1,21,1,21,5,21,235,8,21,10,21,12,21,238,9,
+        21,1,22,1,22,1,22,1,22,1,23,1,23,3,23,246,8,23,1,24,1,24,1,24,1,
+        24,5,24,252,8,24,10,24,12,24,255,9,24,3,24,257,8,24,1,24,1,24,1,
+        25,1,25,1,25,1,25,5,25,265,8,25,10,25,12,25,268,9,25,1,25,1,25,1,
+        26,1,26,3,26,274,8,26,1,27,1,27,1,27,1,27,5,27,280,8,27,10,27,12,
+        27,283,9,27,1,27,1,27,1,27,1,27,3,27,289,8,27,1,28,1,28,1,28,3,28,
+        294,8,28,1,28,1,28,1,29,1,29,1,29,1,29,3,29,302,8,29,1,30,1,30,1,
+        30,1,30,5,30,308,8,30,10,30,12,30,311,9,30,1,30,1,30,1,30,1,30,1,
+        30,1,30,5,30,319,8,30,10,30,12,30,322,9,30,1,30,1,30,3,30,326,8,
+        30,1,31,1,31,1,31,1,31,1,31,1,31,1,31,3,31,335,8,31,1,32,1,32,3,
+        32,339,8,32,1,33,1,33,1,34,1,34,1,34,0,2,40,42,35,0,2,4,6,8,10,12,
+        14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,
+        58,60,62,64,66,68,0,1,1,0,21,22,358,0,71,1,0,0,0,2,89,1,0,0,0,4,
+        91,1,0,0,0,6,94,1,0,0,0,8,97,1,0,0,0,10,106,1,0,0,0,12,115,1,0,0,
+        0,14,128,1,0,0,0,16,130,1,0,0,0,18,134,1,0,0,0,20,136,1,0,0,0,22,
+        143,1,0,0,0,24,155,1,0,0,0,26,157,1,0,0,0,28,174,1,0,0,0,30,176,
+        1,0,0,0,32,181,1,0,0,0,34,186,1,0,0,0,36,194,1,0,0,0,38,199,1,0,
+        0,0,40,215,1,0,0,0,42,228,1,0,0,0,44,239,1,0,0,0,46,245,1,0,0,0,
+        48,247,1,0,0,0,50,260,1,0,0,0,52,273,1,0,0,0,54,288,1,0,0,0,56,293,
+        1,0,0,0,58,301,1,0,0,0,60,325,1,0,0,0,62,334,1,0,0,0,64,338,1,0,
+        0,0,66,340,1,0,0,0,68,342,1,0,0,0,70,72,3,24,12,0,71,70,1,0,0,0,
+        72,73,1,0,0,0,73,71,1,0,0,0,73,74,1,0,0,0,74,1,1,0,0,0,75,77,5,23,
+        0,0,76,78,3,6,3,0,77,76,1,0,0,0,77,78,1,0,0,0,78,79,1,0,0,0,79,90,
+        3,8,4,0,80,81,3,6,3,0,81,83,5,23,0,0,82,84,3,6,3,0,83,82,1,0,0,0,
+        83,84,1,0,0,0,84,85,1,0,0,0,85,86,3,8,4,0,86,90,1,0,0,0,87,88,5,
+        23,0,0,88,90,3,4,2,0,89,75,1,0,0,0,89,80,1,0,0,0,89,87,1,0,0,0,90,
+        3,1,0,0,0,91,92,3,6,3,0,92,93,3,48,24,0,93,5,1,0,0,0,94,95,5,1,0,
+        0,95,96,3,18,9,0,96,7,1,0,0,0,97,101,5,2,0,0,98,100,3,24,12,0,99,
+        98,1,0,0,0,100,103,1,0,0,0,101,99,1,0,0,0,101,102,1,0,0,0,102,104,
+        1,0,0,0,103,101,1,0,0,0,104,105,5,3,0,0,105,9,1,0,0,0,106,110,5,
+        2,0,0,107,109,3,12,6,0,108,107,1,0,0,0,109,112,1,0,0,0,110,108,1,
+        0,0,0,110,111,1,0,0,0,111,113,1,0,0,0,112,110,1,0,0,0,113,114,5,
+        3,0,0,114,11,1,0,0,0,115,120,3,14,7,0,116,117,5,26,0,0,117,119,3,
+        14,7,0,118,116,1,0,0,0,119,122,1,0,0,0,120,118,1,0,0,0,120,121,1,
+        0,0,0,121,13,1,0,0,0,122,120,1,0,0,0,123,124,3,40,20,0,124,125,5,
+        26,0,0,125,126,3,40,20,0,126,129,1,0,0,0,127,129,3,40,20,0,128,123,
+        1,0,0,0,128,127,1,0,0,0,129,15,1,0,0,0,130,131,3,42,21,0,131,132,
+        5,4,0,0,132,133,3,40,20,0,133,17,1,0,0,0,134,135,5,30,0,0,135,19,
+        1,0,0,0,136,137,3,42,21,0,137,138,5,24,0,0,138,139,3,40,20,0,139,
+        21,1,0,0,0,140,141,5,13,0,0,141,144,3,40,20,0,142,144,5,13,0,0,143,
+        140,1,0,0,0,143,142,1,0,0,0,144,23,1,0,0,0,145,156,3,26,13,0,146,
+        156,3,16,8,0,147,156,3,20,10,0,148,156,3,40,20,0,149,156,3,2,1,0,
+        150,156,3,34,17,0,151,156,3,36,18,0,152,156,3,30,15,0,153,156,3,
+        22,11,0,154,156,3,32,16,0,155,145,1,0,0,0,155,146,1,0,0,0,155,147,
+        1,0,0,0,155,148,1,0,0,0,155,149,1,0,0,0,155,150,1,0,0,0,155,151,
+        1,0,0,0,155,152,1,0,0,0,155,153,1,0,0,0,155,154,1,0,0,0,156,25,1,
+        0,0,0,157,158,5,18,0,0,158,159,3,18,9,0,159,160,5,24,0,0,160,161,
+        5,5,0,0,161,166,3,28,14,0,162,163,5,6,0,0,163,165,3,28,14,0,164,
+        162,1,0,0,0,165,168,1,0,0,0,166,164,1,0,0,0,166,167,1,0,0,0,167,
+        169,1,0,0,0,168,166,1,0,0,0,169,170,5,7,0,0,170,171,3,8,4,0,171,
+        27,1,0,0,0,172,175,3,18,9,0,173,175,3,44,22,0,174,172,1,0,0,0,174,
+        173,1,0,0,0,175,29,1,0,0,0,176,177,5,17,0,0,177,178,3,68,34,0,178,
+        179,5,23,0,0,179,180,3,18,9,0,180,31,1,0,0,0,181,182,5,19,0,0,182,
+        184,3,68,34,0,183,185,3,68,34,0,184,183,1,0,0,0,184,185,1,0,0,0,
+        185,33,1,0,0,0,186,187,5,14,0,0,187,188,3,8,4,0,188,189,5,15,0,0,
+        189,192,3,10,5,0,190,191,5,16,0,0,191,193,3,8,4,0,192,190,1,0,0,
+        0,192,193,1,0,0,0,193,35,1,0,0,0,194,195,5,20,0,0,195,196,3,10,5,
+        0,196,197,5,14,0,0,197,198,3,8,4,0,198,37,1,0,0,0,199,200,5,8,0,
+        0,200,203,3,18,9,0,201,202,5,24,0,0,202,204,3,48,24,0,203,201,1,
+        0,0,0,203,204,1,0,0,0,204,39,1,0,0,0,205,206,6,20,-1,0,206,216,3,
+        62,31,0,207,216,3,42,21,0,208,216,3,38,19,0,209,216,3,52,26,0,210,
+        216,3,54,27,0,211,212,5,5,0,0,212,213,3,40,20,0,213,214,5,7,0,0,
+        214,216,1,0,0,0,215,205,1,0,0,0,215,207,1,0,0,0,215,208,1,0,0,0,
+        215,209,1,0,0,0,215,210,1,0,0,0,215,211,1,0,0,0,216,225,1,0,0,0,
+        217,218,10,1,0,0,218,219,5,25,0,0,219,224,3,40,20,2,220,221,10,2,
+        0,0,221,222,5,24,0,0,222,224,3,48,24,0,223,217,1,0,0,0,223,220,1,
+        0,0,0,224,227,1,0,0,0,225,223,1,0,0,0,225,226,1,0,0,0,226,41,1,0,
+        0,0,227,225,1,0,0,0,228,229,6,21,-1,0,229,230,3,18,9,0,230,236,1,
+        0,0,0,231,232,10,1,0,0,232,233,5,8,0,0,233,235,3,58,29,0,234,231,
+        1,0,0,0,235,238,1,0,0,0,236,234,1,0,0,0,236,237,1,0,0,0,237,43,1,
+        0,0,0,238,236,1,0,0,0,239,240,3,18,9,0,240,241,5,9,0,0,241,242,3,
+        40,20,0,242,45,1,0,0,0,243,246,3,44,22,0,244,246,3,40,20,0,245,243,
+        1,0,0,0,245,244,1,0,0,0,246,47,1,0,0,0,247,256,5,5,0,0,248,253,3,
+        46,23,0,249,250,5,6,0,0,250,252,3,46,23,0,251,249,1,0,0,0,252,255,
+        1,0,0,0,253,251,1,0,0,0,253,254,1,0,0,0,254,257,1,0,0,0,255,253,
+        1,0,0,0,256,248,1,0,0,0,256,257,1,0,0,0,257,258,1,0,0,0,258,259,
+        5,7,0,0,259,49,1,0,0,0,260,261,5,5,0,0,261,266,3,40,20,0,262,263,
+        5,6,0,0,263,265,3,40,20,0,264,262,1,0,0,0,265,268,1,0,0,0,266,264,
+        1,0,0,0,266,267,1,0,0,0,267,269,1,0,0,0,268,266,1,0,0,0,269,270,
+        5,7,0,0,270,51,1,0,0,0,271,274,3,60,30,0,272,274,3,50,25,0,273,271,
+        1,0,0,0,273,272,1,0,0,0,274,53,1,0,0,0,275,276,5,10,0,0,276,281,
+        3,56,28,0,277,278,5,6,0,0,278,280,3,56,28,0,279,277,1,0,0,0,280,
+        283,1,0,0,0,281,279,1,0,0,0,281,282,1,0,0,0,282,284,1,0,0,0,283,
+        281,1,0,0,0,284,285,5,11,0,0,285,289,1,0,0,0,286,287,5,10,0,0,287,
+        289,5,11,0,0,288,275,1,0,0,0,288,286,1,0,0,0,289,55,1,0,0,0,290,
+        291,3,18,9,0,291,292,5,12,0,0,292,294,1,0,0,0,293,290,1,0,0,0,293,
+        294,1,0,0,0,294,295,1,0,0,0,295,296,3,60,30,0,296,57,1,0,0,0,297,
+        302,3,18,9,0,298,302,5,29,0,0,299,300,5,1,0,0,300,302,3,18,9,0,301,
+        297,1,0,0,0,301,298,1,0,0,0,301,299,1,0,0,0,302,59,1,0,0,0,303,304,
+        5,5,0,0,304,309,3,64,32,0,305,306,5,6,0,0,306,308,3,64,32,0,307,
+        305,1,0,0,0,308,311,1,0,0,0,309,307,1,0,0,0,309,310,1,0,0,0,310,
+        312,1,0,0,0,311,309,1,0,0,0,312,313,5,7,0,0,313,326,1,0,0,0,314,
+        315,5,5,0,0,315,320,3,68,34,0,316,317,5,6,0,0,317,319,3,68,34,0,
+        318,316,1,0,0,0,319,322,1,0,0,0,320,318,1,0,0,0,320,321,1,0,0,0,
+        321,323,1,0,0,0,322,320,1,0,0,0,323,324,5,7,0,0,324,326,1,0,0,0,
+        325,303,1,0,0,0,325,314,1,0,0,0,326,61,1,0,0,0,327,335,3,64,32,0,
+        328,335,3,66,33,0,329,335,3,68,34,0,330,331,5,5,0,0,331,332,3,62,
+        31,0,332,333,5,7,0,0,333,335,1,0,0,0,334,327,1,0,0,0,334,328,1,0,
+        0,0,334,329,1,0,0,0,334,330,1,0,0,0,335,63,1,0,0,0,336,339,5,29,
+        0,0,337,339,5,28,0,0,338,336,1,0,0,0,338,337,1,0,0,0,339,65,1,0,
+        0,0,340,341,7,0,0,0,341,67,1,0,0,0,342,343,5,27,0,0,343,69,1,0,0,
+        0,33,73,77,83,89,101,110,120,128,143,155,166,174,184,192,203,215,
+        223,225,236,245,253,256,266,273,281,288,293,301,309,320,325,334,
+        338
     ]
 
 class AiLangParser ( Parser ):
@@ -141,56 +147,59 @@ class AiLangParser ( Parser ):
     literalNames = [ "<INVALID>", "'@'", "'{'", "'}'", "':='", "'('", "','", 
                      "')'", "'.'", "'='", "'['", "']'", "':'", "'return'", 
                      "'do'", "'if'", "'else'", "'from'", "'function'", "'get'", 
-                     "<INVALID>", "<INVALID>", "'->'", "'<-'" ]
+                     "'while'", "<INVALID>", "<INVALID>", "'->'", "'<-'" ]
 
     symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                       "<INVALID>", "RETURN", "DO", "IF", "ELSE", "FROM", 
-                      "FUNCTION", "GET", "TRUE", "FALSE", "ARR", "REF", 
-                      "MATH_OP", "BOOL_OP", "STR", "FLOAT", "INT", "ID", 
-                      "LINE_COMMENT", "BLOCK_COMMENT", "NL", "WS" ]
+                      "FUNCTION", "GET", "WHILE", "TRUE", "FALSE", "ARR", 
+                      "REF", "MATH_OP", "BOOL_OP", "STR", "FLOAT", "INT", 
+                      "ID", "LINE_COMMENT", "BLOCK_COMMENT", "NL", "WS" ]
 
     RULE_prog = 0
     RULE_block = 1
-    RULE_label = 2
-    RULE_context = 3
-    RULE_bool_context = 4
-    RULE_bool_group = 5
-    RULE_bool_stat = 6
-    RULE_assignment = 7
-    RULE_id = 8
-    RULE_ref_op = 9
-    RULE_ret = 10
-    RULE_stat = 11
-    RULE_func_def = 12
-    RULE_def_arg = 13
-    RULE_fromToData = 14
-    RULE_get_stat = 15
-    RULE_doIfElse = 16
-    RULE_func = 17
-    RULE_expr = 18
-    RULE_assignable = 19
-    RULE_named_arg = 20
-    RULE_arg = 21
-    RULE_arg_list = 22
-    RULE_generic_list = 23
-    RULE_list = 24
-    RULE_df = 25
-    RULE_df_val = 26
-    RULE_member = 27
-    RULE_basic_list = 28
-    RULE_basic_val = 29
-    RULE_num = 30
-    RULE_bool = 31
-    RULE_str = 32
+    RULE_validate = 2
+    RULE_label = 3
+    RULE_context = 4
+    RULE_bool_context = 5
+    RULE_bool_group = 6
+    RULE_bool_stat = 7
+    RULE_assignment = 8
+    RULE_id = 9
+    RULE_ref_op = 10
+    RULE_ret = 11
+    RULE_stat = 12
+    RULE_func_def = 13
+    RULE_def_arg = 14
+    RULE_fromToData = 15
+    RULE_get_stat = 16
+    RULE_doIfElse = 17
+    RULE_whileLoop = 18
+    RULE_func = 19
+    RULE_expr = 20
+    RULE_assignable = 21
+    RULE_named_arg = 22
+    RULE_arg = 23
+    RULE_arg_list = 24
+    RULE_generic_list = 25
+    RULE_list = 26
+    RULE_df = 27
+    RULE_df_val = 28
+    RULE_member = 29
+    RULE_basic_list = 30
+    RULE_basic_val = 31
+    RULE_num = 32
+    RULE_bool = 33
+    RULE_str = 34
 
-    ruleNames =  [ "prog", "block", "label", "context", "bool_context", 
+    ruleNames =  [ "prog", "block", "validate", "label", "context", "bool_context", 
                    "bool_group", "bool_stat", "assignment", "id", "ref_op", 
                    "ret", "stat", "func_def", "def_arg", "fromToData", "get_stat", 
-                   "doIfElse", "func", "expr", "assignable", "named_arg", 
-                   "arg", "arg_list", "generic_list", "list", "df", "df_val", 
-                   "member", "basic_list", "basic_val", "num", "bool", "str" ]
+                   "doIfElse", "whileLoop", "func", "expr", "assignable", 
+                   "named_arg", "arg", "arg_list", "generic_list", "list", 
+                   "df", "df_val", "member", "basic_list", "basic_val", 
+                   "num", "bool", "str" ]
 
     EOF = Token.EOF
     T__0=1
@@ -212,20 +221,21 @@ class AiLangParser ( Parser ):
     FROM=17
     FUNCTION=18
     GET=19
-    TRUE=20
-    FALSE=21
-    ARR=22
-    REF=23
-    MATH_OP=24
-    BOOL_OP=25
-    STR=26
-    FLOAT=27
-    INT=28
-    ID=29
-    LINE_COMMENT=30
-    BLOCK_COMMENT=31
-    NL=32
-    WS=33
+    WHILE=20
+    TRUE=21
+    FALSE=22
+    ARR=23
+    REF=24
+    MATH_OP=25
+    BOOL_OP=26
+    STR=27
+    FLOAT=28
+    INT=29
+    ID=30
+    LINE_COMMENT=31
+    BLOCK_COMMENT=32
+    NL=33
+    WS=34
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
@@ -277,16 +287,16 @@ class AiLangParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 67 
+            self.state = 71 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
-                self.state = 66
+                self.state = 70
                 self.stat()
-                self.state = 69 
+                self.state = 73 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & 1014916386) != 0)):
+                if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & 2029937954) != 0)):
                     break
 
         except RecognitionException as re:
@@ -348,6 +358,33 @@ class AiLangParser ( Parser ):
                 return visitor.visitChildren(self)
 
 
+    class Block2ValidateContext(BlockContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a AiLangParser.BlockContext
+            super().__init__(parser)
+            self.copyFrom(ctx)
+
+        def ARR(self):
+            return self.getToken(AiLangParser.ARR, 0)
+        def validate(self):
+            return self.getTypedRuleContext(AiLangParser.ValidateContext,0)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterBlock2Validate" ):
+                listener.enterBlock2Validate(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitBlock2Validate" ):
+                listener.exitBlock2Validate(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitBlock2Validate" ):
+                return visitor.visitBlock2Validate(self)
+            else:
+                return visitor.visitChildren(self)
+
+
     class Block2BlockContext(BlockContext):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a AiLangParser.BlockContext
@@ -385,46 +422,109 @@ class AiLangParser ( Parser ):
         self.enterRule(localctx, 2, self.RULE_block)
         self._la = 0 # Token type
         try:
-            self.state = 83
+            self.state = 89
             self._errHandler.sync(self)
-            token = self._input.LA(1)
-            if token in [22]:
+            la_ = self._interp.adaptivePredict(self._input,3,self._ctx)
+            if la_ == 1:
                 localctx = AiLangParser.Block2BlockContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 71
+                self.state = 75
                 self.match(AiLangParser.ARR)
-                self.state = 73
+                self.state = 77
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if _la==1:
-                    self.state = 72
+                    self.state = 76
                     self.label()
 
 
-                self.state = 75
+                self.state = 79
                 self.context()
                 pass
-            elif token in [1]:
+
+            elif la_ == 2:
                 localctx = AiLangParser.Label2BlockContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 76
+                self.state = 80
                 self.label()
-                self.state = 77
+                self.state = 81
                 self.match(AiLangParser.ARR)
-                self.state = 79
+                self.state = 83
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if _la==1:
-                    self.state = 78
+                    self.state = 82
                     self.label()
 
 
-                self.state = 81
+                self.state = 85
                 self.context()
                 pass
-            else:
-                raise NoViableAltException(self)
 
+            elif la_ == 3:
+                localctx = AiLangParser.Block2ValidateContext(self, localctx)
+                self.enterOuterAlt(localctx, 3)
+                self.state = 87
+                self.match(AiLangParser.ARR)
+                self.state = 88
+                self.validate()
+                pass
+
+
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class ValidateContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def label(self):
+            return self.getTypedRuleContext(AiLangParser.LabelContext,0)
+
+
+        def arg_list(self):
+            return self.getTypedRuleContext(AiLangParser.Arg_listContext,0)
+
+
+        def getRuleIndex(self):
+            return AiLangParser.RULE_validate
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterValidate" ):
+                listener.enterValidate(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitValidate" ):
+                listener.exitValidate(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitValidate" ):
+                return visitor.visitValidate(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def validate(self):
+
+        localctx = AiLangParser.ValidateContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 4, self.RULE_validate)
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 91
+            self.label()
+            self.state = 92
+            self.arg_list()
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -468,12 +568,12 @@ class AiLangParser ( Parser ):
     def label(self):
 
         localctx = AiLangParser.LabelContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 4, self.RULE_label)
+        self.enterRule(localctx, 6, self.RULE_label)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 85
+            self.state = 94
             self.match(AiLangParser.T__0)
-            self.state = 86
+            self.state = 95
             self.id_()
         except RecognitionException as re:
             localctx.exception = re
@@ -521,23 +621,23 @@ class AiLangParser ( Parser ):
     def context(self):
 
         localctx = AiLangParser.ContextContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 6, self.RULE_context)
+        self.enterRule(localctx, 8, self.RULE_context)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 88
+            self.state = 97
             self.match(AiLangParser.T__1)
-            self.state = 92
+            self.state = 101
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 1014916386) != 0):
-                self.state = 89
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 2029937954) != 0):
+                self.state = 98
                 self.stat()
-                self.state = 94
+                self.state = 103
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 95
+            self.state = 104
             self.match(AiLangParser.T__2)
         except RecognitionException as re:
             localctx.exception = re
@@ -585,23 +685,23 @@ class AiLangParser ( Parser ):
     def bool_context(self):
 
         localctx = AiLangParser.Bool_contextContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 8, self.RULE_bool_context)
+        self.enterRule(localctx, 10, self.RULE_bool_context)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 97
+            self.state = 106
             self.match(AiLangParser.T__1)
-            self.state = 101
+            self.state = 110
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 1009780000) != 0):
-                self.state = 98
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & 2019558688) != 0):
+                self.state = 107
                 self.bool_group()
-                self.state = 103
+                self.state = 112
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 104
+            self.state = 113
             self.match(AiLangParser.T__2)
         except RecognitionException as re:
             localctx.exception = re
@@ -655,21 +755,21 @@ class AiLangParser ( Parser ):
     def bool_group(self):
 
         localctx = AiLangParser.Bool_groupContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 10, self.RULE_bool_group)
+        self.enterRule(localctx, 12, self.RULE_bool_group)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 106
+            self.state = 115
             self.bool_stat()
-            self.state = 111
+            self.state = 120
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==25:
-                self.state = 107
+            while _la==26:
+                self.state = 116
                 self.match(AiLangParser.BOOL_OP)
-                self.state = 108
+                self.state = 117
                 self.bool_stat()
-                self.state = 113
+                self.state = 122
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -722,24 +822,24 @@ class AiLangParser ( Parser ):
     def bool_stat(self):
 
         localctx = AiLangParser.Bool_statContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 12, self.RULE_bool_stat)
+        self.enterRule(localctx, 14, self.RULE_bool_stat)
         try:
-            self.state = 119
+            self.state = 128
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,7,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 114
+                self.state = 123
                 self.expr(0)
-                self.state = 115
+                self.state = 124
                 self.match(AiLangParser.BOOL_OP)
-                self.state = 116
+                self.state = 125
                 self.expr(0)
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 118
+                self.state = 127
                 self.expr(0)
                 pass
 
@@ -791,14 +891,14 @@ class AiLangParser ( Parser ):
     def assignment(self):
 
         localctx = AiLangParser.AssignmentContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 14, self.RULE_assignment)
+        self.enterRule(localctx, 16, self.RULE_assignment)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 121
+            self.state = 130
             self.assignable(0)
-            self.state = 122
+            self.state = 131
             self.match(AiLangParser.T__3)
-            self.state = 123
+            self.state = 132
             self.expr(0)
         except RecognitionException as re:
             localctx.exception = re
@@ -842,10 +942,10 @@ class AiLangParser ( Parser ):
     def id_(self):
 
         localctx = AiLangParser.IdContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 16, self.RULE_id)
+        self.enterRule(localctx, 18, self.RULE_id)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 125
+            self.state = 134
             self.match(AiLangParser.ID)
         except RecognitionException as re:
             localctx.exception = re
@@ -897,14 +997,14 @@ class AiLangParser ( Parser ):
     def ref_op(self):
 
         localctx = AiLangParser.Ref_opContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 18, self.RULE_ref_op)
+        self.enterRule(localctx, 20, self.RULE_ref_op)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 127
+            self.state = 136
             self.assignable(0)
-            self.state = 128
+            self.state = 137
             self.match(AiLangParser.REF)
-            self.state = 129
+            self.state = 138
             self.expr(0)
         except RecognitionException as re:
             localctx.exception = re
@@ -987,25 +1087,25 @@ class AiLangParser ( Parser ):
     def ret(self):
 
         localctx = AiLangParser.RetContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 20, self.RULE_ret)
+        self.enterRule(localctx, 22, self.RULE_ret)
         try:
-            self.state = 134
+            self.state = 143
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,8,self._ctx)
             if la_ == 1:
-                localctx = AiLangParser.NoneReturnContext(self, localctx)
+                localctx = AiLangParser.ExprReturnContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 131
+                self.state = 140
                 self.match(AiLangParser.RETURN)
+                self.state = 141
+                self.expr(0)
                 pass
 
             elif la_ == 2:
-                localctx = AiLangParser.ExprReturnContext(self, localctx)
+                localctx = AiLangParser.NoneReturnContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 132
+                self.state = 142
                 self.match(AiLangParser.RETURN)
-                self.state = 133
-                self.expr(0)
                 pass
 
 
@@ -1106,6 +1206,31 @@ class AiLangParser ( Parser ):
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitDo_if_else" ):
                 return visitor.visitDo_if_else(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class While_loopContext(StatContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a AiLangParser.StatContext
+            super().__init__(parser)
+            self.copyFrom(ctx)
+
+        def whileLoop(self):
+            return self.getTypedRuleContext(AiLangParser.WhileLoopContext,0)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterWhile_loop" ):
+                listener.enterWhile_loop(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitWhile_loop" ):
+                listener.exitWhile_loop(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitWhile_loop" ):
+                return visitor.visitWhile_loop(self)
             else:
                 return visitor.visitChildren(self)
 
@@ -1264,71 +1389,78 @@ class AiLangParser ( Parser ):
     def stat(self):
 
         localctx = AiLangParser.StatContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 22, self.RULE_stat)
+        self.enterRule(localctx, 24, self.RULE_stat)
         try:
-            self.state = 145
+            self.state = 155
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,9,self._ctx)
             if la_ == 1:
                 localctx = AiLangParser.FunctionDefContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 136
+                self.state = 145
                 self.func_def()
                 pass
 
             elif la_ == 2:
                 localctx = AiLangParser.AssignContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 137
+                self.state = 146
                 self.assignment()
                 pass
 
             elif la_ == 3:
                 localctx = AiLangParser.ReferenceContext(self, localctx)
                 self.enterOuterAlt(localctx, 3)
-                self.state = 138
+                self.state = 147
                 self.ref_op()
                 pass
 
             elif la_ == 4:
                 localctx = AiLangParser.PrintExprContext(self, localctx)
                 self.enterOuterAlt(localctx, 4)
-                self.state = 139
+                self.state = 148
                 self.expr(0)
                 pass
 
             elif la_ == 5:
                 localctx = AiLangParser.Block_statContext(self, localctx)
                 self.enterOuterAlt(localctx, 5)
-                self.state = 140
+                self.state = 149
                 self.block()
                 pass
 
             elif la_ == 6:
                 localctx = AiLangParser.Do_if_elseContext(self, localctx)
                 self.enterOuterAlt(localctx, 6)
-                self.state = 141
+                self.state = 150
                 self.doIfElse()
                 pass
 
             elif la_ == 7:
-                localctx = AiLangParser.Load_opContext(self, localctx)
+                localctx = AiLangParser.While_loopContext(self, localctx)
                 self.enterOuterAlt(localctx, 7)
-                self.state = 142
-                self.fromToData()
+                self.state = 151
+                self.whileLoop()
                 pass
 
             elif la_ == 8:
-                localctx = AiLangParser.ReturnContext(self, localctx)
+                localctx = AiLangParser.Load_opContext(self, localctx)
                 self.enterOuterAlt(localctx, 8)
-                self.state = 143
-                self.ret()
+                self.state = 152
+                self.fromToData()
                 pass
 
             elif la_ == 9:
-                localctx = AiLangParser.Get_operationContext(self, localctx)
+                localctx = AiLangParser.ReturnContext(self, localctx)
                 self.enterOuterAlt(localctx, 9)
-                self.state = 144
+                self.state = 153
+                self.ret()
+                pass
+
+            elif la_ == 10:
+                localctx = AiLangParser.Get_operationContext(self, localctx)
+                self.enterOuterAlt(localctx, 10)
+                self.state = 154
                 self.get_stat()
                 pass
 
@@ -1393,35 +1525,35 @@ class AiLangParser ( Parser ):
     def func_def(self):
 
         localctx = AiLangParser.Func_defContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 24, self.RULE_func_def)
+        self.enterRule(localctx, 26, self.RULE_func_def)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 147
+            self.state = 157
             self.match(AiLangParser.FUNCTION)
-            self.state = 148
+            self.state = 158
             self.id_()
-            self.state = 149
+            self.state = 159
             self.match(AiLangParser.REF)
-            self.state = 150
+            self.state = 160
             self.match(AiLangParser.T__4)
-            self.state = 151
+            self.state = 161
             self.def_arg()
-            self.state = 156
+            self.state = 166
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==6:
-                self.state = 152
+                self.state = 162
                 self.match(AiLangParser.T__5)
-                self.state = 153
+                self.state = 163
                 self.def_arg()
-                self.state = 158
+                self.state = 168
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 159
+            self.state = 169
             self.match(AiLangParser.T__6)
-            self.state = 160
+            self.state = 170
             self.context()
         except RecognitionException as re:
             localctx.exception = re
@@ -1470,20 +1602,20 @@ class AiLangParser ( Parser ):
     def def_arg(self):
 
         localctx = AiLangParser.Def_argContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 26, self.RULE_def_arg)
+        self.enterRule(localctx, 28, self.RULE_def_arg)
         try:
-            self.state = 164
+            self.state = 174
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,11,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 162
+                self.state = 172
                 self.id_()
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 163
+                self.state = 173
                 self.named_arg()
                 pass
 
@@ -1541,16 +1673,16 @@ class AiLangParser ( Parser ):
     def fromToData(self):
 
         localctx = AiLangParser.FromToDataContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 28, self.RULE_fromToData)
+        self.enterRule(localctx, 30, self.RULE_fromToData)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 166
+            self.state = 176
             self.match(AiLangParser.FROM)
-            self.state = 167
+            self.state = 177
             self.str_()
-            self.state = 168
+            self.state = 178
             self.match(AiLangParser.ARR)
-            self.state = 169
+            self.state = 179
             self.id_()
         except RecognitionException as re:
             localctx.exception = re
@@ -1601,18 +1733,18 @@ class AiLangParser ( Parser ):
     def get_stat(self):
 
         localctx = AiLangParser.Get_statContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 30, self.RULE_get_stat)
+        self.enterRule(localctx, 32, self.RULE_get_stat)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 171
+            self.state = 181
             self.match(AiLangParser.GET)
-            self.state = 172
+            self.state = 182
             self.str_()
-            self.state = 174
+            self.state = 184
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,12,self._ctx)
             if la_ == 1:
-                self.state = 173
+                self.state = 183
                 self.str_()
 
 
@@ -1675,28 +1807,92 @@ class AiLangParser ( Parser ):
     def doIfElse(self):
 
         localctx = AiLangParser.DoIfElseContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 32, self.RULE_doIfElse)
+        self.enterRule(localctx, 34, self.RULE_doIfElse)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 176
+            self.state = 186
             self.match(AiLangParser.DO)
-            self.state = 177
+            self.state = 187
             self.context()
-            self.state = 178
+            self.state = 188
             self.match(AiLangParser.IF)
-            self.state = 179
+            self.state = 189
             self.bool_context()
-            self.state = 182
+            self.state = 192
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             if _la==16:
-                self.state = 180
+                self.state = 190
                 self.match(AiLangParser.ELSE)
-                self.state = 181
+                self.state = 191
                 self.context()
 
 
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
+
+
+    class WhileLoopContext(ParserRuleContext):
+        __slots__ = 'parser'
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def WHILE(self):
+            return self.getToken(AiLangParser.WHILE, 0)
+
+        def bool_context(self):
+            return self.getTypedRuleContext(AiLangParser.Bool_contextContext,0)
+
+
+        def DO(self):
+            return self.getToken(AiLangParser.DO, 0)
+
+        def context(self):
+            return self.getTypedRuleContext(AiLangParser.ContextContext,0)
+
+
+        def getRuleIndex(self):
+            return AiLangParser.RULE_whileLoop
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterWhileLoop" ):
+                listener.enterWhileLoop(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitWhileLoop" ):
+                listener.exitWhileLoop(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitWhileLoop" ):
+                return visitor.visitWhileLoop(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+
+
+    def whileLoop(self):
+
+        localctx = AiLangParser.WhileLoopContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 36, self.RULE_whileLoop)
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 194
+            self.match(AiLangParser.WHILE)
+            self.state = 195
+            self.bool_context()
+            self.state = 196
+            self.match(AiLangParser.DO)
+            self.state = 197
+            self.context()
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -1747,20 +1943,20 @@ class AiLangParser ( Parser ):
     def func(self):
 
         localctx = AiLangParser.FuncContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 34, self.RULE_func)
+        self.enterRule(localctx, 38, self.RULE_func)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 184
+            self.state = 199
             self.match(AiLangParser.T__7)
-            self.state = 185
+            self.state = 200
             self.id_()
-            self.state = 188
+            self.state = 203
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,14,self._ctx)
             if la_ == 1:
-                self.state = 186
+                self.state = 201
                 self.match(AiLangParser.REF)
-                self.state = 187
+                self.state = 202
                 self.arg_list()
 
 
@@ -2005,11 +2201,11 @@ class AiLangParser ( Parser ):
         _parentState = self.state
         localctx = AiLangParser.ExprContext(self, self._ctx, _parentState)
         _prevctx = localctx
-        _startState = 36
-        self.enterRecursionRule(localctx, 36, self.RULE_expr, _p)
+        _startState = 40
+        self.enterRecursionRule(localctx, 40, self.RULE_expr, _p)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 200
+            self.state = 215
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,15,self._ctx)
             if la_ == 1:
@@ -2017,7 +2213,7 @@ class AiLangParser ( Parser ):
                 self._ctx = localctx
                 _prevctx = localctx
 
-                self.state = 191
+                self.state = 206
                 self.basic_val()
                 pass
 
@@ -2025,7 +2221,7 @@ class AiLangParser ( Parser ):
                 localctx = AiLangParser.PathExprContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-                self.state = 192
+                self.state = 207
                 self.assignable(0)
                 pass
 
@@ -2033,7 +2229,7 @@ class AiLangParser ( Parser ):
                 localctx = AiLangParser.FunctionContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-                self.state = 193
+                self.state = 208
                 self.func()
                 pass
 
@@ -2041,7 +2237,7 @@ class AiLangParser ( Parser ):
                 localctx = AiLangParser.ListValExprContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-                self.state = 194
+                self.state = 209
                 self.list_()
                 pass
 
@@ -2049,7 +2245,7 @@ class AiLangParser ( Parser ):
                 localctx = AiLangParser.DataframeContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-                self.state = 195
+                self.state = 210
                 self.df()
                 pass
 
@@ -2057,17 +2253,17 @@ class AiLangParser ( Parser ):
                 localctx = AiLangParser.GroupContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-                self.state = 196
+                self.state = 211
                 self.match(AiLangParser.T__4)
-                self.state = 197
+                self.state = 212
                 self.expr(0)
-                self.state = 198
+                self.state = 213
                 self.match(AiLangParser.T__6)
                 pass
 
 
             self._ctx.stop = self._input.LT(-1)
-            self.state = 210
+            self.state = 225
             self._errHandler.sync(self)
             _alt = self._interp.adaptivePredict(self._input,17,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
@@ -2075,37 +2271,37 @@ class AiLangParser ( Parser ):
                     if self._parseListeners is not None:
                         self.triggerExitRuleEvent()
                     _prevctx = localctx
-                    self.state = 208
+                    self.state = 223
                     self._errHandler.sync(self)
                     la_ = self._interp.adaptivePredict(self._input,16,self._ctx)
                     if la_ == 1:
                         localctx = AiLangParser.MathOpContext(self, AiLangParser.ExprContext(self, _parentctx, _parentState))
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
-                        self.state = 202
+                        self.state = 217
                         if not self.precpred(self._ctx, 1):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 1)")
-                        self.state = 203
+                        self.state = 218
                         self.match(AiLangParser.MATH_OP)
-                        self.state = 204
+                        self.state = 219
                         self.expr(2)
                         pass
 
                     elif la_ == 2:
                         localctx = AiLangParser.MethodCallContext(self, AiLangParser.ExprContext(self, _parentctx, _parentState))
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
-                        self.state = 205
+                        self.state = 220
                         if not self.precpred(self._ctx, 2):
                             from antlr4.error.Errors import FailedPredicateException
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 2)")
-                        self.state = 206
+                        self.state = 221
                         self.match(AiLangParser.REF)
-                        self.state = 207
+                        self.state = 222
                         self.arg_list()
                         pass
 
              
-                self.state = 212
+                self.state = 227
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,17,self._ctx)
 
@@ -2193,18 +2389,18 @@ class AiLangParser ( Parser ):
         _parentState = self.state
         localctx = AiLangParser.AssignableContext(self, self._ctx, _parentState)
         _prevctx = localctx
-        _startState = 38
-        self.enterRecursionRule(localctx, 38, self.RULE_assignable, _p)
+        _startState = 42
+        self.enterRecursionRule(localctx, 42, self.RULE_assignable, _p)
         try:
             self.enterOuterAlt(localctx, 1)
             localctx = AiLangParser.SimpleTargetContext(self, localctx)
             self._ctx = localctx
             _prevctx = localctx
 
-            self.state = 214
+            self.state = 229
             self.id_()
             self._ctx.stop = self._input.LT(-1)
-            self.state = 221
+            self.state = 236
             self._errHandler.sync(self)
             _alt = self._interp.adaptivePredict(self._input,18,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
@@ -2214,15 +2410,15 @@ class AiLangParser ( Parser ):
                     _prevctx = localctx
                     localctx = AiLangParser.MemberTargetContext(self, AiLangParser.AssignableContext(self, _parentctx, _parentState))
                     self.pushNewRecursionContext(localctx, _startState, self.RULE_assignable)
-                    self.state = 216
+                    self.state = 231
                     if not self.precpred(self._ctx, 1):
                         from antlr4.error.Errors import FailedPredicateException
                         raise FailedPredicateException(self, "self.precpred(self._ctx, 1)")
-                    self.state = 217
+                    self.state = 232
                     self.match(AiLangParser.T__7)
-                    self.state = 218
+                    self.state = 233
                     self.member() 
-                self.state = 223
+                self.state = 238
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,18,self._ctx)
 
@@ -2273,14 +2469,14 @@ class AiLangParser ( Parser ):
     def named_arg(self):
 
         localctx = AiLangParser.Named_argContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 40, self.RULE_named_arg)
+        self.enterRule(localctx, 44, self.RULE_named_arg)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 224
+            self.state = 239
             self.id_()
-            self.state = 225
+            self.state = 240
             self.match(AiLangParser.T__8)
-            self.state = 226
+            self.state = 241
             self.expr(0)
         except RecognitionException as re:
             localctx.exception = re
@@ -2362,22 +2558,22 @@ class AiLangParser ( Parser ):
     def arg(self):
 
         localctx = AiLangParser.ArgContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 42, self.RULE_arg)
+        self.enterRule(localctx, 46, self.RULE_arg)
         try:
-            self.state = 230
+            self.state = 245
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,19,self._ctx)
             if la_ == 1:
                 localctx = AiLangParser.NamedArgContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 228
+                self.state = 243
                 self.named_arg()
                 pass
 
             elif la_ == 2:
                 localctx = AiLangParser.ExprArgContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 229
+                self.state = 244
                 self.expr(0)
                 pass
 
@@ -2428,33 +2624,33 @@ class AiLangParser ( Parser ):
     def arg_list(self):
 
         localctx = AiLangParser.Arg_listContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 44, self.RULE_arg_list)
+        self.enterRule(localctx, 48, self.RULE_arg_list)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 232
+            self.state = 247
             self.match(AiLangParser.T__4)
-            self.state = 241
+            self.state = 256
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 1009780000) != 0):
-                self.state = 233
+            if (((_la) & ~0x3f) == 0 and ((1 << _la) & 2019558688) != 0):
+                self.state = 248
                 self.arg()
-                self.state = 238
+                self.state = 253
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 while _la==6:
-                    self.state = 234
+                    self.state = 249
                     self.match(AiLangParser.T__5)
-                    self.state = 235
+                    self.state = 250
                     self.arg()
-                    self.state = 240
+                    self.state = 255
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
 
 
-            self.state = 243
+            self.state = 258
             self.match(AiLangParser.T__6)
         except RecognitionException as re:
             localctx.exception = re
@@ -2502,27 +2698,27 @@ class AiLangParser ( Parser ):
     def generic_list(self):
 
         localctx = AiLangParser.Generic_listContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 46, self.RULE_generic_list)
+        self.enterRule(localctx, 50, self.RULE_generic_list)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 245
+            self.state = 260
             self.match(AiLangParser.T__4)
-            self.state = 246
+            self.state = 261
             self.expr(0)
-            self.state = 251
+            self.state = 266
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==6:
-                self.state = 247
+                self.state = 262
                 self.match(AiLangParser.T__5)
-                self.state = 248
+                self.state = 263
                 self.expr(0)
-                self.state = 253
+                self.state = 268
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 254
+            self.state = 269
             self.match(AiLangParser.T__6)
         except RecognitionException as re:
             localctx.exception = re
@@ -2571,20 +2767,20 @@ class AiLangParser ( Parser ):
     def list_(self):
 
         localctx = AiLangParser.ListContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 48, self.RULE_list)
+        self.enterRule(localctx, 52, self.RULE_list)
         try:
-            self.state = 258
+            self.state = 273
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,23,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 256
+                self.state = 271
                 self.basic_list()
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 257
+                self.state = 272
                 self.generic_list()
                 pass
 
@@ -2669,41 +2865,41 @@ class AiLangParser ( Parser ):
     def df(self):
 
         localctx = AiLangParser.DfContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 50, self.RULE_df)
+        self.enterRule(localctx, 54, self.RULE_df)
         self._la = 0 # Token type
         try:
-            self.state = 273
+            self.state = 288
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,25,self._ctx)
             if la_ == 1:
                 localctx = AiLangParser.NonEmptyDfContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 260
+                self.state = 275
                 self.match(AiLangParser.T__9)
-                self.state = 261
+                self.state = 276
                 self.df_val()
-                self.state = 266
+                self.state = 281
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 while _la==6:
-                    self.state = 262
+                    self.state = 277
                     self.match(AiLangParser.T__5)
-                    self.state = 263
+                    self.state = 278
                     self.df_val()
-                    self.state = 268
+                    self.state = 283
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
-                self.state = 269
+                self.state = 284
                 self.match(AiLangParser.T__10)
                 pass
 
             elif la_ == 2:
                 localctx = AiLangParser.EmptyDfContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 271
+                self.state = 286
                 self.match(AiLangParser.T__9)
-                self.state = 272
+                self.state = 287
                 self.match(AiLangParser.T__10)
                 pass
 
@@ -2755,21 +2951,21 @@ class AiLangParser ( Parser ):
     def df_val(self):
 
         localctx = AiLangParser.Df_valContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 52, self.RULE_df_val)
+        self.enterRule(localctx, 56, self.RULE_df_val)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 278
+            self.state = 293
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            if _la==29:
-                self.state = 275
+            if _la==30:
+                self.state = 290
                 self.id_()
-                self.state = 276
+                self.state = 291
                 self.match(AiLangParser.T__11)
 
 
-            self.state = 280
+            self.state = 295
             self.basic_list()
         except RecognitionException as re:
             localctx.exception = re
@@ -2875,29 +3071,29 @@ class AiLangParser ( Parser ):
     def member(self):
 
         localctx = AiLangParser.MemberContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 54, self.RULE_member)
+        self.enterRule(localctx, 58, self.RULE_member)
         try:
-            self.state = 286
+            self.state = 301
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [29]:
+            if token in [30]:
                 localctx = AiLangParser.BasicIDMemberContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 282
+                self.state = 297
                 self.id_()
                 pass
-            elif token in [28]:
+            elif token in [29]:
                 localctx = AiLangParser.IntIDMemberContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 283
+                self.state = 298
                 self.match(AiLangParser.INT)
                 pass
             elif token in [1]:
                 localctx = AiLangParser.ListIDMemberContext(self, localctx)
                 self.enterOuterAlt(localctx, 3)
-                self.state = 284
+                self.state = 299
                 self.match(AiLangParser.T__0)
-                self.state = 285
+                self.state = 300
                 self.id_()
                 pass
             else:
@@ -2989,55 +3185,55 @@ class AiLangParser ( Parser ):
     def basic_list(self):
 
         localctx = AiLangParser.Basic_listContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 56, self.RULE_basic_list)
+        self.enterRule(localctx, 60, self.RULE_basic_list)
         self._la = 0 # Token type
         try:
-            self.state = 310
+            self.state = 325
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,30,self._ctx)
             if la_ == 1:
                 localctx = AiLangParser.NumListContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 288
+                self.state = 303
                 self.match(AiLangParser.T__4)
-                self.state = 289
+                self.state = 304
                 self.num()
-                self.state = 294
+                self.state = 309
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 while _la==6:
-                    self.state = 290
+                    self.state = 305
                     self.match(AiLangParser.T__5)
-                    self.state = 291
+                    self.state = 306
                     self.num()
-                    self.state = 296
+                    self.state = 311
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
-                self.state = 297
+                self.state = 312
                 self.match(AiLangParser.T__6)
                 pass
 
             elif la_ == 2:
                 localctx = AiLangParser.StrListContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 299
+                self.state = 314
                 self.match(AiLangParser.T__4)
-                self.state = 300
+                self.state = 315
                 self.str_()
-                self.state = 305
+                self.state = 320
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 while _la==6:
-                    self.state = 301
+                    self.state = 316
                     self.match(AiLangParser.T__5)
-                    self.state = 302
+                    self.state = 317
                     self.str_()
-                    self.state = 307
+                    self.state = 322
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
-                self.state = 308
+                self.state = 323
                 self.match(AiLangParser.T__6)
                 pass
 
@@ -3172,37 +3368,37 @@ class AiLangParser ( Parser ):
     def basic_val(self):
 
         localctx = AiLangParser.Basic_valContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 58, self.RULE_basic_val)
+        self.enterRule(localctx, 62, self.RULE_basic_val)
         try:
-            self.state = 319
+            self.state = 334
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [27, 28]:
+            if token in [28, 29]:
                 localctx = AiLangParser.NumberContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 312
+                self.state = 327
                 self.num()
                 pass
-            elif token in [20, 21]:
+            elif token in [21, 22]:
                 localctx = AiLangParser.BooleanContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 313
+                self.state = 328
                 self.bool_()
                 pass
-            elif token in [26]:
+            elif token in [27]:
                 localctx = AiLangParser.StringContext(self, localctx)
                 self.enterOuterAlt(localctx, 3)
-                self.state = 314
+                self.state = 329
                 self.str_()
                 pass
             elif token in [5]:
                 localctx = AiLangParser.Group_basic_valContext(self, localctx)
                 self.enterOuterAlt(localctx, 4)
-                self.state = 315
+                self.state = 330
                 self.match(AiLangParser.T__4)
-                self.state = 316
+                self.state = 331
                 self.basic_val()
-                self.state = 317
+                self.state = 332
                 self.match(AiLangParser.T__6)
                 pass
             else:
@@ -3286,21 +3482,21 @@ class AiLangParser ( Parser ):
     def num(self):
 
         localctx = AiLangParser.NumContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 60, self.RULE_num)
+        self.enterRule(localctx, 64, self.RULE_num)
         try:
-            self.state = 323
+            self.state = 338
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [28]:
+            if token in [29]:
                 localctx = AiLangParser.IntigerLiteralContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
-                self.state = 321
+                self.state = 336
                 self.match(AiLangParser.INT)
                 pass
-            elif token in [27]:
+            elif token in [28]:
                 localctx = AiLangParser.FloatLiteralContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 322
+                self.state = 337
                 self.match(AiLangParser.FLOAT)
                 pass
             else:
@@ -3351,13 +3547,13 @@ class AiLangParser ( Parser ):
     def bool_(self):
 
         localctx = AiLangParser.BoolContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 62, self.RULE_bool)
+        self.enterRule(localctx, 66, self.RULE_bool)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 325
+            self.state = 340
             _la = self._input.LA(1)
-            if not(_la==20 or _la==21):
+            if not(_la==21 or _la==22):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -3404,10 +3600,10 @@ class AiLangParser ( Parser ):
     def str_(self):
 
         localctx = AiLangParser.StrContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 64, self.RULE_str)
+        self.enterRule(localctx, 68, self.RULE_str)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 327
+            self.state = 342
             self.match(AiLangParser.STR)
         except RecognitionException as re:
             localctx.exception = re
@@ -3422,8 +3618,8 @@ class AiLangParser ( Parser ):
     def sempred(self, localctx:RuleContext, ruleIndex:int, predIndex:int):
         if self._predicates == None:
             self._predicates = dict()
-        self._predicates[18] = self.expr_sempred
-        self._predicates[19] = self.assignable_sempred
+        self._predicates[20] = self.expr_sempred
+        self._predicates[21] = self.assignable_sempred
         pred = self._predicates.get(ruleIndex, None)
         if pred is None:
             raise Exception("No predicate with index:" + str(ruleIndex))

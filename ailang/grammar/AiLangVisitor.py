@@ -24,6 +24,16 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by AiLangParser#Block2Validate.
+    def visitBlock2Validate(self, ctx:AiLangParser.Block2ValidateContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#validate.
+    def visitValidate(self, ctx:AiLangParser.ValidateContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by AiLangParser#label.
     def visitLabel(self, ctx:AiLangParser.LabelContext):
         return self.visitChildren(ctx)
@@ -64,13 +74,13 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by AiLangParser#NoneReturn.
-    def visitNoneReturn(self, ctx:AiLangParser.NoneReturnContext):
+    # Visit a parse tree produced by AiLangParser#ExprReturn.
+    def visitExprReturn(self, ctx:AiLangParser.ExprReturnContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by AiLangParser#ExprReturn.
-    def visitExprReturn(self, ctx:AiLangParser.ExprReturnContext):
+    # Visit a parse tree produced by AiLangParser#NoneReturn.
+    def visitNoneReturn(self, ctx:AiLangParser.NoneReturnContext):
         return self.visitChildren(ctx)
 
 
@@ -101,6 +111,11 @@ class AiLangVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by AiLangParser#do_if_else.
     def visitDo_if_else(self, ctx:AiLangParser.Do_if_elseContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#while_loop.
+    def visitWhile_loop(self, ctx:AiLangParser.While_loopContext):
         return self.visitChildren(ctx)
 
 
@@ -141,6 +156,11 @@ class AiLangVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by AiLangParser#doIfElse.
     def visitDoIfElse(self, ctx:AiLangParser.DoIfElseContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#whileLoop.
+    def visitWhileLoop(self, ctx:AiLangParser.WhileLoopContext):
         return self.visitChildren(ctx)
 
 
