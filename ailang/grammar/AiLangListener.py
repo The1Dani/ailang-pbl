@@ -125,21 +125,21 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by AiLangParser#NoneReturn.
-    def enterNoneReturn(self, ctx:AiLangParser.NoneReturnContext):
-        pass
-
-    # Exit a parse tree produced by AiLangParser#NoneReturn.
-    def exitNoneReturn(self, ctx:AiLangParser.NoneReturnContext):
-        pass
-
-
     # Enter a parse tree produced by AiLangParser#ExprReturn.
     def enterExprReturn(self, ctx:AiLangParser.ExprReturnContext):
         pass
 
     # Exit a parse tree produced by AiLangParser#ExprReturn.
     def exitExprReturn(self, ctx:AiLangParser.ExprReturnContext):
+        pass
+
+
+    # Enter a parse tree produced by AiLangParser#NoneReturn.
+    def enterNoneReturn(self, ctx:AiLangParser.NoneReturnContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#NoneReturn.
+    def exitNoneReturn(self, ctx:AiLangParser.NoneReturnContext):
         pass
 
 

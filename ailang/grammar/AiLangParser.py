@@ -66,8 +66,8 @@ def serializedATN():
         121,1,0,0,0,126,125,1,0,0,0,127,15,1,0,0,0,128,129,3,40,20,0,129,
         130,5,4,0,0,130,131,3,38,19,0,131,17,1,0,0,0,132,133,5,29,0,0,133,
         19,1,0,0,0,134,135,3,40,20,0,135,136,5,23,0,0,136,137,3,38,19,0,
-        137,21,1,0,0,0,138,142,5,13,0,0,139,140,5,13,0,0,140,142,3,38,19,
-        0,141,138,1,0,0,0,141,139,1,0,0,0,142,23,1,0,0,0,143,153,3,26,13,
+        137,21,1,0,0,0,138,139,5,13,0,0,139,142,3,38,19,0,140,142,5,13,0,
+        0,141,138,1,0,0,0,141,140,1,0,0,0,142,23,1,0,0,0,143,153,3,26,13,
         0,144,153,3,16,8,0,145,153,3,20,10,0,146,153,3,38,19,0,147,153,3,
         2,1,0,148,153,3,34,17,0,149,153,3,30,15,0,150,153,3,22,11,0,151,
         153,3,32,16,0,152,143,1,0,0,0,152,144,1,0,0,0,152,145,1,0,0,0,152,
@@ -1087,19 +1087,19 @@ class AiLangParser ( Parser ):
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,8,self._ctx)
             if la_ == 1:
-                localctx = AiLangParser.NoneReturnContext(self, localctx)
+                localctx = AiLangParser.ExprReturnContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
                 self.state = 138
                 self.match(AiLangParser.RETURN)
+                self.state = 139
+                self.expr(0)
                 pass
 
             elif la_ == 2:
-                localctx = AiLangParser.ExprReturnContext(self, localctx)
+                localctx = AiLangParser.NoneReturnContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
-                self.state = 139
-                self.match(AiLangParser.RETURN)
                 self.state = 140
-                self.expr(0)
+                self.match(AiLangParser.RETURN)
                 pass
 
 

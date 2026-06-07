@@ -33,7 +33,8 @@ ref_op: assignable REF expr;
 
 RETURN: 'return';
 
-ret: RETURN # NoneReturn | RETURN expr # ExprReturn;
+ret: RETURN expr # ExprReturn 
+   | RETURN # NoneReturn;
 
 stat:
 	func_def		# functionDef

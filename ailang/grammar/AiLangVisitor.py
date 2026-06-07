@@ -74,13 +74,13 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by AiLangParser#NoneReturn.
-    def visitNoneReturn(self, ctx:AiLangParser.NoneReturnContext):
+    # Visit a parse tree produced by AiLangParser#ExprReturn.
+    def visitExprReturn(self, ctx:AiLangParser.ExprReturnContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by AiLangParser#ExprReturn.
-    def visitExprReturn(self, ctx:AiLangParser.ExprReturnContext):
+    # Visit a parse tree produced by AiLangParser#NoneReturn.
+    def visitNoneReturn(self, ctx:AiLangParser.NoneReturnContext):
         return self.visitChildren(ctx)
 
 
