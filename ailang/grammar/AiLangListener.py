@@ -197,6 +197,15 @@ class AiLangListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by AiLangParser#while_loop.
+    def enterWhile_loop(self, ctx:AiLangParser.While_loopContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#while_loop.
+    def exitWhile_loop(self, ctx:AiLangParser.While_loopContext):
+        pass
+
+
     # Enter a parse tree produced by AiLangParser#load_op.
     def enterLoad_op(self, ctx:AiLangParser.Load_opContext):
         pass
@@ -266,6 +275,15 @@ class AiLangListener(ParseTreeListener):
 
     # Exit a parse tree produced by AiLangParser#doIfElse.
     def exitDoIfElse(self, ctx:AiLangParser.DoIfElseContext):
+        pass
+
+
+    # Enter a parse tree produced by AiLangParser#whileLoop.
+    def enterWhileLoop(self, ctx:AiLangParser.WhileLoopContext):
+        pass
+
+    # Exit a parse tree produced by AiLangParser#whileLoop.
+    def exitWhileLoop(self, ctx:AiLangParser.WhileLoopContext):
         pass
 
 

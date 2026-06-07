@@ -114,6 +114,11 @@ class AiLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by AiLangParser#while_loop.
+    def visitWhile_loop(self, ctx:AiLangParser.While_loopContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by AiLangParser#load_op.
     def visitLoad_op(self, ctx:AiLangParser.Load_opContext):
         return self.visitChildren(ctx)
@@ -151,6 +156,11 @@ class AiLangVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by AiLangParser#doIfElse.
     def visitDoIfElse(self, ctx:AiLangParser.DoIfElseContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by AiLangParser#whileLoop.
+    def visitWhileLoop(self, ctx:AiLangParser.WhileLoopContext):
         return self.visitChildren(ctx)
 
 

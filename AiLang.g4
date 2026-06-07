@@ -43,6 +43,7 @@ stat:
 	| expr			# printExpr //ok
 	| block			# block_stat //ok
 	| doIfElse		# do_if_else //ok
+	| whileLoop		# while_loop
 	| fromToData	# load_op //dummy implemented
 	| ret			# return
 	| get_stat		# get_operation;
@@ -58,6 +59,7 @@ fromToData: FROM str ARR id;
 get_stat: GET str (str)?;
 
 doIfElse: DO context IF bool_context (ELSE context)?;
+whileLoop: WHILE bool_context DO context;
 func: '.' id (REF arg_list)?;
 
 expr:
@@ -122,6 +124,7 @@ ELSE: 'else';
 FROM: 'from';
 FUNCTION: 'function';
 GET: 'get';
+WHILE: 'while';
 
 TRUE: [tT]'rue';
 FALSE: [fF]'alse';
