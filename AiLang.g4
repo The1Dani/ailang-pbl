@@ -6,7 +6,10 @@ prog: stat+;
 
 block:
 	ARR label? context			# Block2Block
-	| label ARR label? context	# Label2Block;
+	| label ARR label? context	# Label2Block
+	| ARR validate				# Block2Validate;
+
+validate: label arg_list;
 
 label: '@' id;
 
@@ -30,7 +33,8 @@ ref_op: assignable REF expr;
 
 RETURN: 'return';
 
-ret: RETURN # NoneReturn | RETURN expr # ExprReturn;
+ret: RETURN expr # ExprReturn 
+   | RETURN # NoneReturn;
 
 stat:
 	func_def		# functionDef
@@ -39,6 +43,7 @@ stat:
 	| expr			# printExpr //ok
 	| block			# block_stat //ok
 	| doIfElse		# do_if_else //ok
+	| whileLoop		# while_loop
 	| fromToData	# load_op //dummy implemented
 	| ret			# return
 	| get_stat		# get_operation;
@@ -54,6 +59,7 @@ fromToData: FROM str ARR id;
 get_stat: GET str (str)?;
 
 doIfElse: DO context IF bool_context (ELSE context)?;
+whileLoop: WHILE bool_context DO context;
 func: '.' id (REF arg_list)?;
 
 expr:
@@ -64,11 +70,11 @@ expr:
 	| df				# dataframe //ok
 	| '(' expr ')'		# group //ok
 	| expr REF arg_list	# methodCall //ok
-	| expr MATH_OP expr	# mathOp ; // not compleate
+	| expr MATH_OP expr	# mathOp; // not compleate
 
 assignable:
 	id						# simpleTarget
-	| assignable '.' member	# memberTarget ; // Allows x.y, df.col, df.1.sub
+	| assignable '.' member	# memberTarget; // Allows x.y, df.col, df.1.sub
 
 named_arg: id '=' expr;
 
@@ -89,7 +95,7 @@ df_val: (id ':')? basic_list;
 member:
 	id			# basicIDMember
 	| INT		# intIDMember
-	| '@' id	# listIDMember ; // Keeps your label/set logic
+	| '@' id	# listIDMember; // Keeps your label/set logic
 
 // column_method: column '.' id (REF arg_list)?;
 
@@ -118,6 +124,7 @@ ELSE: 'else';
 FROM: 'from';
 FUNCTION: 'function';
 GET: 'get';
+WHILE: 'while';
 
 TRUE: [tT]'rue';
 FALSE: [fF]'alse';

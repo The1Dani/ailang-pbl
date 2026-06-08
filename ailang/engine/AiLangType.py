@@ -170,6 +170,16 @@ class NoneType(AiLangType, metaclass=utils.Singleton):
         super().__init__(None)
 
 
+class MapType(AiLangType):
+    """MapType wraps a list of (score, model) pairs for validation results."""
+
+    def getScores(self) -> list:
+        return [p[0] for p in self.val]
+
+    def getModels(self) -> list:
+        return [p[1] for p in self.val]
+
+
 class PyType(AiLangType):
     """
     Wrapper type for any Python objects that
