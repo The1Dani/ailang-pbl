@@ -1,5 +1,38 @@
 // solution1.ail  -  Titanic survival (classification)
 
+// Score a model with 5-fold cross-validated accuracy.
+function validate <- (model) {
+    result <- model.cross_validate <- (X, y, 5, "accuracy")
+    return result.mean_score
+}
+
+// Receive every branch's score+model, keep the best, ship it.
+function validate_select <- (scores_map) {
+    scores <- scores_map.scores
+    models <- scores_map.models
+
+    n <- scores.len <- ()
+    i <- 1
+    best_score <- scores.at <- (0)
+    best_model <- models.at <- (0)
+
+    while { i < n } do {
+        current_score <- scores.at <- (i)
+        current_model <- models.at <- (i)
+        do {
+            best_score <- current_score
+            best_model <- current_model
+        } if {
+            current_score > best_score
+        }
+        i <- i + 1
+    }
+
+    predictions <- best_model.predict <- (X_test)
+    .save_csv <- (predictions, "test/data/titanic_submission.csv", ids=test_ids)
+    .print    <- ("best model:", best_model)
+}
+
 -> @Load {
     get "https://www.kaggle.com/datasets/heptapod/titanic" "train.csv"
     get "https://www.kaggle.com/datasets/heptapod/titanic" "test.csv"
@@ -8,33 +41,26 @@
 } -> @Prepare {
     train_num <- train_raw.select_numeric <- ()
     train_num <- train_num.fillna_median  <- ()
-    test_num  <- test_raw.select_numeric  <- ()
-    test_num  <- test_num.fillna_median   <- ()
+
+    test_num <- test_raw.select_numeric <- ()
+    test_num <- test_num.fillna_median  <- ()
+    X_test   <- test_num.select_cols    <- (("Pclass", "Age", "SibSp", "Parch", "Fare"))
 
     y        := train_raw.Survived
     test_ids := test_raw.PassengerId
-
-} -> @BranchA {
-    cols_a  := ("Pclass", "Fare")
-    Xa      <- train_num.select_cols <- (cols_a)
-    model_a <- logistic_regression.fit <- (Xa, y)
-
-} -> @BranchB {
-    cols_b  := ("Pclass", "Age", "SibSp", "Parch", "Fare")
-    Xb      <- train_num.select_cols <- (cols_b)
-    model_b <- random_forest_classifier.fit <- (Xb, y)
-
-} -> @BranchC {
-    cols_c  := ("Age", "Fare", "Pclass")
-    Xc      <- train_num.select_cols <- (cols_c)
-    model_c <- knn_classifier.fit <- (Xc, y)
-
-} -> @Validate {
-    scores := (
-        .validate <- (model_a),
-        .validate <- (model_b),
-        .validate <- (model_c)
-    )
-    best <- .validate_select <- (scores)
-    .after_validate <- (best)
 }
+
+@Prepare -> @BranchA {
+    X     <- train_num.select_cols <- (("Pclass", "Fare"))
+    model <- logistic_regression.fit <- (X, y)
+} -> @Validate(model)
+
+@Prepare -> @BranchB {
+    X     <- train_num.select_cols <- (("Pclass", "Age", "SibSp", "Parch", "Fare"))
+    model <- random_forest_classifier.fit <- (X, y)
+} -> @Validate(model)
+
+@Prepare -> @BranchC {
+    X     <- train_num.select_cols <- (("Age", "Fare", "Pclass"))
+    model <- knn_classifier.fit <- (X, y)
+} -> @Validate(model)

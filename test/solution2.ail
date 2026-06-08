@@ -1,5 +1,38 @@
 // solution2.ail  -  House Prices (regression)
 
+// Score a model with 5-fold cross-validated R2.
+function validate <- (model) {
+    result <- model.cross_validate <- (X, y, 5, "r2")
+    return result.mean_score
+}
+
+// Receive every branch's score+model, keep the best, ship it.
+function validate_select <- (scores_map) {
+    scores <- scores_map.scores
+    models <- scores_map.models
+
+    n <- scores.len <- ()
+    i <- 1
+    best_score <- scores.at <- (0)
+    best_model <- models.at <- (0)
+
+    while { i < n } do {
+        current_score <- scores.at <- (i)
+        current_model <- models.at <- (i)
+        do {
+            best_score <- current_score
+            best_model <- current_model
+        } if {
+            current_score > best_score
+        }
+        i <- i + 1
+    }
+
+    predictions <- best_model.predict <- (X_test)
+    .save_csv <- (predictions, "test/data/house_prices_submission.csv", ids=test_ids)
+    .print    <- ("best model:", best_model)
+}
+
 -> @Load {
     get "https://www.kaggle.com/datasets/lespin/house-prices-dataset" "train.csv"
     get "https://www.kaggle.com/datasets/lespin/house-prices-dataset" "test.csv"
@@ -8,33 +41,26 @@
 } -> @Prepare {
     train_num <- train_raw.select_numeric <- ()
     train_num <- train_num.fillna_median  <- ()
-    test_num  <- test_raw.select_numeric  <- ()
-    test_num  <- test_num.fillna_median   <- ()
+
+    test_num <- test_raw.select_numeric <- ()
+    test_num <- test_num.fillna_median  <- ()
+    X_test   <- test_num.select_cols    <- (("OverallQual", "GrLivArea", "GarageCars", "TotalBsmtSF", "YearBuilt", "FullBath"))
 
     y        := train_raw.SalePrice
     test_ids := test_raw.Id
-
-} -> @BranchA {
-    cols_a  := ("OverallQual", "GrLivArea")
-    Xa      <- train_num.select_cols <- (cols_a)
-    model_a <- linear_regression.fit <- (Xa, y)
-
-} -> @BranchB {
-    cols_b  := ("OverallQual", "GrLivArea", "GarageCars", "TotalBsmtSF", "YearBuilt")
-    Xb      <- train_num.select_cols <- (cols_b)
-    model_b <- ridge.fit <- (Xb, y)
-
-} -> @BranchC {
-    cols_c  := ("GrLivArea", "TotalBsmtSF", "GarageCars", "OverallQual", "YearBuilt", "FullBath")
-    Xc      <- train_num.select_cols <- (cols_c)
-    model_c <- random_forest_regressor.fit <- (Xc, y)
-
-} -> @Validate {
-    scores := (
-        .validate <- (model_a),
-        .validate <- (model_b),
-        .validate <- (model_c)
-    )
-    best <- .validate_select <- (scores)
-    .after_validate <- (best)
 }
+
+@Prepare -> @BranchA {
+    X     <- train_num.select_cols <- (("OverallQual", "GrLivArea"))
+    model <- linear_regression.fit <- (X, y)
+} -> @Validate(model)
+
+@Prepare -> @BranchB {
+    X     <- train_num.select_cols <- (("OverallQual", "GrLivArea", "GarageCars", "TotalBsmtSF", "YearBuilt"))
+    model <- ridge.fit <- (X, y)
+} -> @Validate(model)
+
+@Prepare -> @BranchC {
+    X     <- train_num.select_cols <- (("GrLivArea", "TotalBsmtSF", "GarageCars", "OverallQual", "YearBuilt", "FullBath"))
+    model <- random_forest_regressor.fit <- (X, y)
+} -> @Validate(model)
