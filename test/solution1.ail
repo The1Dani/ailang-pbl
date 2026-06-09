@@ -1,53 +1,41 @@
 // solution1.ail  -  Titanic survival (classification)
 
-// Score a model with 5-fold cross-validated accuracy.
+// Runs in the branch scope, so it sees that branch's model + X + y.
+// Returns the model's accuracy as the validation score.
 function validate <- (model) {
-    result <- model.cross_validate <- (X, y, 5, "accuracy")
-    return result.mean_score
+    return model.score <- (X, y)
 }
 
-// Receive every branch's score+model, keep the best, ship it.
+// Receives every branch's scores + models; keep the highest scorer
+// and report it together with its score.
 function validate_select <- (scores_map) {
     scores <- scores_map.scores
     models <- scores_map.models
+    best   <- .select_best <- (scores, models)
 
     n <- scores.len <- ()
     i <- 1
     best_score <- scores.at <- (0)
-    best_model <- models.at <- (0)
-
     while { i < n } do {
-        current_score <- scores.at <- (i)
-        current_model <- models.at <- (i)
+        current <- scores.at <- (i)
         do {
-            best_score <- current_score
-            best_model <- current_model
+            best_score <- current
         } if {
-            current_score > best_score
+            current > best_score
         }
         i <- i + 1
     }
 
-    predictions <- best_model.predict <- (X_test)
-    .save_csv <- (predictions, "test/data/titanic_submission.csv", ids=test_ids)
-    .print    <- ("best model:", best_model)
+    .print <- ("Best model:", best, "with score:", best_score)
 }
 
 -> @Load {
-    get "https://www.kaggle.com/datasets/heptapod/titanic" "train.csv"
-    get "https://www.kaggle.com/datasets/heptapod/titanic" "test.csv"
-    from "train.csv" -> train_raw
-    from "test.csv"  -> test_raw
+    get "https://www.kaggle.com/datasets/yasserh/titanic-dataset" "Titanic-Dataset.csv"
+    from "Titanic-Dataset.csv" -> train_raw
 } -> @Prepare {
     train_num <- train_raw.select_numeric <- ()
     train_num <- train_num.fillna_median  <- ()
-
-    test_num <- test_raw.select_numeric <- ()
-    test_num <- test_num.fillna_median  <- ()
-    X_test   <- test_num.select_cols    <- (("Pclass", "Age", "SibSp", "Parch", "Fare"))
-
-    y        := train_raw.Survived
-    test_ids := test_raw.PassengerId
+    y         := train_raw.Survived
 }
 
 @Prepare -> @BranchA {
