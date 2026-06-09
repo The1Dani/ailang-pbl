@@ -4,12 +4,13 @@
 import re
 import shutil
 import sys
+import urllib.request
 from pathlib import Path
 from urllib.parse import urlparse
 
 import kagglehub
 
-from ailang.shared.utils import _AILANG_DATA_DIR, _ensureDataDir, downloadToPath
+from ailang.shared.utils import _AILANG_DATA_DIR, _ensureDataDir
 
 
 def parseKaggleHandle(url: str) -> str:
@@ -37,7 +38,7 @@ def downloadUrlFile(url: str) -> Path:
         print(f"Could not determine filename from URL: {url}")
         sys.exit(1)
     dest = _AILANG_DATA_DIR / filename
-    downloadToPath(url, dest)
+    urllib.request.urlretrieve(url, dest)
     print(f"Downloaded {url} -> {dest}")
     return dest
 

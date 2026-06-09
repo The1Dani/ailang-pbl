@@ -35,21 +35,6 @@ def _ensureDataDir() -> None:
     _AILANG_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
-# Browser-like User-Agent: many CDNs (e.g. behind Cloudflare) reject the
-# default "Python-urllib/x.y" agent with HTTP 403, so we present a common one.
-_BROWSER_USER_AGENT = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-)
-
-
-def downloadToPath(url: str, dest: Path, timeout: int = 30) -> None:
-    """Download `url` to `dest`, sending a browser User-Agent to avoid 403s."""
-    request = urllib.request.Request(url, headers={"User-Agent": _BROWSER_USER_AGENT})
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        dest.write_bytes(response.read())
-
-
 def _loadFromUrl(url: str) -> pd.DataFrame:
     _ensureDataDir()
     filename = Path(urlparse(url).path).name
@@ -58,7 +43,7 @@ def _loadFromUrl(url: str) -> pd.DataFrame:
         sys.exit(1)
     dest = _AILANG_DATA_DIR / filename
     if not dest.exists():
-        downloadToPath(url, dest)
+        urllib.request.urlretrieve(url, dest)
         print(f"Downloaded {url} -> {dest}")
     return pd.read_csv(dest)
 
