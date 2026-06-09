@@ -39,7 +39,6 @@ def downloadUrlFile(url: str) -> Path:
         sys.exit(1)
     dest = _AILANG_DATA_DIR / filename
     urllib.request.urlretrieve(url, dest)
-    print(f"Downloaded {url} -> {dest}")
     return dest
 
 
@@ -62,6 +61,12 @@ def downloadKaggleDataset(handle: str, specific_file: str | None = None) -> None
 
 def getFile(raw: str, specific_file: str | None = None) -> None:
     """Dispatch a `get` operation to generic URL download or Kaggle dataset download."""
+
+    if specific_file is not None:
+        dst = _AILANG_DATA_DIR / Path(specific_file)
+        if dst.exists():
+            return
+
     if raw.startswith("http") and "kaggle.com" not in raw:
         downloadUrlFile(raw)
     else:
