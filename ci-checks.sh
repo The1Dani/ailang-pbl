@@ -5,7 +5,7 @@ check() {
     uv run pyright --warnings -p pyproject.toml && \
     uv run pylint . && \
     uv run black --check .
-    uv run pytest tests/ 
+    AILANG_DATA_DIR="tests/.ailang/data" uv run pytest tests/ 
 }
 
 uv run black .

@@ -1,0 +1,53 @@
+// solution3.ail  -  Pima Indians Diabetes (classification)
+
+// Runs in the branch scope; returns the model's accuracy as the score.
+function validate <- (model) {
+    return model.score <- (X, y)
+}
+
+// Receives every branch's scores + models; keep the highest scorer
+// and report it together with its score.
+function validate_select <- (scores_map) {
+    scores <- scores_map.scores
+    models <- scores_map.models
+    best   <- .select_best <- (scores, models)
+
+    n <- scores.len <- ()
+    i <- 1
+    best_score <- scores.at <- (0)
+    while { i < n } do {
+        current <- scores.at <- (i)
+        do {
+            best_score <- current
+        } if {
+            current > best_score
+        }
+        i <- i + 1
+    }
+
+    .print <- ("Best model:", best, "with score:", best_score)
+}
+
+-> @Load {
+    get "https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database" "diabetes.csv"
+    from "diabetes.csv" -> train_raw
+} -> @Prepare {
+    train_num <- train_raw.select_numeric <- ()
+    train_num <- train_num.fillna_median  <- ()
+    y         := train_raw.Outcome
+}
+
+@Prepare -> @BranchA {
+    X     <- train_num.select_cols <- (("Glucose", "BMI"))
+    model <- logistic_regression.fit <- (X, y)
+} -> @Validate(model)
+
+@Prepare -> @BranchB {
+    X     <- train_num.select_cols <- (("Pregnancies", "Glucose", "BloodPressure", "BMI", "Age"))
+    model <- svr.fit <- (X, y)
+} -> @Validate(model)
+
+@Prepare -> @BranchC {
+    X     <- train_num.select_cols <- (("Glucose", "BMI", "Age", "Insulin", "SkinThickness", "DiabetesPedigreeFunction"))
+    model <- knn_classifier.fit <- (X, y)
+} -> @Validate(model)

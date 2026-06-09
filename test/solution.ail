@@ -1,0 +1,25 @@
+-> @Load {
+    get "https://www.kaggle.com/datasets/defcodeking/spaceship-titanic-prepared-datasets" "test_prepared.csv"
+    get "https://www.kaggle.com/datasets/defcodeking/spaceship-titanic-prepared-datasets" "train_prepared.csv"
+    from "train_prepared.csv" -> train_raw
+    from "test_prepared.csv" -> test_raw
+} -> @Prepare {
+    train_proc <- train_raw.map_bool_cols <- (("Transported", "CryoSleep", "VIP"))
+    test_proc <- test_raw.map_bool_cols <- (("CryoSleep", "VIP"))
+
+    train_num <- train_proc.select_numeric <- ()
+    test_num <- test_proc.select_numeric <- ()
+
+    train_num <- train_num.fillna_median <- ()
+    test_num <- test_num.fillna_median <- ()
+
+    feature_cols := ("CryoSleep", "VIP", "Age", "RoomService", "FoodCourt", "ShoppingMall", "Spa", "VRDeck")
+    X <- train_num.select_cols <- (feature_cols)
+    X_test <- test_num.select_cols <- (feature_cols)
+} -> @Train {
+    y := train_proc.Transported
+
+    model <- random_forest_classifier.fit <- (X, y)
+    predictions <- model.predict <- (X_test)
+    .save_csv <- (predictions, "test/data/predictions.csv", ids=test_raw.PassengerId)
+}

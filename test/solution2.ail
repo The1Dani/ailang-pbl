@@ -1,0 +1,53 @@
+// solution2.ail  -  House Prices (regression)
+
+// Runs in the branch scope; returns the regressor's R2 as the score.
+function validate <- (model) {
+    return model.score <- (X, y)
+}
+
+// Receives every branch's scores + models; keep the highest scorer
+// and report it together with its score.
+function validate_select <- (scores_map) {
+    scores <- scores_map.scores
+    models <- scores_map.models
+    best   <- .select_best <- (scores, models)
+
+    n <- scores.len <- ()
+    i <- 1
+    best_score <- scores.at <- (0)
+    while { i < n } do {
+        current <- scores.at <- (i)
+        do {
+            best_score <- current
+        } if {
+            current > best_score
+        }
+        i <- i + 1
+    }
+
+    .print <- ("Best model:", best, "with score:", best_score)
+}
+
+-> @Load {
+    get "https://www.kaggle.com/datasets/lespin/house-prices-dataset" "train.csv"
+    from "train.csv" -> train_raw
+} -> @Prepare {
+    train_num <- train_raw.select_numeric <- ()
+    train_num <- train_num.fillna_median  <- ()
+    y         := train_raw.SalePrice
+}
+
+@Prepare -> @BranchA {
+    X     <- train_num.select_cols <- (("OverallQual", "GrLivArea"))
+    model <- linear_regression.fit <- (X, y)
+} -> @Validate(model)
+
+@Prepare -> @BranchB {
+    X     <- train_num.select_cols <- (("OverallQual", "GrLivArea", "GarageCars", "TotalBsmtSF", "YearBuilt"))
+    model <- ridge.fit <- (X, y)
+} -> @Validate(model)
+
+@Prepare -> @BranchC {
+    X     <- train_num.select_cols <- (("GrLivArea", "TotalBsmtSF", "GarageCars", "OverallQual", "YearBuilt", "FullBath"))
+    model <- random_forest_regressor.fit <- (X, y)
+} -> @Validate(model)

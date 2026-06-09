@@ -17,3 +17,5 @@ AGENTS.md
 catboost_info/
 .ailang
 .kaggle*
+
+test/data/predictions.csv

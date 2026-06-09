@@ -16,6 +16,12 @@ class AiLangObj:
         self.members: dict[str, AiLangObj] = {}
         self.original_reference: AiLangObj | None = None
 
+        if isinstance(val, DfType):
+            df = val.get()
+            for col, ser in df.items():
+                column_obj = AiLangObj(col, DfItem(ser))
+                self.setMember(column_obj)
+
     def killMembers(self) -> None:
         self.members = {}
 
@@ -35,6 +41,11 @@ class AiLangObj:
         return self
 
     def set(self, val: AiLangType | None) -> None:
+        if isinstance(val, DfType):
+            df = val.get()
+            for col, ser in df.items():
+                column_obj = AiLangObj(col, DfItem(ser))
+                self.setMember(column_obj)
         self.val = val
 
     def setMember(self, member: AiLangObj):
@@ -135,8 +146,4 @@ def evalMember(node, parent):
 
 
 def fromDFtoObj(ident: str, df: pd.DataFrame) -> AiLangObj:
-    obj = AiLangObj(ident, DfType(df))
-    for col, ser in df.items():
-        column_obj = AiLangObj(col, DfItem(ser))
-        obj.setMember(column_obj)
-    return obj
+    return AiLangObj(ident, DfType(df))
